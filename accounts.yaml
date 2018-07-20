@@ -1,0 +1,739 @@
+swagger: '2.0'
+info:
+  description: Accounts service for eDropin
+  version: 1.0.0
+  title: eDropin Accounts
+  license:
+    name: UNLICENSED
+  contact:
+    name: Saj Arora
+    email: dev@edropin.com
+host: 'accounts-dot-edropin-playground.appspot.com'
+basePath: /v1
+tags:
+  - name: eaCron
+    description: Cron tasks that are run on a schedule
+  - name: eaAccounts
+    description: User accounts on eDropin
+  - name: eaNotifications
+    description: Send notifications to user such as email/push
+  - name: eaWebhooks
+    description: Web hooks for 3rd party plugins
+  - name: eaMail
+    description: Handle browser mail
+  - name: eaProfiles
+    description: Profiles such as course providers and businesses
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    in: header
+    name: Authorization
+  ClientKey:
+    type: apiKey
+    in: header
+    name: X-Client-Key
+security:
+  - ClientKey: []
+    Authorization: []
+paths:
+  
+  ### Cron tasks
+  /cron/mail:
+    get:
+      tags:
+        - eaCron
+      summary: Process all mail
+      operationId: cronMail
+      responses:
+        '200':
+          description: Started processing mail
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of cron tasks
+  
+  ### Mail
+  '/mail/add-mail-template':
+    put:
+      tags:
+        - eaMail
+      summary: Upsert mail templates
+      operationId: upsertMailTemplate
+      parameters:
+        - in: body
+          name: mailProps
+          description: Add Mail Template
+          required: true
+          schema:
+            $ref: '#/definitions/MailTemplateInsert'
+      responses:
+        '200':
+          description: Mail Template
+          schema:
+            $ref: '#/definitions/MailTemplate'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/mail/secure/{secureToken}':
+    get:
+      tags:
+        - eaMail
+      summary: Get mail from secure token
+      operationId: getMailWithSecureToken
+      parameters:
+        - in: path
+          name: secureToken
+          required: true
+          description: Secure Mail Token
+          type: string
+      responses:
+        '200':
+          description: Mail Html
+          schema:
+            $ref: '#/definitions/MailHTML'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Mail item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End Mail
+  
+  ### Accounts
+  /accounts:
+    get:
+      tags:
+        - eaAccounts
+      summary: Get Account
+      operationId: getAccount
+      responses:
+        '200':
+          description: Account
+          schema:
+            $ref: '#/definitions/Account'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaAccounts
+      summary: Create/update existing account
+      operationId: updateAccount
+      parameters:
+        - in: body
+          name: accountProps
+          description: Account object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/AccountUpdate'
+      responses:
+        '200':
+          description: Account updated
+          schema:
+            $ref: '#/definitions/Account'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/accounts/search':
+    get:
+      tags:
+        - eaAccounts
+      summary: Search Accounts
+      operationId: searchAccount
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: q
+      responses:
+        '200':
+          description: Accounts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Account'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Accounts
+  
+  ### Profiles
+  '/profiles':
+    get:
+      tags:
+        - eaProfiles
+      summary: Get Profiles
+      operationId: getAllProfiles
+      parameters:
+        - in: query
+          name: profileType
+          type: string
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Profile
+          schema:
+            $ref: '#/definitions/PagedProfile'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfiles
+      summary: Create profile
+      operationId: createProfile
+      parameters:
+        - in: body
+          name: profileProps
+          description: Profile object that needs to be created
+          required: true
+          schema:
+            $ref: '#/definitions/ProfileUpdate'
+      responses:
+        '200':
+          description: Profile created
+          schema:
+            $ref: '#/definitions/Profile'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/get-multi':
+    get:
+      tags:
+        - eaProfiles
+      summary: Get Multiple Profiles
+      operationId: getMultipleProfiles
+      parameters:
+        - in: query
+          name: profileIds
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Profile
+          schema:
+            $ref: '#/definitions/ProfileList'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Get a profile from the directory
+      operationId: getProfile
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Profile'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaProfiles
+      summary: Update an existing profile
+      operationId: updateProfile
+      parameters:
+        - in: body
+          name: profileProps
+          description: Profile object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/Profile'
+      responses:
+        '200':
+          description: Profile updated
+          schema:
+            $ref: '#/definitions/Profile'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eaProfiles
+      summary: Delete an existing profile
+      operationId: deleteProfile
+      responses:
+        '204':
+          description: Profile deleted
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/permissions':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eaProfiles
+      summary: List all profile permissions
+      operationId: getProfilePermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this profile
+          schema:
+            $ref: '#/definitions/PagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaProfiles
+      summary: Set permission for profile
+      operationId: setProfilePermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Account Id and Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/PermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/Permission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/search':
+    get:
+      tags:
+        - eaProfiles
+      summary: Search Profiles
+      operationId: searchProfile
+      parameters:
+        - in: query
+          name: q
+          type: string
+        - in: query
+          name: profileType
+          type: string
+      responses:
+        '200':
+          description: Profiles
+          schema:
+            $ref: '#/definitions/PagedProfile'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Courses
+  
+  ### Webhooks
+  /webhooks/sendgrid:
+    post:
+      tags:
+        - eaWebhooks
+      security: []
+      summary: Sendgrid webhook
+      operationId: sendgridWebhook
+      responses:
+        '200':
+          description: Processed webhook
+  ### End Webhooks
+parameters:
+  limit:
+    name: limit
+    in: query
+    description: Number of items returned
+    type: integer
+    format: int32
+    minimum: 0
+    exclusiveMinimum: true
+    maximum: 50
+    exclusiveMaximum: false
+    multipleOf: 10
+    default: 20
+  cursor:
+    name: cursor
+    in: query
+    description: Start Cursor for query
+    type: string
+  profileId:
+    name: profileId
+    in: path
+    description: Profile Id
+    type: string
+    required: true
+responses:
+  Default500ErrorResponse:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/DefaultError'
+  InvalidInputResponse:
+    description: Validation exception
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+definitions:
+  # Extendable Models
+  BaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      created:
+        type: integer
+        format: int32
+        readOnly: true
+      modified:
+        type: integer
+        format: int32
+        readOnly: true
+      version:
+        type: string
+        readOnly: true
+  
+  Creator:
+    type: object
+    allOf:
+      - $ref: '#/definitions/BaseId'
+      - properties:
+          creatorId:
+            type: string
+            
+  Pagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
+      prevCursor:
+        type: string
+      total:
+        type: integer
+        format: int32
+      more:
+        type: boolean
+        default: false
+  ### End Extendable Models
+  
+  ### Components
+  Address:
+    type: object
+    properties:
+      line1:
+        type: string
+      line2:
+        type: string
+      line3:
+        type: string
+      city:
+        type: string
+      stateCode:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+      zip:
+        type: string
+      geoloc:
+        $ref: '#/definitions/Geoloc'
+  
+  Geoloc:
+    type: object
+    properties:
+      lat:
+        type: number
+        format: float
+      lng:
+        type: number
+        format: float
+  
+  DefaultError:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  
+  ### Permissions
+  # PermissionEntity:
+  #   type: object
+  #   properties:
+  #     permissionName:
+  #       type: string
+  #     startTimestamp:
+  #       type: integer
+  #     endTimestamp:
+  #       type: integer
+  #     conditions:
+  #       type: object
+  #     client:
+  #       type: string
+  #     creatorId:
+  #       type: string
+  Permission:
+    type: object
+    properties:
+      id:
+        type: string
+      creatorId:
+        type: string
+      entityKind:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+  PermissionInput:
+    type: object
+    properties:
+      accountId:
+        type: string
+      accountEmail:
+        type: string
+      permissions:
+        type: object
+  PagedPermission:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/Pagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Permission'
+  ### End Permissions
+
+  ### Notifications
+  MailTemplate:
+    type: object
+    allOf:
+      - $ref: '#/definitions/BaseId'
+      - properties:
+          uid:
+            type: string
+          link:
+            type: string
+          html:
+            type: string
+  MailTemplateInsert:
+    type: object
+    properties:
+      uid:
+        type: string
+      link:
+        type: string
+  # MailSummary:
+  #   type: object
+  #   properties:
+  #     id:
+  #       type: integer
+  #     subject:
+  #       type: string
+  #     processedWhen:
+  #       type: integer
+  #     deferredWhen:
+  #       type: integer
+  #     sentWhen:
+  #       type: integer
+  #     failedWhen:
+  #       type: integer
+  #     failedReason:
+  #       type: string
+  #     deliveredWhen:
+  #       type: integer
+  #     openedWhen:
+  #       type: array
+  #       items:
+  #         type: integer
+  #     clickedWhen:
+  #       type: array
+  #       items:
+  #         type: integer
+  #     created:
+  #       type: integer
+  # Mail:
+  #   type: object
+  #   allOf:
+  #     - $ref: '#/definitions/MailSummary'
+  #     - properties:
+  #         toAccountId:
+  #           type: string
+  #         toName:
+  #           type: string
+  #         toEmail:
+  #           type: string
+  # PagedMail:
+  #   type: object
+  #   properties:
+  #     pageData:
+  #       $ref: '#/definitions/Pagination'
+  #     items:
+  #       type: array
+  #       items:
+  #         $ref: '#/definitions/Mail'
+  # RetryMail:
+  #   type: object
+  #   properties:
+  #     toEmail:
+  #       type: string
+  #     toName:
+  #       type: string
+  
+  ### Mail html
+  MailHTML:
+    type: object
+    properties:
+      created:
+        type: integer
+        format: int32
+      subject:
+        type: string
+      html:
+        type: string
+      subs:
+        type: object
+  ### End Mail
+  
+  ### Account
+  AccountUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      picture:
+        type: string
+      website:
+        type: string
+      bio:
+        type: string
+  Account:
+    type: object
+    allOf:
+      - $ref: '#/definitions/BaseId'
+      - $ref: '#/definitions/AccountUpdate'
+  ### End Account
+  
+  ### Profile
+  ProfileUpdate:
+    type: object
+    properties:
+      username:
+        type: string
+      name:
+        type: string
+      profileType:
+        type: string
+        enum: [speaker, provider, business]
+      picture:
+        type: string
+      bio:
+        type: string
+      location:
+        type: string
+      address:
+        $ref: '#/definitions/Address'
+      website:
+        type: string
+      facebook:
+        type: string
+      linkedIn: 
+        type: string
+      instagram:
+        type: string
+  Profile:
+    type: object
+    allOf:
+      - $ref: '#/definitions/Creator'
+      - $ref: '#/definitions/ProfileUpdate'
+  ProfileSummary:
+    type: object
+    properties:
+      username:
+        type: string
+      name: 
+        type: string
+      location:
+        type: string
+  PagedProfile:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/Pagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ProfileSummary'
+  ProfileList:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Profile'

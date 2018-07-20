@@ -1,0 +1,380 @@
+swagger: '2.0'
+info:
+  description: Store service for eDropin
+  version: 1.0.0
+  title: eDropin Store
+  license:
+    name: UNLICENSED
+  contact:
+    name: Saj Arora
+    email: dev@edropin.com
+host: 'store-dot-edropin-playground.appspot.com'
+basePath: /v1
+tags:
+  - name: esMerchants
+    description: Merchant management
+  - name: esStore
+    description: Store management
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    in: header
+    name: Authorization
+  ClientKey:
+    type: apiKey
+    in: header
+    name: X-Client-Key
+security:
+  - ClientKey: []
+    Authorization: []
+paths:
+  ### Merchants
+  '/merchants/{profileId}':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - esMerchants
+      summary: Get a Merchant from the directory
+      operationId: getMerchant
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esMerchants
+      summary: Upsert a Merchant
+      operationId: upsertMerchant
+      parameters:
+        - in: body
+          name: storeItemProps
+          description: Store Item that needs to be upserted
+          required: true
+          schema:
+            $ref: '#/definitions/EsMerchantUpdate'
+      responses:
+        '200':
+          description: Merchant updated/inserted
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/merchants/{profileId}/permissions':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - esMerchants
+      summary: List all Event permissions
+      operationId: getEventPermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this Event
+          schema:
+            $ref: '#/definitions/EsPagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esMerchants
+      summary: Set permission for Event
+      operationId: setEventPermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Account Id and Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/EsPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Merchants
+  
+  ### Store
+  '/store/{storeId}':
+    parameters:
+      - $ref: '#/parameters/storeId'
+    get:
+      tags:
+        - esStore
+      summary: Get a store item from the directory
+      operationId: getStoreItem
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esStore
+      summary: Upsert a store item
+      operationId: upsertStoreItem
+      parameters:
+        - in: body
+          name: storeItemProps
+          description: Store Item that needs to be upserted
+          required: true
+          schema:
+            $ref: '#/definitions/EsStoreItemUpdate'
+      responses:
+        '200':
+          description: Store Item updated
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Store Item not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esStore
+      summary: Delete an existing Store Item
+      operationId: deleteStoreItem
+      responses:
+        '204':
+          description: Event deleted
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: StoreItem not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Store
+parameters:
+  limit:
+    name: limit
+    in: query
+    description: Number of items returned
+    type: integer
+    format: int32
+    minimum: 0
+    exclusiveMinimum: true
+    maximum: 50
+    exclusiveMaximum: false
+    multipleOf: 10
+    default: 20
+  cursor:
+    name: cursor
+    in: query
+    description: Start Cursor for query
+    type: string
+  profileId:
+    name: profileId
+    in: path
+    description: Profile Id
+    type: string
+    required: true
+  storeId:
+    name: storeId
+    in: path
+    description: Store Id
+    type: string
+    required: true
+responses:
+  Default500ErrorResponse:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/EsDefaultError'
+  InvalidInputResponse:
+    description: Validation exception
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+definitions:
+  # Extendable Models
+  EsBaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      created:
+        type: integer
+        format: int32
+        readOnly: true
+      modified:
+        type: integer
+        format: int32
+        readOnly: true
+      version:
+        type: string
+        readOnly: true
+  ### End Extendable Models
+  
+  ### Components
+  EsDefaultError:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  
+  EsPagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
+      prevCursor:
+        type: string
+      total:
+        type: integer
+        format: int32
+      more:
+        type: boolean
+        default: false
+        
+  ### Permissions
+  EsPermission:
+    type: object
+    properties:
+      id:
+        type: string
+      creatorId:
+        type: string
+      entityKind:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+  EsPermissionInput:
+    type: object
+    properties:
+      accountId:
+        type: string
+      accountEmail:
+        type: string
+      permissions:
+        type: object
+  EsPagedPermission:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsPermission'
+  
+  ### End Permissions
+  
+  ### Merchant
+  EsMerchantUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      picture:
+        type: string
+      bio:
+        type: string
+      shortBio:
+        type: string
+      address:
+        type: object
+  EsMerchant:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsMerchantUpdate'
+      - properties:
+          stripeId:
+            type: string
+
+  ### Store
+  EsStoreItemUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      picture:
+        type: string
+      description:
+        type: string
+      shortDescription:
+        type: string
+      link:
+        type: string
+      sellerId:
+        type: string
+      openFlag:
+        type: boolean
+        default: true
+      onSaleHook:
+        type: object
+      cancellationPolicy:
+        type: object
+      onCancelHook:
+        type: object
+        
+  EsStoreItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsStoreItemUpdate'
+      - properties:
+          profileRoles:
+            type: object

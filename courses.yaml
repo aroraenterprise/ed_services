@@ -1,0 +1,575 @@
+swagger: '2.0'
+info:
+  description: Courses service for eDropin
+  version: 1.0.0
+  title: eDropin Courses
+  license:
+    name: UNLICENSED
+  contact:
+    name: Saj Arora
+    email: dev@edropin.com
+host: 'courses-dot-edropin-playground.appspot.com'
+basePath: /v1
+tags:
+  - name: ecCourses
+    description: Courses
+  - name: ecSubjects
+    description: Subjects
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    in: header
+    name: Authorization
+  ClientKey:
+    type: apiKey
+    in: header
+    name: X-Client-Key
+security:
+  - ClientKey: []
+    Authorization: []
+paths:
+  ### Courses
+  '/courses':
+    get:
+      tags:
+        - ecCourses
+      summary: Get Courses
+      operationId: getAllCourses
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Courses
+          schema:
+            $ref: '#/definitions/EcPagedCourse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - ecCourses
+      summary: Create Course
+      operationId: createCourse
+      parameters:
+        - in: body
+          name: courseProps
+          description: Course object that needs to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EcCourseUpdate'
+      responses:
+        '200':
+          description: Course created
+          schema:
+            $ref: '#/definitions/EcCourse'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/courses/get-multi':
+    get:
+      tags:
+        - ecCourses
+      summary: Get Multiple Courses
+      operationId: getMultipleCourses
+      parameters:
+        - in: query
+          name: courseIds
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Course
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EcCourse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/courses/{courseId}':
+    parameters:
+      - $ref: '#/parameters/courseId'
+    get:
+      tags:
+        - ecCourses
+      summary: Get a course from the directory
+      operationId: getCourse
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EcCourse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Course not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - ecCourses
+      summary: Update an existing course
+      operationId: updateCourse
+      parameters:
+        - in: body
+          name: courseProps
+          description: Course object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EcCourseUpdate'
+      responses:
+        '200':
+          description: Course updated
+          schema:
+            $ref: '#/definitions/EcCourse'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Course not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - ecCourses
+      summary: Delete an existing course
+      operationId: deleteCourse
+      responses:
+        '204':
+          description: Course deleted
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Course not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/courses/{courseId}/permissions':
+    parameters:
+      - $ref: '#/parameters/courseId'
+    get:
+      tags:
+        - ecCourses
+      summary: List all course permissions
+      operationId: getCoursePermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this course
+          schema:
+            $ref: '#/definitions/EcPagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - ecCourses
+      summary: Set permission for course
+      operationId: setCoursePermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Account Id and Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/EcPermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/EcPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/courses/{courseId}/profiles':
+    parameters:
+      - $ref: '#/parameters/courseId'
+    get:
+      tags:
+        - ecCourses
+      summary: Get profiles linked to the course
+      operationId: getCourseProfiles
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EcProfileRoles'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Course not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - ecCourses
+      summary: Update course profile roles
+      operationId: upsertCourseProfile
+      parameters:
+        - in: body
+          name: courseProfileRoles
+          description: Profile role to update
+          required: true
+          schema:
+            $ref: '#/definitions/EcProfileRoles'
+      responses:
+        '200':
+          description: Course Profile role updated
+          schema:
+            $ref: '#/definitions/EcProfileRolesUpdate'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Course or Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/courses/search':
+    get:
+      tags:
+        - ecCourses
+      summary: Search Courses
+      operationId: searchCourse
+      parameters:
+        - in: query
+          name: q
+          type: string
+        - in: query
+          name: subjectId
+          type: string
+        - in: query
+          name: organizerId
+          type: string
+        - in: query
+          name: profileId
+          type: string
+        - in: query
+          name: handsOnFlag
+          type: boolean
+        - in: query
+          name: onlineFlag
+          type: boolean
+      responses:
+        '200':
+          description: Courses
+          schema:
+            $ref: '#/definitions/EcPagedCourse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Courses
+  
+  '/subjects/search':
+    get:
+      tags:
+        - ecSubjects
+      summary: Search Subjects
+      operationId: searchSubject
+      parameters:
+        - in: query
+          name: q
+          type: string
+      responses:
+        '200':
+          description: Subjects
+          schema:
+            $ref: '#/definitions/EcPagedSubject'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+parameters:
+  limit:
+    name: limit
+    in: query
+    description: Number of items returned
+    type: integer
+    format: int32
+    minimum: 0
+    exclusiveMinimum: true
+    maximum: 50
+    exclusiveMaximum: false
+    multipleOf: 10
+    default: 20
+  cursor:
+    name: cursor
+    in: query
+    description: Start Cursor for query
+    type: string
+  courseId:
+    name: courseId
+    in: path
+    description: Course Id
+    type: string
+    required: true
+responses:
+  Default500ErrorResponse:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/EcDefaultError'
+  InvalidInputResponse:
+    description: Validation exception
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+definitions:
+  # Extendable Models
+  EcBaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      created:
+        type: integer
+        format: int32
+        readOnly: true
+      modified:
+        type: integer
+        format: int32
+        readOnly: true
+      version:
+        type: string
+        readOnly: true
+  
+  EcCreator:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EcBaseId'
+      - properties:
+          creatorId:
+            type: string
+            
+  EcPagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
+      prevCursor:
+        type: string
+      total:
+        type: integer
+        format: int32
+      more:
+        type: boolean
+        default: false
+  ### End Extendable Models
+  
+  ### Components
+  EcDefaultError:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  
+  ### Permissions
+  EcPermission:
+    type: object
+    properties:
+      id:
+        type: string
+      creatorId:
+        type: string
+      entityKind:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+  EcPermissionInput:
+    type: object
+    properties:
+      accountId:
+        type: string
+      accountEmail:
+        type: string
+      permissions:
+        type: object
+  EcPagedPermission:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EcPagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EcPermission'
+  
+  ### End Permissions
+  EcProfile:
+    type: object
+    properties:
+      id:
+        type: string
+      name: 
+        type: string
+      location:
+        type: string
+      profileType:
+        type: string
+      shortBio:
+        type: string
+        
+  EcProfileRolesUpdate:
+    type: object
+    additionalProperties:
+      type: array
+      items:
+        type: string
+  
+  EcProfileRoles:
+    type: object
+    properties:
+      profiles:
+        type: array
+        items:
+          $ref: '#/definitions/EcProfile'
+      roles:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        
+
+  ### Subject
+  EcSubjectUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      picture:
+        type: string
+      color:
+        type: string
+        
+  EcSubject:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EcBaseId'
+      - $ref: '#/definitions/EcSubjectUpdate'
+
+  EcPagedSubject:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EcPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EcSubject'
+          
+  ### Course
+  EcCourseUpdate:
+    type: object
+    properties:
+      organizerId:
+        type: string
+      name:
+        type: string
+      shortBio:
+        type: string
+      bio:
+        type: string
+      objectives:
+        type: string
+      picture:
+        type: string
+      pictures:
+        type: array
+        items:
+          type: string
+      onlineFlag:
+        type: boolean
+      handsOnFlag:
+        type: boolean
+      duration:
+        type: integer
+        format: int32
+      website:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      subject:
+        type: string
+      isLive:
+        type: boolean
+      isPublic:
+        type: boolean
+  EcCourse:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EcCreator'
+      - $ref: '#/definitions/EcCourseUpdate'
+      - properties:
+          subject:
+            $ref: '#/definitions/EcSubject'
+          profiles:
+            type: array
+            items:
+              $ref: '#/definitions/EcProfile'
+          profileRoles:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EcProfileRoles'
+  EcPagedCourse:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EcPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EcCourse'

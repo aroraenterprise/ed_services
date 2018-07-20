@@ -1,0 +1,585 @@
+swagger: '2.0'
+info:
+  description: Events service for eDropin
+  version: 1.0.0
+  title: eDropin Events
+  license:
+    name: UNLICENSED
+  contact:
+    name: Saj Arora
+    email: dev@edropin.com
+host: 'events-dot-edropin-playground.appspot.com'
+basePath: /v1
+tags:
+  - name: eeEvents
+    description: Events
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    in: header
+    name: Authorization
+  ClientKey:
+    type: apiKey
+    in: header
+    name: X-Client-Key
+security:
+  - ClientKey: []
+    Authorization: []
+paths:
+  ### Events
+  '/events':
+    get:
+      tags:
+        - eeEvents
+      summary: Get Events
+      operationId: getAllEvents
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Events
+          schema:
+            $ref: '#/definitions/EePagedEvent'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEvents
+      summary: Create Event
+      operationId: createEvent
+      parameters:
+        - in: body
+          name: eventProps
+          description: Event object that needs to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventUpdate'
+      responses:
+        '200':
+          description: Event created
+          schema:
+            $ref: '#/definitions/EeEvent'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/get-multi':
+    get:
+      tags:
+        - eeEvents
+      summary: Get Multiple Events
+      operationId: getMultipleEvents
+      parameters:
+        - in: query
+          name: eventIds
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Event
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeEvent'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEvents
+      summary: Get a Event from the directory
+      operationId: getEvent
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEvent'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEvents
+      summary: Update an existing Event
+      operationId: updateEvent
+      parameters:
+        - in: body
+          name: eventProps
+          description: Event object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventUpdate'
+      responses:
+        '200':
+          description: Event updated
+          schema:
+            $ref: '#/definitions/EeEvent'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEvents
+      summary: Delete an existing Event
+      operationId: deleteEvent
+      responses:
+        '204':
+          description: Event deleted
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/permissions':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEvents
+      summary: List all Event permissions
+      operationId: getEventPermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this Event
+          schema:
+            $ref: '#/definitions/EePagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEvents
+      summary: Set permission for Event
+      operationId: setEventPermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Account Id and Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/EePermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/EePermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/profiles':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEvents
+      summary: Get profiles linked to the Event
+      operationId: getEventProfiles
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEvents
+      summary: Update Event profile roles
+      operationId: upsertEventProfile
+      parameters:
+        - in: body
+          name: eventProfileRoles
+          description: Profile role to update
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Event Profile role updated
+          schema:
+            type: object
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event or Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/courses':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEvents
+      summary: Get courses linked to the Event
+      operationId: getEventCourses
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEventCourse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEvents
+      summary: Update Event profile roles
+      operationId: upsertEventCourse
+      parameters:
+        - in: body
+          name: eventCourses
+          description: Courses to update
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventCourse'
+      responses:
+        '200':
+          description: Event Course updated
+          schema:
+            $ref: '#/definitions/EeEventCourse'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event or Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/search':
+    get:
+      tags:
+        - eeEvents
+      summary: Search Events
+      operationId: searchEvent
+      parameters:
+        - in: query
+          name: q
+          type: string
+        - in: query
+          name: courseId
+          type: string
+        - in: query
+          name: organizerId
+          type: string
+        - in: query
+          name: profileId
+          type: string
+        - in: query
+          name: destinationFlag
+          type: boolean
+        - in: query
+          name: handsOnFlag
+          type: boolean
+        - in: query
+          name: onlineFlag
+          type: boolean
+      responses:
+        '200':
+          description: Events
+          schema:
+            $ref: '#/definitions/EePagedEvent'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Events
+parameters:
+  limit:
+    name: limit
+    in: query
+    description: Number of items returned
+    type: integer
+    format: int32
+    minimum: 0
+    exclusiveMinimum: true
+    maximum: 50
+    exclusiveMaximum: false
+    multipleOf: 10
+    default: 20
+  cursor:
+    name: cursor
+    in: query
+    description: Start Cursor for query
+    type: string
+  eventId:
+    name: eventId
+    in: path
+    description: Event Id
+    type: string
+    required: true
+responses:
+  Default500ErrorResponse:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/EeDefaultError'
+  InvalidInputResponse:
+    description: Validation exception
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+definitions:
+  # Extendable Models
+  EeBaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      created:
+        type: integer
+        format: int32
+        readOnly: true
+      modified:
+        type: integer
+        format: int32
+        readOnly: true
+      version:
+        type: string
+        readOnly: true
+  
+  EeCreator:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          creatorId:
+            type: string
+            
+  EePagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
+      prevCursor:
+        type: string
+      total:
+        type: integer
+        format: int32
+      more:
+        type: boolean
+        default: false
+  ### End Extendable Models
+  
+  ### Components
+  EeDefaultError:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  
+  ### Permissions
+  EePermission:
+    type: object
+    properties:
+      id:
+        type: string
+      creatorId:
+        type: string
+      entityKind:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+  EePermissionInput:
+    type: object
+    properties:
+      accountId:
+        type: string
+      accountEmail:
+        type: string
+      permissions:
+        type: object
+  EePagedPermission:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EePermission'
+  
+  ### End Permissions
+  EeProfile:
+    type: object
+    properties:
+      id:
+        type: string
+      name: 
+        type: string
+      location:
+        type: string
+      profileType:
+        type: string
+      shortBio:
+        type: string  
+
+  ### Course
+  EeCourse:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      shortBio:
+        type: string
+        
+  EeEventCourse:
+    type: object
+    properties:
+      courseId:
+        type: string
+      startTimestamp:
+        type: integer
+      endTimestamp:
+        type: integer
+      description:
+        type: string
+
+  ### Event
+  EeEventUpdate:
+    type: object
+    properties:
+      organizerId:
+        type: string
+      name:
+        type: string
+      shortBio:
+        type: string
+      bio:
+        type: string
+      picture:
+        type: string
+      pictures:
+        type: array
+        items:
+          type: string
+      onlineFlag:
+        type: boolean
+      handsOnFlag:
+        type: boolean
+      destinationFlag:
+        type: boolean
+      startTimestamp:
+        type: integer
+        format: int32
+      endTimestamp:
+        type: integer
+        format: int32
+      website:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      isLive:
+        type: boolean
+      isPublic:
+        type: boolean
+        
+  EeEvent:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeCreator'
+      - $ref: '#/definitions/EeEventUpdate'
+      - properties:
+          profiles:
+            type: array
+            items:
+              $ref: '#/definitions/EeProfile'
+          profileRoles:
+            type: object
+          # courses:
+          #   type: array
+          #   items:
+          #     $ref: '#/definitions/EeCourse'
+          # eventCourses:
+          #   type: array
+          #   items:
+          #     $ref: '#/definitions/EeEventCourse'
+          
+  EePagedEvent:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEvent'
