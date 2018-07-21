@@ -211,19 +211,20 @@ paths:
           description: Profile not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/permissions':
+  '/profiles/{profileId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/accountId'
     get:
       tags:
         - eaProfiles
-      summary: List all permissions for account for an entity
+      summary: Get permission for account
       operationId: getAccountPermissionForProfile
       responses:
         '200':
-          description: List of permissions linked to this profile for this account
+          description: Permissions for account
           schema:
-            $ref: '#/definitions/EaPermission'
+            $ref: "#/definitions/EaPermission"
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -238,7 +239,7 @@ paths:
       parameters:
         - in: body
           name: permissionProps
-          description: Account Id and Permissions
+          description: Permissions
           required: true
           schema:
             $ref: '#/definitions/EaPermissionInput'
@@ -247,6 +248,31 @@ paths:
           description: Permission set
           schema:
             $ref: '#/definitions/EaPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Check account has permission
+      operationId: checkAccountHasPermission
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            type: boolean
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -319,6 +345,12 @@ parameters:
     in: query
     description: Start Cursor for query
     type: string
+  accountId:
+    name: accountId
+    in: path
+    description: Account Id
+    type: string
+    required: true
   profileId:
     name: profileId
     in: path
@@ -438,10 +470,6 @@ definitions:
   EaPermissionInput:
     type: object
     properties:
-      accountId:
-        type: string
-      accountEmail:
-        type: string
       permissions:
         type: object
   EaPagedPermission:
