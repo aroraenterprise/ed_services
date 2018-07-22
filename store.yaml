@@ -300,6 +300,8 @@ paths:
       - $ref: '#/parameters/cartId'
       - $ref: '#/parameters/itemId'
     put:
+      tags:
+        - esCart
       summary: Upsert item to cart
       operationId: upsertCartItem
       parameters:
