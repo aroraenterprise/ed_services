@@ -402,7 +402,7 @@ definitions:
       pageSize:
         type: integer
         format: int32
-      cursor:
+      nextCursor:
         type: string
       total:
         type: integer
