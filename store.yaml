@@ -15,6 +15,8 @@ tags:
     description: Merchant management
   - name: esStore
     description: Store management
+  - name: esCart
+    description: User Cart for store items
 schemes:
   - https
 produces:
@@ -79,23 +81,20 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
-  '/merchants/{profileId}/permissions':
+  '/merchants/{merchantId}/permissions/{accountId}':
     parameters:
-      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/accountId'
     get:
       tags:
         - esMerchants
-      summary: List all Event permissions
-      operationId: getEventPermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
+      summary: Get permission for account
+      operationId: getAccountPermissionForMerchant
       responses:
         '200':
-          description: List of Users with permissions linked to this Event
+          description: Permissions for account
           schema:
-            $ref: '#/definitions/EsPagedPermission'
+            $ref: "#/definitions/EsPermission"
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -105,12 +104,12 @@ paths:
     put:
       tags:
         - esMerchants
-      summary: Set permission for Event
-      operationId: setEventPermission
+      summary: Set permission for merchant
+      operationId: setMerchantPermission
       parameters:
         - in: body
           name: permissionProps
-          description: Account Id and Permissions
+          description: Permissions
           required: true
           schema:
             $ref: '#/definitions/EsPermissionInput'
@@ -125,12 +124,60 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/merchants/{merchantId}/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - esMerchants
+      summary: Check account has permission
+      operationId: checkAccountHasPermission
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/merchants/{merchantId}/all-permissions':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+    get:
+      tags:
+        - esMerchants
+      summary: List all merchant permissions
+      operationId: getMerchantPermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this merchant
+          schema:
+            $ref: '#/definitions/EsPagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   ### End of Merchants
   
   ### Store
-  '/store/{storeId}':
+  '/store/{merchantId}/items/{itemId}':
     parameters:
-      - $ref: '#/parameters/storeId'
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/itemId'
     get:
       tags:
         - esStore
@@ -191,6 +238,108 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   ### End of Store
+  
+  ### Cart
+  '/cart':
+    get:
+      tags:
+        - esCart
+      summary: Get the users current cart
+      operationId: getCurrentCart
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsCart'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - esCart
+      summary: Create a new user cart
+      operationId: addCart
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsCart'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/cart/{cartId}':
+    parameters:
+      - $ref: '#/parameters/cartId'
+    get:
+      tags:
+        - esCart
+      summary: Get a cart by id
+      operationId: getCart
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsCart'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esCart
+      summary: Delete a cart
+      operationId: deleteCart
+      responses:
+        '204':
+          description: Cart deleted
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/cart/{cartId}/items/{itemId}':
+    parameters:
+      - $ref: '#/parameters/cartId'
+      - $ref: '#/parameters/itemId'
+    put:
+      summary: Upsert item to cart
+      operationId: upsertCartItem
+      parameters:
+        - in: body
+          name: cartItemProps
+          description: Cart Item that needs to be upserted
+          required: true
+          schema:
+            $ref: '#/definitions/EsCartItemInput'
+      responses:
+        '200':
+          description: Cart Item upserted
+          schema:
+            $ref: '#/definitions/EsCart'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart/Store Item not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esCart
+      summary: Delete a cart item
+      operationId: deleteCartItem
+      responses:
+        '204':
+          description: Cart Item deleted
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Cart
+  
 parameters:
   limit:
     name: limit
@@ -209,16 +358,34 @@ parameters:
     in: query
     description: Start Cursor for query
     type: string
+  accountId:
+    name: accountId
+    in: path
+    description: Account Id
+    type: string
+    required: true
+  cartId:
+    name: cartId
+    in: path
+    description: Cart Id
+    type: string
+    required: true
+  merchantId:
+    name: merchantId
+    in: path
+    description: Merchant Id
+    type: string
+    required: true
   profileId:
     name: profileId
     in: path
     description: Profile Id
     type: string
     required: true
-  storeId:
-    name: storeId
+  itemId:
+    name: itemId
     in: path
-    description: Store Id
+    description: Store Item Id
     type: string
     required: true
 responses:
@@ -273,14 +440,9 @@ definitions:
         format: int32
       nextCursor:
         type: string
-      prevCursor:
-        type: string
       total:
         type: integer
         format: int32
-      more:
-        type: boolean
-        default: false
         
   ### Permissions
   EsPermission:
@@ -299,10 +461,6 @@ definitions:
   EsPermissionInput:
     type: object
     properties:
-      accountId:
-        type: string
-      accountEmail:
-        type: string
       permissions:
         type: object
   EsPagedPermission:
@@ -318,6 +476,11 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsPermission'
+  EsPermissionCheck:
+    type: object
+    properties:
+      hasPermission:
+        type: boolean
   
   ### End Permissions
   
@@ -358,16 +521,27 @@ definitions:
         type: string
       link:
         type: string
-      sellerId:
+      price:
+        type: integer
+      startSale:
+        type: integer
+      endSale:
+        type: integer
+      totalInventory:
+        type: integer
+      merchantId:
         type: string
-      openFlag:
+      active:
         type: boolean
         default: true
+      forceOpen:
+        type: boolean
+        default: false
+      refundPolicy:
+        type: object
       onSaleHook:
         type: object
-      cancellationPolicy:
-        type: object
-      onCancelHook:
+      onRefundHook:
         type: object
         
   EsStoreItem:
@@ -378,3 +552,80 @@ definitions:
       - properties:
           profileRoles:
             type: object
+          inventoryLeft:
+            type: integer
+            
+  ### Cart
+  EsCart:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          quantity:
+            type: integer
+          subtotal:
+            type: integer
+          merchants:
+            type: array
+            items:
+              $ref: '#/definitions/EsCartMerchant'
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/EsCartItem'
+  EsCartMerchant:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          name:
+            type: string
+          shortBio:
+            type: string
+          location:
+            type: string
+          picture:
+            type: string
+  EsCartItemInput:
+    type: object
+    properties:
+      quantity:
+        type: string
+      discountCodes:
+        type: array
+        items:
+          type: string
+  EsCartItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          merchantId:
+            type: string
+          name:
+            type: string
+          picture:
+            type: string
+          shortDescription:
+            type: string
+          link:
+            type: string
+          retailPrice:
+            type: integer
+          discountPrice:
+            type: integer
+          quantity:
+            type: integer
+          subtotal:
+            type: integer
+          discounts:
+            type: array
+            items:
+              $ref: '#/definitions/EsCartItemDiscount'
+  EsCartItemDiscount:
+    type: object
+    properties:
+      discountCode:
+        type: string
+      discountPrice:
+        type: integer
