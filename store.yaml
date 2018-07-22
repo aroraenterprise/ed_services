@@ -61,8 +61,8 @@ paths:
       operationId: upsertMerchant
       parameters:
         - in: body
-          name: storeItemProps
-          description: Store Item that needs to be upserted
+          name: merchantProps
+          description: Merchant that needs to be upserted
           required: true
           schema:
             $ref: '#/definitions/EsMerchantUpdate'
