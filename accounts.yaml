@@ -309,7 +309,7 @@ paths:
         '200':
           description: Account has Permission
           schema:
-            type: boolean
+            $ref: '#/definitions/EaPermissionCheck'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -522,6 +522,11 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaPermission'
+  EaPermissionCheck:
+    type: object
+    properties:
+      hasPermission:
+        type: boolean
   ### End Permissions
   
   ### Account
