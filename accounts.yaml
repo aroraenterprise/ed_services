@@ -15,6 +15,8 @@ tags:
     description: User accounts on eDropin
   - name: eaProfiles
     description: Profiles such as course providers and businesses
+  - name: eaRoles
+    description: Special roles on eDropin
 schemes:
   - https
 produces:
@@ -28,6 +30,10 @@ securityDefinitions:
     type: apiKey
     in: header
     name: X-Client-Key
+  AdminKey:
+    type: apiKey
+    in: header
+    name: X-Admin-Key
 security:
   - ClientKey: []
     Authorization: []
@@ -62,6 +68,37 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/EaAccountUpdate'
+      responses:
+        '200':
+          description: Account updated
+          schema:
+            $ref: '#/definitions/EaAccount'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Accounts
+  '/accounts/{accountId}/claims':
+    put:
+      tags:
+        - eaAccounts
+      security:
+        - AdminKey: []
+          ClientKey: []
+      summary: Update account claims
+      operationId: updateAccountClaims
+      parameters:
+        - $ref: '#/parameters/accountId'
+        - in: body
+          name: claimProps
+          description: Claims that need to be updated
+          required: true
+          schema:
+            type: object
       responses:
         '200':
           description: Account updated
@@ -501,11 +538,16 @@ definitions:
         type: string
       shortBio:
         type: string
+      
   EaAccount:
     type: object
     allOf:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaAccountUpdate'
+      - properties:
+          claims:
+            type: object
+            readOnly: true
   ### End Account
   
   ### Profile
