@@ -245,35 +245,7 @@ paths:
       tags:
         - esCart
       summary: Get the users current cart
-      operationId: getCurrentCart
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsCart'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    post:
-      tags:
-        - esCart
-      summary: Create a new user cart
-      operationId: addCart
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsCart'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  
-  '/cart/{cartId}':
-    parameters:
-      - $ref: '#/parameters/cartId'
-    get:
-      tags:
-        - esCart
-      summary: Get a cart by id
-      operationId: getCart
+      operationId: getUserCart
       responses:
         '200':
           description: OK
@@ -284,8 +256,8 @@ paths:
     delete:
       tags:
         - esCart
-      summary: Delete a cart
-      operationId: deleteCart
+      summary: Empty the user cart
+      operationId: emptyCart
       responses:
         '204':
           description: Cart deleted
@@ -295,9 +267,8 @@ paths:
           description: Cart not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/cart/{cartId}/items/{itemId}':
+  '/cart/items/{itemId}':
     parameters:
-      - $ref: '#/parameters/cartId'
       - $ref: '#/parameters/itemId'
     put:
       tags:
@@ -530,6 +501,8 @@ definitions:
       endSale:
         type: integer
       totalInventory:
+        type: integer
+      itemsRemaining:
         type: integer
       merchantId:
         type: string
