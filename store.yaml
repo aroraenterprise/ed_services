@@ -81,6 +81,35 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/merchants/{profileId}/stripe':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    put:
+      tags:
+        - esMerchants
+      summary: Link a stripe account to merchant
+      operationId: linkMerchantStripAccount
+      parameters:
+        - in: query
+          name: code
+          required: true
+          description: Stripe Code for OAuth
+          type: string
+      responses:
+        '200':
+          description: Merchant stripe account linked
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/merchants/{merchantId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -312,6 +341,56 @@ paths:
           description: Cart Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/carts/validate':
+    post:
+      tags:
+        - esCart
+      summary: Validate Cart to ensure all items are available and pricing is all right
+      operationId: validateCart
+      responses:
+        '200':
+          description: Cart Item validated
+          schema:
+            $ref: '#/definitions/EsCart'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart/Store Item not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/carts/checkout':
+    post:
+      tags:
+        - esCart
+      summary: Payment information to process all cart items
+      parameters:
+        - in: body
+          name: paymentProps
+          description: Payment props for checkout
+          required: true
+          schema:
+            $ref: '#/definitions/EsPaymentInput'
+      operationId: checkoutCart
+      responses:
+        '200':
+          description: Order
+          schema:
+            $ref: '#/definitions/EsOrder'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart/Store Item not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+      
   ### End of Cart
   
 parameters:
@@ -472,7 +551,7 @@ definitions:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsMerchantUpdate'
       - properties:
-          stripeId:
+          stripeAccountId:
             type: string
 
   ### Store
@@ -535,6 +614,8 @@ definitions:
             type: integer
           subtotal:
             type: integer
+          discountTotal:
+            type: integer
           merchants:
             type: array
             items:
@@ -591,11 +672,29 @@ definitions:
           discounts:
             type: array
             items:
-              $ref: '#/definitions/EsCartItemDiscount'
-  EsCartItemDiscount:
+              $ref: '#/definitions/EsDiscount'
+  EsDiscount:
     type: object
     properties:
       discountCode:
         type: string
       discountPrice:
         type: integer
+  
+  # Order
+  EsOrder:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsCart'
+      - properties:
+          paymentKey:
+            type: string
+
+  EsPaymentInput:
+    type: object
+    properties:
+      source:
+        type: string
+      email:
+        type: string
+      
