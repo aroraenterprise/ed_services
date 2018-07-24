@@ -267,8 +267,9 @@ paths:
           description: Cart not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/cart/items/{itemId}':
+  '/cart/upsert/merchants/{merchantId}/items/{itemId}':
     parameters:
+      - $ref: '#/parameters/merchantId'
       - $ref: '#/parameters/itemId'
     put:
       tags:
@@ -335,12 +336,6 @@ parameters:
     name: accountId
     in: path
     description: Account Id
-    type: string
-    required: true
-  cartId:
-    name: cartId
-    in: path
-    description: Cart Id
     type: string
     required: true
   merchantId:
@@ -565,7 +560,7 @@ definitions:
     type: object
     properties:
       quantity:
-        type: string
+        type: integer
       discountCodes:
         type: array
         items:
