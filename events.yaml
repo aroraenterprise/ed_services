@@ -163,70 +163,9 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/permissions':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEvents
-      summary: List all Event permissions
-      operationId: getEventPermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: List of Users with permissions linked to this Event
-          schema:
-            $ref: '#/definitions/EePagedPermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEvents
-      summary: Set permission for Event
-      operationId: setEventPermission
-      parameters:
-        - in: body
-          name: permissionProps
-          description: Account Id and Permissions
-          required: true
-          schema:
-            $ref: '#/definitions/EePermissionInput'
-      responses:
-        '200':
-          description: Permission set
-          schema:
-            $ref: '#/definitions/EePermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   '/events/{eventId}/profiles':
     parameters:
       - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEvents
-      summary: Get profiles linked to the Event
-      operationId: getEventProfiles
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: object
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
         - eeEvents
@@ -257,22 +196,6 @@ paths:
   '/events/{eventId}/courses':
     parameters:
       - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEvents
-      summary: Get courses linked to the Event
-      operationId: getEventCourses
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeEventCourse'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
         - eeEvents
@@ -291,7 +214,7 @@ paths:
         '200':
           description: Event Course updated
           schema:
-            $ref: '#/definitions/EeEventCourse'
+            $ref: '#/definitions/EeEvent'
         '400':
           description: Invalid ID supplied
         '401':
@@ -341,7 +264,215 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/permissions/{accountId}':
+    parameters:
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eeEvents
+      summary: Get permission for account
+      operationId: getAccountPermissionForProfile
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: "#/definitions/EePermission"
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEvents
+      summary: Set permission for profile
+      operationId: setProfilePermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/EePermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/EePermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eeEvents
+      summary: Check account has permission
+      operationId: checkAccountHasPermission
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EePermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/all-permissions':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEvents
+      summary: List all profile permissions
+      operationId: getProfilePermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this profile
+          schema:
+            $ref: '#/definitions/EePagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   ### End of Events
+  
+  ### Event Tickets
+  '/events/{eventId}/tickets':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    post:
+      tags:
+        - eeTickets
+      summary: Add Ticket to event
+      operationId: addEventTicket
+      parameters:
+        - in: body
+          name: eventCourses
+          description: Courses to update
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventCourse'
+      responses:
+        '200':
+          description: Event Course updated
+          schema:
+            $ref: '#/definitions/EeEvent'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event or Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    get:
+      tags:
+        - eeTickets
+      summary: Get Ticket to event
+      operationId: listEventTickets
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Event Tickets
+          schema:
+            $ref: '#/definitions/EePagedTicket'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/tickets/{ticketId}':
+    parameters:
+      - $ref: '#/parameters/ticketId'
+    get:
+      tags:
+        - eeTickets
+      summary: Get a ticket from the directory
+      operationId: getTicket
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeTicket'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Ticket not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeTickets
+      summary: Update an existing Event
+      operationId: updateTicket
+      parameters:
+        - in: body
+          name: ticketProps
+          description: Ticket object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EeTicketUpdate'
+      responses:
+        '200':
+          description: Ticket updated
+          schema:
+            $ref: '#/definitions/EeTicket'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Ticket not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeTickets
+      summary: Delete an existing Event
+      operationId: deleteTicket
+      responses:
+        '204':
+          description: Ticket deleted
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Ticket not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   limit:
     name: limit
@@ -360,10 +491,22 @@ parameters:
     in: query
     description: Start Cursor for query
     type: string
+  accountId:
+    name: accountId
+    in: path
+    description: Account Id
+    type: string
+    required: true
   eventId:
     name: eventId
     in: path
     description: Event Id
+    type: string
+    required: true
+  ticketId:
+    name: ticketId
+    in: path
+    description: Ticket Id
     type: string
     required: true
 responses:
@@ -413,14 +556,9 @@ definitions:
         format: int32
       nextCursor:
         type: string
-      prevCursor:
-        type: string
       total:
         type: integer
         format: int32
-      more:
-        type: boolean
-        default: false
   ### End Extendable Models
   
   ### Components
@@ -434,6 +572,8 @@ definitions:
         format: int32
       message:
         type: string
+  
+  ### Permissions
   
   ### Permissions
   EePermission:
@@ -452,10 +592,6 @@ definitions:
   EePermissionInput:
     type: object
     properties:
-      accountId:
-        type: string
-      accountEmail:
-        type: string
       permissions:
         type: object
   EePagedPermission:
@@ -471,6 +607,12 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EePermission'
+  EePermissionCheck:
+    type: object
+    properties:
+      hasPermission:
+        type: boolean
+  ### End Permissions
   
   ### End Permissions
   EeProfile:
@@ -565,14 +707,14 @@ definitions:
               $ref: '#/definitions/EeProfile'
           profileRoles:
             type: object
-          # courses:
-          #   type: array
-          #   items:
-          #     $ref: '#/definitions/EeCourse'
-          # eventCourses:
-          #   type: array
-          #   items:
-          #     $ref: '#/definitions/EeEventCourse'
+          courses:
+            type: array
+            items:
+              $ref: '#/definitions/EeCourse'
+          eventCourses:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventCourse'
           
   EePagedEvent:
     type: object
@@ -583,3 +725,57 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
+  ### End Event
+  
+  ### Ticket
+  EeTicketUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      isFree:
+        type: boolean
+      retailPrice:
+        type: integer
+        format: int32
+      currency:
+        type: string
+      totalInventory:
+        type: integer
+        format: int32
+      startSale:
+        type: integer
+        format: int32
+      endSale:
+        type: integer
+        format: int32
+      description:
+        type: string
+      shortDescription:
+        type: string
+      policy:
+        type: string
+      refundPolicy:
+        type: string
+      status:
+        type: string
+  
+  EeTicket:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeTicketUpdate'
+      - properties:
+          eventId:
+            type: string
+            
+  EePagedTicket:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeTicket'
+  ### End Event
