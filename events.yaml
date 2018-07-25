@@ -273,7 +273,7 @@ paths:
       tags:
         - eeEvents
       summary: Get permission for account
-      operationId: getAccountPermissionForProfile
+      operationId: getAccountPermissionForEvent
       responses:
         '200':
           description: Permissions for account
@@ -288,8 +288,8 @@ paths:
     put:
       tags:
         - eeEvents
-      summary: Set permission for profile
-      operationId: setProfilePermission
+      summary: Set permission for event
+      operationId: setEventPermission
       parameters:
         - in: body
           name: permissionProps
@@ -339,14 +339,14 @@ paths:
     get:
       tags:
         - eeEvents
-      summary: List all profile permissions
-      operationId: getProfilePermission
+      summary: List all event permissions
+      operationId: listEventPermissions
       parameters:
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: List of Users with permissions linked to this profile
+          description: List of Users with permissions linked to this event
           schema:
             $ref: '#/definitions/EePagedPermission'
         '401':
@@ -385,7 +385,7 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
-          description: Event or Profile not found
+          description: Event not found
         '405':
           $ref: '#/responses/InvalidInputResponse'
         '500':
