@@ -766,6 +766,9 @@ definitions:
       - properties:
           eventId:
             type: string
+          totalSold:
+            type: integer
+            format: int32
             
   EePagedTicket:
     type: object
