@@ -369,12 +369,10 @@ paths:
       parameters:
         - in: body
           name: ticketProps
-          description: Courses to update
+          description: Ticket to update
           required: true
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EeEventCourse'
+            $ref: '#/definitions/EeTicketUpdate'
       responses:
         '200':
           description: Event Course updated
