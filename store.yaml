@@ -202,6 +202,29 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
   ### End of Merchants
   
+  '/store/{merchantId}/items':
+    get:
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      tags:
+        - esStore
+      summary: Get all store items
+      operationId: listStoreItems
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    
+  
   ### Store
   '/store/{merchantId}/items/{itemId}':
     parameters:
@@ -603,7 +626,20 @@ definitions:
             type: object
           inventoryLeft:
             type: integer
-            
+  EsPagedStoreItem:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsStoreItem'
+          
   ### Cart
   EsCart:
     type: object
