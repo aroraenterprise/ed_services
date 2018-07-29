@@ -694,7 +694,9 @@ definitions:
           stripeAccountId:
             type: string
           feeStructure:
-            $ref: '#/definitions/EsFeeStructure'
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsFeeStructure'
 
   ### Store
   EsStoreItemUpdate:
