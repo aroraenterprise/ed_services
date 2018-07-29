@@ -17,6 +17,8 @@ tags:
     description: Store management
   - name: esCart
     description: User Cart for store items
+  - name: esOrder
+    description: Order items for user
 schemes:
   - https
 produces:
@@ -110,6 +112,27 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/merchants/{merchantId}/orders':
+    get:
+      tags:
+        - esMerchants
+      summary: Get orders for by merchant (merchant use only)
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      operationId: listOrders
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrder'
+        '400':
+          description: Invalid ID supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/merchants/{merchantId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -422,15 +445,35 @@ paths:
         - esOrder
       summary: Get orders for current user
       parameters:
-        - $ref: '#/parameters/merchantId'
+        - in: query
+          name: merchantId
+          required: false
+          type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
-      operationId: listOrders
+      operationId: listOrdersByMerchant
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsPagedStoreItem'
+            $ref: '#/definitions/EsPagedOrder'
+        '400':
+          description: Invalid ID supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/orders/{orderId}':
+    parameters:
+      - $ref: '#/parameters/orderId'
+    get:
+      tags:
+        - esOrder
+      summary: Get order by id
+      operationId: getOrder
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsOrder'
         '400':
           description: Invalid ID supplied
         '404':
@@ -474,6 +517,12 @@ parameters:
     description: Profile Id
     type: string
     required: true
+  orderId:
+    name: orderId
+    in: path
+    description: Order Id
+    type: string
+    required: true
   itemId:
     name: itemId
     in: path
@@ -511,7 +560,7 @@ definitions:
         type: string
         readOnly: true
   ### End Extendable Models
-  
+
   ### Components
   EsDefaultError:
     required:
@@ -523,7 +572,7 @@ definitions:
         format: int32
       message:
         type: string
-  
+
   EsPagination:
     type: object
     properties:
@@ -535,7 +584,7 @@ definitions:
       total:
         type: integer
         format: int32
-        
+  
   ### Permissions
   EsPermission:
     type: object
@@ -574,7 +623,7 @@ definitions:
       hasPermission:
         type: boolean
   ### End Permissions
-  
+
   ### Merchant
   EsMerchantUpdate:
     type: object
@@ -640,7 +689,7 @@ definitions:
         type: object
       onRefundHook:
         type: object
-        
+ 
   EsStoreItem:
     type: object
     allOf:
@@ -651,20 +700,17 @@ definitions:
             type: object
           inventoryLeft:
             type: integer
+
   EsPagedStoreItem:
     type: object
     properties:
       pageData:
         $ref: '#/definitions/EsPagination'
-      allPermission:
-        type: array
-        items:
-          type: string
       items:
         type: array
         items:
           $ref: '#/definitions/EsStoreItem'
-          
+
   ### Cart
   EsCart:
     type: object
@@ -685,6 +731,7 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsCartItem'
+  
   EsCartMerchant:
     type: object
     allOf:
@@ -698,6 +745,7 @@ definitions:
             type: string
           picture:
             type: string
+  
   EsCartItemInput:
     type: object
     properties:
@@ -707,6 +755,7 @@ definitions:
         type: array
         items:
           type: string
+  
   EsCartItem:
     type: object
     allOf:
@@ -734,6 +783,7 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsDiscount'
+  
   EsDiscount:
     type: object
     properties:
@@ -753,7 +803,7 @@ definitions:
   EsOrderItem:
     type: object
     allOf:
-      - $ref: '#/definitions/EsCartIterm'
+      - $ref: '#/definitions/EsCartItem'
       - properties:
           orderId:
             type: string
@@ -790,3 +840,13 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsOrderItem'
+
+  EsPagedOrder:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsOrder'
