@@ -700,6 +700,8 @@ definitions:
   EsStoreItemUpdate:
     type: object
     properties:
+      itemType:
+        type: string
       name:
         type: string
       picture:
@@ -717,8 +719,6 @@ definitions:
       endSale:
         type: integer
       totalInventory:
-        type: integer
-      itemsRemaining:
         type: integer
       merchantId:
         type: string
@@ -743,8 +743,10 @@ definitions:
       - properties:
           profileRoles:
             type: object
-          inventoryLeft:
+          totalSold:
             type: integer
+          uid:
+            type: string
 
   EsPagedStoreItem:
     type: object
@@ -807,6 +809,10 @@ definitions:
       - $ref: '#/definitions/EsBaseId'
       - properties:
           merchantId:
+            type: string
+          itemType:
+            type: string
+          uid:
             type: string
           name:
             type: string
