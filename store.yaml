@@ -37,9 +37,9 @@ security:
     Authorization: []
 paths:
   ### Merchants
-  '/merchants/{profileId}':
+  '/merchants/{merchantId}':
     parameters:
-      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/merchantId'
     get:
       tags:
         - esMerchants
@@ -83,14 +83,14 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/merchants/{profileId}/stripe':
+  '/merchants/{merchantId}/stripe':
     parameters:
-      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/merchantId'
     put:
       tags:
         - esMerchants
       summary: Link a stripe account to merchant
-      operationId: linkMerchantStripAccount
+      operationId: linkMerchantStripeAccount
       parameters:
         - in: query
           name: code
@@ -130,6 +130,38 @@ paths:
             $ref: '#/definitions/EsPagedOrder'
         '400':
           description: Invalid ID supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/merchants/{merchantId}/fee-structure':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+    put:
+      tags:
+        - esMerchants
+      summary: Setup fee structure for merchant [Admin Only]
+      operationId: updateFeeStructure
+      parameters:
+        - in: body
+          name: feeProps
+          required: true
+          description: Fee structure
+          schema:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsFeeStructure'
+      responses:
+        '200':
+          description: Merchant fee structure updated
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
@@ -511,12 +543,6 @@ parameters:
     description: Merchant Id
     type: string
     required: true
-  profileId:
-    name: profileId
-    in: path
-    description: Profile Id
-    type: string
-    required: true
   orderId:
     name: orderId
     in: path
@@ -625,6 +651,24 @@ definitions:
   ### End Permissions
 
   ### Merchant
+  EsFeeStructure:
+    type: object
+    properties:
+      itemType:
+        type: string
+      perItem:
+        type: boolean
+        default: true
+      feeType:
+        type: string
+        enum: [fixed, percentage]
+      feeMaximum:
+        type: integer
+      feeMinimum:
+        type: integer
+      feeAmount:
+        type: integer
+          
   EsMerchantUpdate:
     type: object
     properties:
@@ -640,6 +684,7 @@ definitions:
         type: string
       contactEmail:
         type: string
+        
   EsMerchant:
     type: object
     allOf:
@@ -649,7 +694,7 @@ definitions:
           stripeAccountId:
             type: string
           feeStructure:
-            type: object
+            $ref: '#/definitions/EsFeeStructure'
 
   ### Store
   EsStoreItemUpdate:
