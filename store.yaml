@@ -402,7 +402,9 @@ paths:
         '200':
           description: Order
           schema:
-            $ref: '#/definitions/EsOrder'
+            type: array
+            items:
+              $ref: '#/definitions/EsOrder'
         '400':
           description: Invalid ID supplied
         '401':
@@ -413,8 +415,28 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-      
   ### End of Cart
+  '/orders':
+    get:
+      tags:
+        - esOrder
+      summary: Get orders for current user
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      operationId: listOrders
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
 parameters:
   limit:
@@ -551,7 +573,6 @@ definitions:
     properties:
       hasPermission:
         type: boolean
-  
   ### End Permissions
   
   ### Merchant
@@ -562,12 +583,14 @@ definitions:
         type: string
       picture:
         type: string
-      bio:
-        type: string
       shortBio:
         type: string
       address:
         type: object
+      contactPhone:
+        type: string
+      contactEmail:
+        type: string
   EsMerchant:
     type: object
     allOf:
@@ -576,6 +599,8 @@ definitions:
       - properties:
           stripeAccountId:
             type: string
+          feeStructure:
+            type: object
 
   ### Store
   EsStoreItemUpdate:
@@ -716,15 +741,6 @@ definitions:
         type: string
       discountPrice:
         type: integer
-  
-  # Order
-  EsOrder:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsCart'
-      - properties:
-          paymentKey:
-            type: string
 
   EsPaymentInput:
     type: object
@@ -733,4 +749,44 @@ definitions:
         type: string
       email:
         type: string
-      
+  
+  EsOrderItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsCartIterm'
+      - properties:
+          orderId:
+            type: string
+          feeAmount:
+            type: integer
+          discountAmount:
+            type: integer
+          chargeAmount:
+            type: integer
+          paymentRef:
+            type: string
+          
+  # Order
+  EsOrder:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsCart'
+      - properties:
+          quantity:
+            type: integer
+          subtotal:
+            type: integer
+          discountAmount:
+            type: integer
+          feeAmount:
+            type: integer
+          chargeAmount:
+            type: integer
+          paymentRef:
+            type: string
+          merchant:
+            $ref: '#/definitions/EsCartMerchant'
+          items:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItem'
