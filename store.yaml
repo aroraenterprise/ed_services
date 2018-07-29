@@ -19,6 +19,8 @@ tags:
     description: User Cart for store items
   - name: esOrder
     description: Order items for user
+  - name: esCustomers
+    description: Customers of eDropin
 schemes:
   - https
 produces:
@@ -512,7 +514,36 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  # Customers
+  ### Cart
+  '/customers':
+    get:
+      tags:
+        - esCustomers
+      summary: Get the users customer information
+      operationId: getUserCart
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsCart'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esCart
+      summary: Empty the user cart
+      operationId: emptyCart
+      responses:
+        '204':
+          description: Cart deleted
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
 parameters:
   limit:
     name: limit
