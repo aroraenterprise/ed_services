@@ -521,26 +521,12 @@ paths:
       tags:
         - esCustomers
       summary: Get the users customer information
-      operationId: getUserCart
+      operationId: getUserCustomer
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsCart'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - esCart
-      summary: Empty the user cart
-      operationId: emptyCart
-      responses:
-        '204':
-          description: Cart deleted
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Cart not found
+            $ref: '#/definitions/EsCustomer'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
@@ -935,3 +921,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrder'
+          
+  EsCustomer:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          email:
+            type: string
+          savedPaymentMethods:
+            type: array
+            items:
+              type: object
