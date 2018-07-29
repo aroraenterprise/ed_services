@@ -122,7 +122,7 @@ paths:
         - $ref: '#/parameters/merchantId'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
-      operationId: listOrders
+      operationId: listOrdersByMerchant
       responses:
         '200':
           description: OK
@@ -483,7 +483,7 @@ paths:
           type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
-      operationId: listOrdersByMerchant
+      operationId: listOrders
       responses:
         '200':
           description: OK
@@ -654,8 +654,6 @@ definitions:
   EsFeeStructure:
     type: object
     properties:
-      itemType:
-        type: string
       perItem:
         type: boolean
         default: true
@@ -666,6 +664,7 @@ definitions:
         type: integer
       feeMinimum:
         type: integer
+        default: 0
       feeAmount:
         type: integer
           
