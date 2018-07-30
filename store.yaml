@@ -85,36 +85,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/merchants/{merchantId}/stripe':
-    parameters:
-      - $ref: '#/parameters/merchantId'
-    put:
-      tags:
-        - esMerchants
-      summary: Link a stripe account to merchant
-      operationId: linkMerchantStripeAccount
-      parameters:
-        - in: query
-          name: code
-          required: true
-          description: Stripe Code for OAuth
-          type: string
-      responses:
-        '200':
-          description: Merchant stripe account linked
-          schema:
-            $ref: '#/definitions/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Profile not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  
   '/merchants/{merchantId}/orders':
     get:
       tags:
@@ -700,14 +670,29 @@ definitions:
         type: string
       contactEmail:
         type: string
+      stripeCode:
+        type: string
         
   EsMerchant:
     type: object
     allOf:
       - $ref: '#/definitions/EsBaseId'
-      - $ref: '#/definitions/EsMerchantUpdate'
       - properties:
-          stripeAccountId:
+          name:
+            type: string
+          picture:
+            type: string
+          shortBio:
+            type: string
+          address:
+            type: object
+          contactPhone:
+            type: string
+          contactEmail:
+            type: string
+          paymentsEnabled:
+            type: boolean
+          stripeId:
             type: string
           feeStructure:
             type: object
@@ -736,11 +721,11 @@ definitions:
         type: integer
       merchantId:
         type: string
-      saleStartTimestamp:
+      saleStart:
         type: integer
-      saleEndTimestamp:
+      saleEnd:
         type: integer
-      forceOnSaleFlag:
+      forceOpen:
         type: boolean
         default: false
       
@@ -757,14 +742,14 @@ definitions:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsStoreItemUpdate'
       - properties:
-          saleStatus:
+          status:
             type: string
             enum: [onSale, notOnSale, soldOut]
             readOnly: true
           totalSold:
             type: integer
             readOnly: true
-          uid:
+          storeId:
             type: string
             readOnly: true
 
@@ -790,6 +775,8 @@ definitions:
             type: integer
           discountTotal:
             type: integer
+          currency:
+            type: string
           merchants:
             type: array
             items:
@@ -832,13 +819,13 @@ definitions:
             type: string
           itemType:
             type: string
-          uid:
+          storeId:
             type: string
           name:
             type: string
           picture:
             type: string
-          shortDescription:
+          description:
             type: string
           link:
             type: string
