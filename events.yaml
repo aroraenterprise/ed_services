@@ -182,7 +182,7 @@ paths:
         '200':
           description: Event Profile role updated
           schema:
-            type: object
+            $ref: '#/definitions/EeEvent'
         '400':
           description: Invalid ID supplied
         '401':
@@ -612,7 +612,6 @@ definitions:
         type: boolean
   ### End Permissions
   
-  ### End Permissions
   EeProfile:
     type: object
     properties:

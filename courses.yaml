@@ -271,22 +271,6 @@ paths:
   '/courses/{courseId}/profiles':
     parameters:
       - $ref: '#/parameters/courseId'
-    get:
-      tags:
-        - ecCourses
-      summary: Get profiles linked to the course
-      operationId: getCourseProfiles
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EcProfileRoles'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Course not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
         - ecCourses
@@ -298,12 +282,12 @@ paths:
           description: Profile role to update
           required: true
           schema:
-            $ref: '#/definitions/EcProfileRoles'
+            type: object
       responses:
         '200':
           description: Course Profile role updated
           schema:
-            $ref: '#/definitions/EcProfileRolesUpdate'
+            $ref: '#/definitions/EcCourse'
         '400':
           description: Invalid ID supplied
         '401':
@@ -519,28 +503,6 @@ definitions:
         type: string
       shortBio:
         type: string
-        
-  EcProfileRolesUpdate:
-    type: object
-    additionalProperties:
-      type: array
-      items:
-        type: string
-  
-  EcProfileRoles:
-    type: object
-    properties:
-      profiles:
-        type: array
-        items:
-          $ref: '#/definitions/EcProfile'
-      roles:
-        type: object
-        additionalProperties:
-          type: array
-          items:
-            type: string
-        
 
   ### Subject
   EcSubjectUpdate:
@@ -622,8 +584,6 @@ definitions:
               $ref: '#/definitions/EcProfile'
           profileRoles:
             type: object
-            additionalProperties:
-              $ref: '#/definitions/EcProfileRoles'
   EcPagedCourse:
     type: object
     properties:
