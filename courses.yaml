@@ -40,6 +40,15 @@ paths:
       summary: Get Courses
       operationId: getAllCourses
       parameters:
+        - in: query
+          name: q
+          type: string
+        - in: query
+          name: subjectId
+          type: string
+        - in: query
+          name: organizerId
+          type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
