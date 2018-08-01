@@ -123,6 +123,9 @@ paths:
       operationId: getAllProfiles
       parameters:
         - in: query
+          name: q
+          type: string
+        - in: query
           name: profileType
           type: string
         - $ref: '#/parameters/cursor'
