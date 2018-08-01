@@ -174,22 +174,22 @@ paths:
           description: Course not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/courses/{courseId}/permissions':
+  
+  ### Course Permissions
+  '/courses/{courseId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/courseId'
+      - $ref: '#/parameters/accountId'
     get:
       tags:
         - ecCourses
-      summary: List all course permissions
-      operationId: getCoursePermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
+      summary: Get permission for account
+      operationId: getAccountPermissionForCourse
       responses:
         '200':
-          description: List of Users with permissions linked to this course
+          description: Permissions for account
           schema:
-            $ref: '#/definitions/EcPagedPermission'
+            $ref: "#/definitions/EcPermission"
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -199,12 +199,12 @@ paths:
     put:
       tags:
         - ecCourses
-      summary: Set permission for course
+      summary: Set permission for event
       operationId: setCoursePermission
       parameters:
         - in: body
           name: permissionProps
-          description: Account Id and Permissions
+          description: Permissions
           required: true
           schema:
             $ref: '#/definitions/EcPermissionInput'
@@ -219,6 +219,55 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/courses/{courseId}/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/courseId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - ecCourses
+      summary: Check account has permission
+      operationId: checkAccountHasPermission
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EcPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/courses/{courseId}/all-permissions':
+    parameters:
+      - $ref: '#/parameters/courseId'
+    get:
+      tags:
+        - ecCourses
+      summary: List all event permissions
+      operationId: getCoursePermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this event
+          schema:
+            $ref: '#/definitions/EcPagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of Course Permissions
+  
   '/courses/{courseId}/profiles':
     parameters:
       - $ref: '#/parameters/courseId'
@@ -342,6 +391,12 @@ parameters:
     in: query
     description: Start Cursor for query
     type: string
+  accountId:
+    name: accountId
+    in: path
+    description: Account Id
+    type: string
+    required: true
   courseId:
     name: courseId
     in: path
@@ -395,14 +450,9 @@ definitions:
         format: int32
       nextCursor:
         type: string
-      prevCursor:
-        type: string
       total:
         type: integer
         format: int32
-      more:
-        type: boolean
-        default: false
   ### End Extendable Models
   
   ### Components
@@ -434,10 +484,6 @@ definitions:
   EcPermissionInput:
     type: object
     properties:
-      accountId:
-        type: string
-      accountEmail:
-        type: string
       permissions:
         type: object
   EcPagedPermission:
@@ -453,8 +499,13 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EcPermission'
-  
+  EcPermissionCheck:
+    type: object
+    properties:
+      hasPermission:
+        type: boolean
   ### End Permissions
+  
   EcProfile:
     type: object
     properties:
