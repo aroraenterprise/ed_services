@@ -713,8 +713,6 @@ definitions:
         type: string
       shortDescription:
         type: string
-      link:
-        type: string
       retailPrice:
         type: integer
       totalInventory:
@@ -728,6 +726,8 @@ definitions:
       forceOpen:
         type: boolean
         default: false
+      meta:
+        type: object
       
       refundPolicy:
         type: object
@@ -735,6 +735,7 @@ definitions:
         type: object
       onRefundHook:
         type: object
+        
  
   EsStoreItem:
     type: object
@@ -827,8 +828,8 @@ definitions:
             type: string
           description:
             type: string
-          link:
-            type: string
+          meta:
+            type: object
           retailPrice:
             type: integer
           discountPrice:
