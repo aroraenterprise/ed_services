@@ -372,7 +372,7 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
-          description: Cart/Store Item not found
+          description: Cart Store Item not found
         '405':
           $ref: '#/responses/InvalidInputResponse'
         '500':
@@ -407,7 +407,7 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
-          description: Cart/Store Item not found
+          description: Cart Store Item not found
         '405':
           $ref: '#/responses/InvalidInputResponse'
         '500':
@@ -437,7 +437,7 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
-          description: Cart/Store Item not found
+          description: Cart Store Item not found
         '405':
           $ref: '#/responses/InvalidInputResponse'
         '500':
@@ -710,8 +710,6 @@ definitions:
       picture:
         type: string
       description:
-        type: string
-      shortDescription:
         type: string
       retailPrice:
         type: integer
