@@ -103,9 +103,7 @@ paths:
         '200':
           description: Course
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EcCourse'
+            $ref: '#/definitions/EcPagedCourse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
