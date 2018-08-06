@@ -9,7 +9,7 @@ info:
     name: Saj Arora
     email: dev@edropin.com
 host: 'accounts-dot-edropin-playground.appspot.com'
-basePath: /v1
+basePath: /
 tags:
   - name: eaAccounts
     description: User accounts on eDropin
