@@ -38,6 +38,32 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
+  '/accounts/authenticate/password':
+    post:
+      tags:
+        - eaAccounts
+      security:
+        - ClientKey: []
+      summary: Authenticate using email/password
+      operationId: authemticatePassword
+      parameters:
+        - in: body
+          name: authProps
+          description: Authentication values
+          required: true
+          schema:
+            $ref: '#/definitions/EaPasswordAuthentication'
+      responses:
+        '200':
+          description: Authentication
+          schema:
+            $ref: '#/definitions/EaAuthentication'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   ### Accounts
   /accounts:
     get:
@@ -94,7 +120,7 @@ paths:
           description: Claims that need to be updated
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EaClaims'
       responses:
         '200':
           description: Account updated
@@ -209,7 +235,7 @@ paths:
           description: Profile object that needs to be updated
           required: true
           schema:
-            $ref: '#/definitions/EaProfile'
+            $ref: '#/definitions/EaProfileUpdate'
       responses:
         '200':
           description: Profile updated
@@ -279,10 +305,7 @@ paths:
         '200':
           description: Username is available
           schema:
-            type: object
-            properties:
-              available:
-                type: boolean
+            $ref: '#/definitions/EaSuccess'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '500':
@@ -643,6 +666,24 @@ definitions:
         type: object
   
   ### Account
+  EaPasswordAuthentication:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+        
+  EaAuthentication:
+    type: object
+    properties:
+      idToken:
+        type: string
+      isAnonymous:
+        type: string
+      id:
+        type: string
+  
   EaAccountUpdate:
     type: object
     properties:
@@ -666,6 +707,12 @@ definitions:
           claims:
             type: object
             readOnly: true
+  
+  EaClaims:
+    type: object
+    properties:
+      claims:
+        type: object
   ### End Account
   
   ### Profile
