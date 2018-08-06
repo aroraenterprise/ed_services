@@ -811,6 +811,8 @@ definitions:
     properties:
       phone:
         type: string
+      countryCode:
+        type: string
       method:
         type: string
         enum: [sms, call]
