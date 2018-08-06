@@ -45,7 +45,7 @@ paths:
       security:
         - ClientKey: []
       summary: Authenticate using email/password
-      operationId: authemticatePassword
+      operationId: authenticatePassword
       parameters:
         - in: body
           name: authProps
@@ -460,7 +460,7 @@ paths:
       operationId: startPhoneVerification
       parameters:
         - in: body
-          name: startPhoneVerification
+          name: phoneProps
           description: Phone number for verification
           required: true
           schema:
@@ -485,7 +485,7 @@ paths:
       operationId: completePhoneVerification
       parameters:
         - in: body
-          name: completePhoneVerification
+          name: phoneProps
           description: Phone code to complete verification
           required: true
           schema:
@@ -582,11 +582,9 @@ definitions:
     properties:
       summary:
         type: string
-      line1:
+      streetNumberOrBuilding:
         type: string
-      line2:
-        type: string
-      line3:
+      street:
         type: string
       city:
         type: string
@@ -596,7 +594,7 @@ definitions:
         type: string
       zip:
         type: string
-  
+        
   EaGeoloc:
     type: object
     properties:
@@ -695,8 +693,7 @@ definitions:
         type: string
       bio:
         type: string
-      shortBio:
-        type: string
+        maxLength: 200
       
   EaAccount:
     type: object
@@ -741,8 +738,6 @@ definitions:
         type: string
       address:
         $ref: '#/definitions/EaAddress'
-      _geoloc:
-        $ref: '#/definitions/EaGeoloc'
       website:
         type: string
       facebook:
@@ -751,7 +746,9 @@ definitions:
         type: string
       instagram:
         type: string
-        
+      _geoloc:
+        $ref: '#/definitions/EaGeoloc'
+
       
   EaProfileUpdate:
     type: object
