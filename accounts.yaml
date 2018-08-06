@@ -52,8 +52,6 @@ paths:
             $ref: '#/definitions/EaAccount'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     put:
@@ -73,11 +71,9 @@ paths:
           description: Account updated
           schema:
             $ref: '#/definitions/EaAccount'
-        '400':
-          description: Invalid ID supplied
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -104,12 +100,12 @@ paths:
           description: Account updated
           schema:
             $ref: '#/definitions/EaAccount'
-        '400':
-          description: Invalid ID supplied
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
+        '404':
+          description: Account not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   ### End of Accounts
@@ -137,8 +133,6 @@ paths:
             $ref: '#/definitions/EaPagedProfile'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     post:
@@ -158,11 +152,9 @@ paths:
           description: Profile created
           schema:
             $ref: '#/definitions/EaProfile'
-        '400':
-          description: Invalid ID supplied
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -185,7 +177,7 @@ paths:
             $ref: '#/definitions/EaPagedProfile'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -202,8 +194,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EaProfile'
-        '400':
-          description: Invalid ID supplied
         '404':
           description: Profile not found
         '500':
@@ -225,13 +215,11 @@ paths:
           description: Profile updated
           schema:
             $ref: '#/definitions/EaProfile'
-        '400':
-          description: Invalid ID supplied
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Profile not found
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -241,14 +229,62 @@ paths:
       summary: Delete an existing profile
       operationId: deleteProfile
       responses:
-        '204':
+        '200':
           description: Profile deleted
-        '400':
-          description: Invalid ID supplied
+          schema:
+            type: object
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Profile not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/invite':
+    put:
+      tags:
+        - eaProfiles
+      summary: Invite for profile creation
+      operationId: profileInvite
+      parameters:
+        - in: body
+          name: profileProps
+          description: Profile object for invite
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+      responses:
+        '200':
+          description: Profile invite sent
+          schema:
+            $ref: '#/definitions/EaProfile'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/usernamecheck':
+    get:
+      tags:
+        - eaProfiles
+      summary: Check username availability
+      operationId: checkUsernameAvailability
+      parameters:
+        - in: query
+          name: username
+          description: Username to check for availability
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Username is available
+          schema:
+            type: object
+            properties:
+              available:
+                type: boolean
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/profiles/{profileId}/permissions/{accountId}':
@@ -267,7 +303,7 @@ paths:
             $ref: "#/definitions/EaPermission"
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -290,7 +326,7 @@ paths:
             $ref: '#/definitions/EaPermission'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -315,7 +351,7 @@ paths:
             $ref: '#/definitions/EaPermissionCheck'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -337,7 +373,7 @@ paths:
             $ref: '#/definitions/EaPagedPermission'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -361,11 +397,98 @@ paths:
             $ref: '#/definitions/EaPagedProfile'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Courses
+  '/profiles/search/category':
+    get:
+      tags:
+        - eaProfiles
+      summary: Get category facets
+      operationId: getProfileCategories
+      parameters:
+        - in: query
+          name: q
+          type: string
+        - in: query
+          name: profileType
+          type: string
+      responses:
+        '200':
+          description: Categories
+          schema:
+            type: array
+            items:
+              type: string
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### End of profiles
+  
+  '/utility/phoneverification/start':
+    post:
+      tags:
+        - eaUtilites
+      summary: Verify a phone number
+      operationId: startPhoneVerification
+      parameters:
+        - in: body
+          name: startPhoneVerification
+          description: Phone number for verification
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Phone verification code sent
+          schema:
+            type: object
+            properties:
+              verificationId:
+                type: string
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/utility/phoneverification/complete':
+    post:
+      tags:
+        - eaUtilites
+      summary: Complete phone verification
+      operationId: completePhoneVerification
+      parameters:
+        - in: body
+          name: completePhoneVerification
+          description: Phone code to complete verification
+          required: true
+          schema:
+            type: object
+            properties:
+              verificationId:
+                type: string
+              code:
+                type: string
+      responses:
+        '200':
+          description: Phone verified
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 
 parameters:
   limit:
@@ -427,14 +550,6 @@ definitions:
       version:
         type: string
         readOnly: true
-  
-  EaCreator:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EaBaseId'
-      - properties:
-          creatorId:
-            type: string
             
   EaPagination:
     type: object
@@ -453,6 +568,8 @@ definitions:
   EaAddress:
     type: object
     properties:
+      summary:
+        type: string
       line1:
         type: string
       line2:
@@ -461,16 +578,12 @@ definitions:
         type: string
       city:
         type: string
-      stateCode:
-        type: string
       state:
         type: string
       country:
         type: string
       zip:
         type: string
-      geoloc:
-        $ref: '#/definitions/EaGeoloc'
   
   EaGeoloc:
     type: object
@@ -564,6 +677,10 @@ definitions:
     properties:
       name:
         type: string
+      email:
+        type: string
+      phone:
+        type: string
       profileType:
         type: string
       picture:
@@ -574,12 +691,14 @@ definitions:
         type: string
       bio:
         type: string
-      shortBio: 
+      category:
         type: string
       location:
         type: string
       address:
         $ref: '#/definitions/EaAddress'
+      _geoloc:
+        $ref: '#/definitions/EaGeoloc'
       website:
         type: string
       facebook:
@@ -588,15 +707,38 @@ definitions:
         type: string
       instagram:
         type: string
+        
+      
   EaProfileUpdate:
     type: object
     allOf:
       - $ref: '#/definitions/EaProfileBase'
+      - properties:
+          username:
+            type: string
+  
+  EaProfileInvite:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EaProfileBase'
+        
   EaProfile:
     type: object
     allOf:
-      - $ref: '#/definitions/EaCreator'
+      - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaProfileBase'
+      - properties:
+          phoneVerifiedFlag:
+            type: boolean
+          emailVerifiedFlag:
+            type: boolean
+          verfiedFlag:
+            type: boolean
+          merchantFlag:
+            type: boolean
+          trustStatus:
+            type: string
+            
   EaProfileSummary:
     type: object
     properties:
@@ -606,10 +748,13 @@ definitions:
         type: string
       picture:
         type: string
-      shortBio:
+      category:
         type: string
       location:
         type: string
+      inviteFlag:
+        type: boolean
+      
   EaPagedProfile:
     type: object
     properties:
