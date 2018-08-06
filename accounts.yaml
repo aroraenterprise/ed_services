@@ -15,8 +15,8 @@ tags:
     description: User accounts on eDropin
   - name: eaProfiles
     description: Profiles such as course providers and businesses
-  - name: eaRoles
-    description: Special roles on eDropin
+  - name: eaUtilities
+    description: eDropin Utilities
 schemes:
   - https
 produces:
@@ -172,7 +172,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Profile
+          description: List of Profiles
           schema:
             $ref: '#/definitions/EaPagedProfile'
         '401':
@@ -191,7 +191,7 @@ paths:
       operationId: getProfile
       responses:
         '200':
-          description: OK
+          description: Profile
           schema:
             $ref: '#/definitions/EaProfile'
         '404':
@@ -232,7 +232,7 @@ paths:
         '200':
           description: Profile deleted
           schema:
-            type: object
+            $ref: '#/definitions/EaSuccess'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
@@ -432,7 +432,7 @@ paths:
   '/utility/phoneverification/start':
     post:
       tags:
-        - eaUtilites
+        - eaUtilities
       summary: Verify a phone number
       operationId: startPhoneVerification
       parameters:
@@ -441,15 +441,12 @@ paths:
           description: Phone number for verification
           required: true
           schema:
-            type: string
+            $ref: '#/definitions/EaPhoneVerificationInput'
       responses:
         '200':
           description: Phone verification code sent
           schema:
-            type: object
-            properties:
-              verificationId:
-                type: string
+            $ref: '#/definitions/EaPhoneVerification'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -460,7 +457,7 @@ paths:
   '/utility/phoneverification/complete':
     post:
       tags:
-        - eaUtilites
+        - eaUtilities
       summary: Complete phone verification
       operationId: completePhoneVerification
       parameters:
@@ -469,20 +466,12 @@ paths:
           description: Phone code to complete verification
           required: true
           schema:
-            type: object
-            properties:
-              verificationId:
-                type: string
-              code:
-                type: string
+            $ref: '#/definitions/EaPhoneVerificationComplete'
       responses:
         '200':
           description: Phone verified
           schema:
-            type: object
-            properties:
-              success:
-                type: boolean
+            $ref: '#/definitions/EaSuccess'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -645,6 +634,14 @@ definitions:
         type: boolean
   ### End Permissions
   
+  EaSuccess:
+    type: object
+    properties:
+      success:
+        type: boolean
+      message:
+        type: object
+  
   ### Account
   EaAccountUpdate:
     type: object
@@ -764,3 +761,27 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaProfileSummary'
+  
+  EaPhoneVerificationInput:
+    type: object
+    properties:
+      phone:
+        type: string
+      method:
+        type: string
+        enum: [sms, call]
+        default: sms
+          
+  EaPhoneVerification:
+    type: object
+    properties:
+      verificationId:
+        type: string
+        
+  EaPhoneVerificationComplete:
+    type: object
+    properties:
+      verificationId:
+        type: string
+      code:
+        type: string
