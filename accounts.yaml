@@ -469,7 +469,7 @@ paths:
         '200':
           description: Phone verification code sent
           schema:
-            $ref: '#/definitions/EaPhoneVerification'
+            $ref: '#/definitions/EaSuccess'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -477,24 +477,24 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/utility/phoneverification/complete':
+  '/utility/phoneverification/check':
     post:
       tags:
         - eaUtilities
-      summary: Complete phone verification
-      operationId: completePhoneVerification
+      summary: Check phone verification
+      operationId: checkPhoneVerification
       parameters:
         - in: body
           name: phoneProps
           description: Phone code to complete verification
           required: true
           schema:
-            $ref: '#/definitions/EaPhoneVerificationComplete'
+            $ref: '#/definitions/EaPhoneVerificationCheck'
       responses:
         '200':
           description: Phone verified
           schema:
-            $ref: '#/definitions/EaSuccess'
+            $ref: '#/definitions/EaPhoneVerification'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -813,6 +813,8 @@ definitions:
     properties:
       phone:
         type: string
+      countryCode:
+        type: string
       method:
         type: string
         enum: [sms, call]
@@ -821,13 +823,15 @@ definitions:
   EaPhoneVerification:
     type: object
     properties:
-      verificationId:
+      verificationToken:
         type: string
         
-  EaPhoneVerificationComplete:
+  EaPhoneVerificationCheck:
     type: object
     properties:
-      verificationId:
+      phone:
+        type: string
+      countryCode:
         type: string
       code:
         type: string
