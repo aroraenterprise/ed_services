@@ -469,7 +469,7 @@ paths:
         '200':
           description: Phone verification code sent
           schema:
-            $ref: '#/definitions/EaSuccess'
+            $ref: '#/definitions/EaPhoneVerification'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -477,24 +477,24 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/utility/phoneverification/check':
+  '/utility/phoneverification/complete':
     post:
       tags:
         - eaUtilities
-      summary: Check phone verification
-      operationId: checkPhoneVerification
+      summary: Complete phone verification
+      operationId: completePhoneVerification
       parameters:
         - in: body
           name: phoneProps
           description: Phone code to complete verification
           required: true
           schema:
-            $ref: '#/definitions/EaPhoneVerificationCheck'
+            $ref: '#/definitions/EaPhoneVerificationComplete'
       responses:
         '200':
           description: Phone verified
           schema:
-            $ref: '#/definitions/EaPhoneVerification'
+            $ref: '#/definitions/EaSuccess'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -580,7 +580,7 @@ definitions:
   EaAddress:
     type: object
     properties:
-      summary:
+      formatted:
         type: string
       streetNumberOrBuilding:
         type: string
@@ -757,6 +757,8 @@ definitions:
       - properties:
           username:
             type: string
+          phoneVerificationToken:
+            type: string
   
   EaProfileInvite:
     type: object
@@ -811,8 +813,6 @@ definitions:
     properties:
       phone:
         type: string
-      countryCode:
-        type: string
       method:
         type: string
         enum: [sms, call]
@@ -821,15 +821,13 @@ definitions:
   EaPhoneVerification:
     type: object
     properties:
-      verificationToken:
+      verificationId:
         type: string
         
-  EaPhoneVerificationCheck:
+  EaPhoneVerificationComplete:
     type: object
     properties:
-      phone:
-        type: string
-      countryCode:
+      verificationId:
         type: string
       code:
         type: string
