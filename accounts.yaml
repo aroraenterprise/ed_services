@@ -8,7 +8,7 @@ info:
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: 'accounts-dot-edropin-playground.appspot.com'
+host: 'accounts-dot-edropin-play.appspot.com'
 basePath: /
 tags:
   - name: eaAccounts
@@ -676,8 +676,6 @@ definitions:
     type: object
     properties:
       idToken:
-        type: string
-      isAnonymous:
         type: string
       id:
         type: string
