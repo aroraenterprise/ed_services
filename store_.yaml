@@ -8,7 +8,7 @@ info:
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: 'store-dot-edropin-play.appspot.com'
+host: 'store-dot-edropin-playground.appspot.com'
 basePath: /v1
 tags:
   - name: esMerchants
@@ -34,10 +34,6 @@ securityDefinitions:
     type: apiKey
     in: header
     name: X-Client-Key
-  AdminKey:
-    type: apiKey
-    name: X-Admin-Key
-    in: header
 security:
   - ClientKey: []
     Authorization: []
@@ -55,7 +51,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsMerchant'
+            $ref: '#/definitions/EsStoreItem'
         '400':
           description: Invalid ID supplied
         '404':
@@ -65,18 +61,18 @@ paths:
     put:
       tags:
         - esMerchants
-      summary: Enable billing
-      operationId: enableBilling
+      summary: Upsert a Merchant
+      operationId: upsertMerchant
       parameters:
         - in: body
-          name: stripeCode
-          description: Stripe Code To Enable Billing
+          name: merchantProps
+          description: Merchant that needs to be upserted
           required: true
           schema:
-            type: string
+            $ref: '#/definitions/EsMerchantUpdate'
       responses:
         '200':
-          description: Billing updated
+          description: Merchant updated/inserted
           schema:
             $ref: '#/definitions/EsMerchant'
         '400':
@@ -89,16 +85,31 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  '/merchants/{merchantId}/orders':
+    get:
+      tags:
+        - esMerchants
+      summary: Get orders for by merchant (merchant use only)
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      operationId: listOrdersByMerchant
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrder'
+        '400':
+          description: Invalid ID supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/merchants/{merchantId}/fee-structure':
     parameters:
       - $ref: '#/parameters/merchantId'
     put:
       tags:
         - esMerchants
-      security:
-        - ClientKey: []
-          AdminKey: []
       summary: Setup fee structure for merchant [Admin Only]
       operationId: updateFeeStructure
       parameters:
@@ -216,11 +227,8 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   ### End of Merchants
   
-  
-  ### Store
   '/store/{merchantId}/items':
     get:
       parameters:
@@ -229,7 +237,7 @@ paths:
         - $ref: '#/parameters/limit'
       tags:
         - esStore
-      summary: Get all store items for merchant
+      summary: Get all store items
       operationId: listStoreItems
       responses:
         '200':
@@ -243,6 +251,8 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     
+  
+  ### Store
   '/store/{merchantId}/items/{itemId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -434,30 +444,7 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   ### End of Cart
-  
-  ### Orders
-  '/merchants/{merchantId}/orders':
-    get:
-      tags:
-        - esOrder
-      summary: Get orders for by merchant (merchant use only)
-      parameters:
-        - $ref: '#/parameters/merchantId'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      operationId: listOrdersByMerchant
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsPagedOrder'
-        '400':
-          description: Invalid ID supplied
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  
   '/orders':
     get:
       tags:
@@ -499,8 +486,6 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Orders
-  
   # Customers
   ### Cart
   '/customers':
@@ -671,6 +656,24 @@ definitions:
         default: 0
       feeAmount:
         type: integer
+          
+  EsMerchantUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      picture:
+        type: string
+      shortBio:
+        type: string
+      address:
+        type: object
+      contactPhone:
+        type: string
+      contactEmail:
+        type: string
+      stripeCode:
+        type: string
         
   EsMerchant:
     type: object
@@ -679,20 +682,24 @@ definitions:
       - properties:
           name:
             type: string
+          picture:
+            type: string
+          shortBio:
+            type: string
+          address:
+            type: object
+          contactPhone:
+            type: string
+          contactEmail:
+            type: string
+          paymentsEnabled:
+            type: boolean
           stripeId:
             type: string
           feeStructure:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
-
-  EsMerchantSummary:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          name:
-            type: string
 
   ### Store
   EsStoreItemUpdate:
@@ -774,11 +781,25 @@ definitions:
           merchants:
             type: array
             items:
-              $ref: '#/definitions/EsMerchantSummary'
+              $ref: '#/definitions/EsCartMerchant'
           items:
             type: array
             items:
               $ref: '#/definitions/EsCartItem'
+  
+  EsCartMerchant:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          name:
+            type: string
+          shortBio:
+            type: string
+          location:
+            type: string
+          picture:
+            type: string
   
   EsCartItemInput:
     type: object
@@ -873,7 +894,7 @@ definitions:
           paymentRef:
             type: string
           merchant:
-            $ref: '#/definitions/EsMerchantSummary'
+            $ref: '#/definitions/EsCartMerchant'
           items:
             type: array
             items:
