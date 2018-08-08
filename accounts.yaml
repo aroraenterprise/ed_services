@@ -731,7 +731,7 @@ definitions:
       bio:
         type: string
       category:
-        type: Array
+        type: array
         items:
           type: string
       location:
@@ -792,7 +792,9 @@ definitions:
       picture:
         type: string
       category:
-        type: string
+        type: array
+        items:
+          type: string
       location:
         type: string
       inviteFlag:
