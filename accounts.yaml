@@ -731,7 +731,9 @@ definitions:
       bio:
         type: string
       category:
-        type: string
+        type: Array
+        items:
+          type: string
       location:
         type: string
       address:
