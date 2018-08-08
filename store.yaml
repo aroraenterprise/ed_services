@@ -9,7 +9,7 @@ info:
     name: Saj Arora
     email: dev@edropin.com
 host: 'store-dot-edropin-play.appspot.com'
-basePath: /v1
+basePath: /
 tags:
   - name: esMerchants
     description: Merchant management
@@ -34,10 +34,6 @@ securityDefinitions:
     type: apiKey
     in: header
     name: X-Client-Key
-  AdminKey:
-    type: apiKey
-    name: X-Admin-Key
-    in: header
 security:
   - ClientKey: []
     Authorization: []
@@ -96,9 +92,6 @@ paths:
     put:
       tags:
         - esMerchants
-      security:
-        - ClientKey: []
-          AdminKey: []
       summary: Setup fee structure for merchant [Admin Only]
       operationId: updateFeeStructure
       parameters:
