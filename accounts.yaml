@@ -734,6 +734,7 @@ definitions:
         type: array
         items:
           type: string
+        maxLength: 30
       location:
         type: string
       address:
