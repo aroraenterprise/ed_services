@@ -418,32 +418,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/search/category':
-    get:
-      tags:
-        - eaProfiles
-      summary: Get category facets
-      operationId: getProfileCategories
-      parameters:
-        - in: query
-          name: q
-          type: string
-        - in: query
-          name: profileType
-          type: string
-      responses:
-        '200':
-          description: Categories
-          schema:
-            type: array
-            items:
-              type: string
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   ### End of profiles
   
   '/utility/phoneverification/start':
@@ -811,6 +785,8 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EaPagination'
+      facets:
+        type: object
       items:
         type: array
         items:
