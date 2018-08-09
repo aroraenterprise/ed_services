@@ -8,8 +8,8 @@ info:
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: 'events-dot-edropin-playground.appspot.com'
-basePath: /v1
+host: 'events-dot-edropin-play.appspot.com'
+basePath: /
 tags:
   - name: eeEvents
     description: Events
@@ -38,6 +38,8 @@ paths:
       summary: Get Events
       operationId: getAllEvents
       parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -47,7 +49,7 @@ paths:
             $ref: '#/definitions/EePagedEvent'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '405':
+        '400':
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
@@ -232,27 +234,10 @@ paths:
       summary: Search Events
       operationId: searchEvent
       parameters:
-        - in: query
-          name: q
-          type: string
-        - in: query
-          name: courseId
-          type: string
-        - in: query
-          name: organizerId
-          type: string
-        - in: query
-          name: profileId
-          type: string
-        - in: query
-          name: destinationFlag
-          type: boolean
-        - in: query
-          name: handsOnFlag
-          type: boolean
-        - in: query
-          name: onlineFlag
-          type: boolean
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Events
@@ -507,6 +492,16 @@ parameters:
     description: Ticket Id
     type: string
     required: true
+  searchQuery:
+    in: query
+    name: q
+    type: string
+  searchFacets:
+    in: query
+    name: facets
+    type: array
+    items:
+      type: string
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
@@ -526,25 +521,16 @@ definitions:
     properties:
       id:
         type: string
-      created:
-        type: integer
-        format: int32
+      createdOn:
+        type: string
         readOnly: true
-      modified:
-        type: integer
-        format: int32
+      modifiedOn:
+        type: string
         readOnly: true
       version:
         type: string
         readOnly: true
-  
-  EeCreator:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - properties:
-          creatorId:
-            type: string
+
             
   EePagination:
     type: object
@@ -570,6 +556,36 @@ definitions:
         format: int32
       message:
         type: string
+  
+  EeAddress:
+    type: object
+    properties:
+      formatted:
+        type: string
+      streetNumberOrBuilding:
+        type: string
+      street:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+      zip:
+        type: string
+      _geoloc:
+        $ref: '#/definitions/EeGeoloc'
+        
+  EeGeoloc:
+    type: object
+    properties:
+      lat:
+        type: number
+        format: float
+      lng:
+        type: number
+        format: float
   
   ### Permissions
   
@@ -623,8 +639,6 @@ definitions:
         type: string
       profileType:
         type: string
-      shortBio:
-        type: string  
 
   ### Course
   EeCourse:
@@ -636,19 +650,11 @@ definitions:
         type: string
       picture:
         type: string
-      shortBio:
+      organizerId:
         type: string
-        
-  EeEventCourse:
-    type: object
-    properties:
-      courseId:
+      organizerName:
         type: string
-      startTimestamp:
-        type: integer
-      endTimestamp:
-        type: integer
-      description:
+      bio:
         type: string
 
   ### Event
@@ -659,8 +665,15 @@ definitions:
         type: string
       name:
         type: string
-      shortBio:
+      startTimestamp:
+        type: integer
+        format: int32
+      endTimestamp:
+        type: integer
+        format: int32
+      timezone:
         type: string
+        
       bio:
         type: string
       picture:
@@ -669,46 +682,44 @@ definitions:
         type: array
         items:
           type: string
+      website:
+        type: string
       onlineFlag:
         type: boolean
       handsOnFlag:
         type: boolean
       destinationFlag:
         type: boolean
-      startTimestamp:
-        type: integer
-        format: int32
-      endTimestamp:
-        type: integer
-        format: int32
-      website:
+      destinationType:
         type: string
-      tags:
-        type: array
-        items:
-          type: string
       isLive:
         type: boolean
       isPublic:
         type: boolean
+      duration:
+        type: string
+      categories:
+        type: array
+        items:
+          type: string
+      address:
+        $ref: '#/definitions/EeAddress'
+      policy:
+        type: string
         
   EeEvent:
     type: object
     allOf:
-      - $ref: '#/definitions/EeCreator'
+      - $ref: '#/definitions/EeBaseId'
       - $ref: '#/definitions/EeEventUpdate'
       - properties:
+          organizerName:
+            type: string
           profiles:
             type: array
             items:
-              $ref: '#/definitions/EeProfile'
-          profileRoles:
-            type: object
+              $ref: '#/definitions/EeEventProfile'
           courses:
-            type: array
-            items:
-              $ref: '#/definitions/EeCourse'
-          eventCourses:
             type: array
             items:
               $ref: '#/definitions/EeEventCourse'
@@ -718,10 +729,47 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
+      facets:
+        type: object
       items:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
+          
+  EeEventProfile:
+    type: object
+    properties:
+      profile:
+        $ref: '#/definitions/EeProfile'
+      roles:
+        type: array
+        items:
+          type: string
+      invitedProfileFlag:
+        type: boolean
+      accepted:
+        type: boolean
+  
+  EeEventCourse:
+    type: object
+    properties:
+      course:
+        $ref: '#/definitions/EeCourse'
+      offerings:
+        type: array
+        items:
+          type: object
+          properties:
+            startTimestamp:
+              type: integer
+            endTimestamp:
+              type: integer
+            ticketId:
+              type: string
+            ticketName:
+              type: string
+          
+
   ### End Event
   
   ### Ticket
