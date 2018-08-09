@@ -144,12 +144,8 @@ paths:
       summary: Get Profiles
       operationId: getAllProfiles
       parameters:
-        - in: query
-          name: q
-          type: string
-        - in: query
-          name: profileType
-          type: string
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -532,6 +528,17 @@ parameters:
     description: Profile Id
     type: string
     required: true
+  searchQuery:
+    in: query
+    name: q
+    type: string
+  searchFacets:
+    in: query
+    name: searchFacets
+    type: array
+    items:
+      type: string
+    
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
