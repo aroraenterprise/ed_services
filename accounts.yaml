@@ -403,12 +403,10 @@ paths:
       summary: Search Profiles
       operationId: searchProfile
       parameters:
-        - in: query
-          name: q
-          type: string
-        - in: query
-          name: profileType
-          type: string
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Profiles
@@ -534,7 +532,7 @@ parameters:
     type: string
   searchFacets:
     in: query
-    name: searchFacets
+    name: facets
     type: array
     items:
       type: string
