@@ -389,7 +389,7 @@ paths:
       - $ref: '#/parameters/courseId'
     put:
       tags:
-        - eeEventProfiles
+        - eeEventCourses
       summary: Set course in event
       operationId: upsertEventCourse
       parameters:
