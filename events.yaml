@@ -684,20 +684,23 @@ definitions:
           type: string
       website:
         type: string
-      onlineFlag:
+      isOnline:
         type: boolean
-      handsOnFlag:
+      isHandsOn:
         type: boolean
-      destinationFlag:
+      isDestination:
         type: boolean
       destinationType:
         type: string
+      isFree:
+        type: boolean
       isLive:
         type: boolean
       isPublic:
         type: boolean
       duration:
-        type: string
+        type: integer
+        format: int32
       categories:
         type: array
         items:
