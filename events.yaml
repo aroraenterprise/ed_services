@@ -13,6 +13,12 @@ basePath: /
 tags:
   - name: eeEvents
     description: Events
+  - name: eeEventProfiles
+    description: Profiles linked to events
+  - name: eeEventCourses
+    description: Courses linked to events
+  - name: eeEventTickets
+    description: Tickets linked to events
 schemes:
   - https
 produces:
@@ -165,68 +171,7 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/profiles':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    put:
-      tags:
-        - eeEvents
-      summary: Update Event profile roles
-      operationId: upsertEventProfile
-      parameters:
-        - in: body
-          name: eventProfileRoles
-          description: Profile role to update
-          required: true
-          schema:
-            type: object
-      responses:
-        '200':
-          description: Event Profile role updated
-          schema:
-            $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event or Profile not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/courses':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    put:
-      tags:
-        - eeEvents
-      summary: Update Event profile roles
-      operationId: upsertEventCourse
-      parameters:
-        - in: body
-          name: eventCourses
-          description: Courses to update
-          required: true
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/EeEventCourse'
-      responses:
-        '200':
-          description: Event Course updated
-          schema:
-            $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event or Course not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+
   '/events/search':
     get:
       tags:
@@ -341,14 +286,158 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   ### End of Events
+  '/events/{eventId}/profiles':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventProfiles
+      summary: Get Profiles linked to event
+      operationId: listEventProfiles
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Event Profiles
+          schema:
+            $ref: '#/definitions/EePagedEventProfile'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/profiles/{profileId}':
+    parameters:
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/profileId'
+    put:
+      tags:
+        - eeEventProfiles
+      summary: Set profile role in event
+      operationId: upsertEventProfile
+      parameters:
+        - in: body
+          name: roleProp
+          description: Profile role to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventProfileUpdate'
+      responses:
+        '200':
+          description: Event Profile
+          schema:
+            $ref: '#/definitions/EeEventProfile'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventProfiles
+      summary: Remove profile role from event
+      operationId: removeEventProfile
+      responses:
+        '200':
+          description: Removed profile
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
+  '/events/{eventId}/courses':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventCourses
+      summary: Get Courses linked to event
+      operationId: listEventCourses
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Event Courses
+          schema:
+            $ref: '#/definitions/EePagedEventCourse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/courses/{courseId}':
+    parameters:
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/courseId'
+    put:
+      tags:
+        - eeEventProfiles
+      summary: Set course in event
+      operationId: upsertEventCourse
+      parameters:
+        - in: body
+          name: courseProp
+          description: Course to upsert
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventCourseUpdate'
+      responses:
+        '200':
+          description: Event Course
+          schema:
+            $ref: '#/definitions/EeEventCourse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventCourses
+      summary: Remove course role from event
+      operationId: removeEventCourse
+      responses:
+        '200':
+          description: Removed course
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   ### Event Tickets
   '/events/{eventId}/tickets':
     parameters:
       - $ref: '#/parameters/eventId'
     post:
       tags:
-        - eeTickets
+        - eeEventTickets
       summary: Add Ticket to event
       operationId: addEventTicket
       parameters:
@@ -375,7 +464,7 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
     get:
       tags:
-        - eeTickets
+        - eeEventTickets
       summary: Get Ticket to event
       operationId: listEventTickets
       parameters:
@@ -399,7 +488,7 @@ paths:
       - $ref: '#/parameters/ticketId'
     get:
       tags:
-        - eeTickets
+        - eeEventTickets
       summary: Get a ticket from the directory
       operationId: getTicket
       responses:
@@ -415,7 +504,7 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
-        - eeTickets
+        - eeEventTickets
       summary: Update an existing Event
       operationId: updateTicket
       parameters:
@@ -442,7 +531,7 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeTickets
+        - eeEventTickets
       summary: Delete an existing Event
       operationId: deleteTicket
       responses:
@@ -484,6 +573,18 @@ parameters:
     name: eventId
     in: path
     description: Event Id
+    type: string
+    required: true
+  profileId:
+    name: profileId
+    in: path
+    description: Profile Id
+    type: string
+    required: true
+  courseId:
+    name: courseId
+    in: path
+    description: Course Id
     type: string
     required: true
   ticketId:
@@ -628,6 +729,14 @@ definitions:
         type: boolean
   ### End Permissions
   
+  EeSuccess:
+    type: object
+    properties:
+      success:
+        type: boolean
+      message:
+        type: object
+  
   EeProfile:
     type: object
     properties:
@@ -673,7 +782,6 @@ definitions:
         format: int32
       timezone:
         type: string
-        
       bio:
         type: string
       picture:
@@ -718,14 +826,30 @@ definitions:
       - properties:
           organizerName:
             type: string
-          profiles:
+          profileIds:
             type: array
             items:
-              $ref: '#/definitions/EeEventProfile'
-          courses:
+              type: string
+          courseIds:
             type: array
             items:
-              $ref: '#/definitions/EeEventCourse'
+              type: string
+          availableCountry:
+            type: array
+            items:
+              type: string
+          totalProfiles:
+            type: integer
+            format: int32
+          totalTickets:
+            type: integer
+            format: int32
+          totalTicketInventory:
+            type: integer
+            format: int32
+          totalTicketSold:
+            type: integer
+            format: int32
           
   EePagedEvent:
     type: object
@@ -738,7 +862,19 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
-          
+  
+  EeEventProfileUpdate:
+    type: object
+    properties:
+      profileId:
+        type: string
+      roles:
+        type: array
+        items:
+          type: string
+      isInvited:
+        type: boolean
+        
   EeEventProfile:
     type: object
     properties:
@@ -748,11 +884,40 @@ definitions:
         type: array
         items:
           type: string
-      invitedProfileFlag:
+      isInvited:
         type: boolean
       accepted:
         type: boolean
+        
+  EePagedEventProfile:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventProfile'
   
+  EeEventCourseUpdate:
+    type: object
+    properties:
+      courseId:
+        type: string
+      offerings:
+        type: array
+        items:
+          type: object
+          properties:
+            startTimestamp:
+              type: integer
+            endTimestamp:
+              type: integer
+            ticketId:
+              type: string
+            ticketName:
+              type: string
+        
   EeEventCourse:
     type: object
     properties:
@@ -772,7 +937,15 @@ definitions:
             ticketName:
               type: string
           
-
+  EePagedEventCourse:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventCourse'
   ### End Event
   
   ### Ticket
