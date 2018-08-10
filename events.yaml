@@ -866,8 +866,6 @@ definitions:
   EeEventProfileUpdate:
     type: object
     properties:
-      profileId:
-        type: string
       roles:
         type: array
         items:
@@ -902,8 +900,6 @@ definitions:
   EeEventCourseUpdate:
     type: object
     properties:
-      courseId:
-        type: string
       offerings:
         type: array
         items:
