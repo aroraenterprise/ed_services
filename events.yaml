@@ -433,41 +433,13 @@ paths:
           
   ### Event Tickets
   '/events/{eventId}/tickets':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    post:
-      tags:
-        - eeEventTickets
-      summary: Add Ticket to event
-      operationId: addEventTicket
-      parameters:
-        - in: body
-          name: ticketProps
-          description: Ticket to update
-          required: true
-          schema:
-            $ref: '#/definitions/EeTicketUpdate'
-      responses:
-        '200':
-          description: Event Course updated
-          schema:
-            $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event or Profile not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     get:
       tags:
         - eeEventTickets
-      summary: Get Ticket to event
+      summary: Get Tickets to event
       operationId: listEventTickets
       parameters:
+        - $ref: '#/parameters/eventId'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -483,9 +455,10 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/tickets/{ticketId}':
+  '/events/{eventId}/tickets/{currencyCode}':
     parameters:
-      - $ref: '#/parameters/ticketId'
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/currencyCode'
     get:
       tags:
         - eeEventTickets
@@ -505,18 +478,18 @@ paths:
     put:
       tags:
         - eeEventTickets
-      summary: Update an existing Event
-      operationId: updateTicket
+      summary: Upsert Ticket to event (One Ticket per currency)
+      operationId: upsertEventTicket
       parameters:
         - in: body
           name: ticketProps
-          description: Ticket object that needs to be updated
+          description: Ticket to update
           required: true
           schema:
             $ref: '#/definitions/EeTicketUpdate'
       responses:
         '200':
-          description: Ticket updated
+          description: Event Ticket updated
           schema:
             $ref: '#/definitions/EeTicket'
         '400':
@@ -524,7 +497,7 @@ paths:
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
-          description: Ticket not found
+          description: Event or Profile not found
         '405':
           $ref: '#/responses/InvalidInputResponse'
         '500':
@@ -587,10 +560,10 @@ parameters:
     description: Course Id
     type: string
     required: true
-  ticketId:
-    name: ticketId
+  currencyCode:
+    name: currencyCode
     in: path
-    description: Ticket Id
+    description: Currency Code
     type: string
     required: true
   searchQuery:
@@ -850,6 +823,22 @@ definitions:
           totalTicketSold:
             type: integer
             format: int32
+          tickets:
+            type: array
+            items:
+              $ref: '#/definitions/EeTicketSummary'
+            
+  EeTicketSummary:
+    type: object
+    properties:
+      id:
+        type: string
+      currencyCode:
+        type: string
+      retailPrice:
+        type: integer
+        format: int32
+      
           
   EePagedEvent:
     type: object
@@ -955,17 +944,21 @@ definitions:
       retailPrice:
         type: integer
         format: int32
+      # discounts:
+      #   type: array
+      #   items:
+      #     $ref: '#/definitions/EeTicketDiscount'
       currencyCode:
         type: string
       totalInventory:
         type: integer
         format: int32
-      startSale:
-        type: integer
-        format: int32
-      endSale:
-        type: integer
-        format: int32
+      # openTimestamp:
+      #   type: integer
+      #   format: int32
+      # closeTimestamp:
+      #   type: integer
+      #   format: int32
       description:
         type: string
       contentPolicy:
@@ -976,8 +969,49 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeRefund'
-      overrideStatus:
-        type: boolean
+      status:
+        type: string
+        enum: [open, closed, soldOut]
+      # passcode:
+      #   type: string
+  
+  EeTicketDiscount:
+    type: object
+    properties:
+      discountyType:
+        type: string
+        enum: [limitedTime, membership, referralCode]
+      discountPrice:
+        type: integer
+        format: int32
+      startTimestamp:
+        type: integer
+        format: int32
+      endTimestamp:
+        type: integer
+        format: int32
+      # membershipVerification:
+      #   type: object
+      #   properties:
+      #     name:
+      #       type: string
+      #     link:
+      #       type: string
+      #     apiKey:
+      #       type: string
+      #     maxUsage:
+      #       type: integer
+      #       format: int32
+      # referralCodes:
+      #   type: array
+      #   items:
+      #     type: object
+      #     properties:
+      #       code:
+      #         type: string
+      #       maxUsage:
+      #         type: integer
+      #         format: int32
   
   EeRefund:
     type: object
@@ -1000,9 +1034,6 @@ definitions:
       - properties:
           eventId:
             type: string
-          status:
-            type: string
-            enum: [open, closed, soldOut]
           totalSold:
             type: integer
             format: int32
