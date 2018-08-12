@@ -84,9 +84,10 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/merchants/{merchantId}/fee-structure':
+  '/merchants/{merchantId}/sell/{itemType}':
     parameters:
       - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/itemType'
     put:
       tags:
         - esMerchants
@@ -98,9 +99,7 @@ paths:
           required: true
           description: Fee structure
           schema:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsFeeStructure'
+            $ref: '#/definitions/EsFeeStructure'
       responses:
         '200':
           description: Merchant fee structure updated
@@ -112,6 +111,22 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Profile not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    get:
+      tags:
+        - esMerchants
+      summary: Check merchant is able to sell an item type
+      operationId: canMerchantSellItem
+      responses:
+        '200':
+          description: Merchant has Permission
+          schema:
+            $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '405':
           $ref: '#/responses/InvalidInputResponse'
         '500':
@@ -184,30 +199,7 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/merchants/{merchantId}/checkCanSell':
-    parameters:
-      - $ref: '#/parameters/merchantId'
-    get:
-      tags:
-        - esMerchants
-      summary: Check account has permission
-      operationId: canMerchantSellItem
-      parameters:
-        - in: query
-          type: string
-          required: true
-          name: itemType
-      responses:
-        '200':
-          description: Merchant has Permission
-          schema:
-            $ref: '#/definitions/EsPermissionCheck'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+          
   '/merchants/{merchantId}/all-permissions':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -323,13 +315,30 @@ paths:
     get:
       tags:
         - esCart
-      summary: Get the users current cart
-      operationId: getUserCart
+      summary: Get all user carts (all currency codes)
+      operationId: listAllCarts
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsCart'
+            type: array
+            items:
+              $ref: '#/definitions/EsCart'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /cart/{currencyCode}:
+    parameters:
+      - $ref: '#/parameters/currencyCode'
+    get:
+      tags:
+        - esCart
+      summary: Get the users cart for currency code
+      operationId: getCartForCurrencyCode
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsCartDetail'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
@@ -353,7 +362,7 @@ paths:
     put:
       tags:
         - esCart
-      summary: Upsert item to cart
+      summary: Upsert item to cart (Item will go into the right currency cart)
       operationId: upsertCartItem
       parameters:
         - in: body
@@ -366,7 +375,7 @@ paths:
         '200':
           description: Cart Item upserted
           schema:
-            $ref: '#/definitions/EsCart'
+            $ref: '#/definitions/EsCartDetail'
         '400':
           description: Invalid ID supplied
         '401':
@@ -385,23 +394,27 @@ paths:
       responses:
         '204':
           description: Cart Item deleted
+          schema:
+            $ref: '#/definitions/EsCartDetail'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Cart Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /carts/validate:
+  /carts/{currencyCode}/validate:
+    parameters: 
+      - $ref: '#/parameters/currencyCode'
     post:
       tags:
         - esCart
-      summary: Validate Cart to ensure all items are available and pricing is all right
+      summary: Validate Cart for a currency to ensure all items are available and pricing is all up to date and there are not potential conflicts
       operationId: validateCart
       responses:
         '200':
           description: Cart Item validated
           schema:
-            $ref: '#/definitions/EsCart'
+            $ref: '#/definitions/EsCartDetail'
         '400':
           description: Invalid ID supplied
         '401':
@@ -412,11 +425,13 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /carts/checkout:
+  /carts/{currencyCode}/checkout:
+    parameters: 
+      - $ref: '#/parameters/currencyCode'
     post:
       tags:
         - esCart
-      summary: Payment information to process all cart items
+      summary: Endpoint to charge the customer for the items in their cart.
       parameters:
         - in: body
           name: paymentProps
@@ -427,7 +442,7 @@ paths:
       operationId: checkoutCart
       responses:
         '200':
-          description: Order
+          description: List of orderItems grouped by merchant as Order that the user has checked out
           schema:
             type: array
             items:
@@ -557,6 +572,18 @@ parameters:
     description: Store Item Id
     type: string
     required: true
+  itemType:
+    name: itemType
+    in: path
+    description: Store Item Type
+    type: string
+    required: true
+  currencyCode:
+    name: currencyCode
+    in: path
+    description: Currency Code
+    type: string
+    required: true
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
@@ -575,15 +602,10 @@ definitions:
     properties:
       id:
         type: string
-      created:
-        type: integer
-        format: int32
+      createdOn:
+        type: string
         readOnly: true
-      modified:
-        type: integer
-        format: int32
-        readOnly: true
-      version:
+      modifiedOn:
         type: string
         readOnly: true
   EsDefaultError:
@@ -643,8 +665,12 @@ definitions:
     properties:
       hasPermission:
         type: boolean
+  
   EsFeeStructure:
     type: object
+    required:
+      - feeType
+      - feeAmount
     properties:
       perItem:
         type: boolean
@@ -661,6 +687,7 @@ definitions:
         default: 0
       feeAmount:
         type: integer
+        default: 0
   EsMerchant:
     type: object
     required:
@@ -677,6 +704,7 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
+  
   EsMerchantSummary:
     type: object
     allOf:
@@ -684,6 +712,7 @@ definitions:
       - properties:
           name:
             type: string
+  
   EsStoreItemUpdate:
     type: object
     required:
@@ -711,30 +740,29 @@ definitions:
         type: string
       contentPolicy:
         type: string
-      refundPolicy:
-        type: string
-      refundCategories:
-        type: array
-        items:
-          $ref: '#/definitions/EsRefund'
+      # refundPolicy:
+      #   type: string
+      # refundCategories:
+      #   type: array
+      #   items:
+      #     $ref: '#/definitions/EsRefund'
       status:
         type: string
         enum: [open, closed, soldOut]
         default: open
       
-  
-  EsRefund:
-    type: object
-    properties:
-      startTimestamp:
-        type: integer
-        format: int32
-      endTimestamp:
-        type: integer
-        format: int32
-      refundFeeAmount:
-        type: integer
-        format: int32
+  # EsRefund:
+  #   type: object
+  #   properties:
+  #     startTimestamp:
+  #       type: integer
+  #       format: int32
+  #     endTimestamp:
+  #       type: integer
+  #       format: int32
+  #     refundFeeAmount:
+  #       type: integer
+  #       format: int32
   
   EsStoreItem:
     type: object
@@ -747,9 +775,7 @@ definitions:
           totalSold:
             type: integer
             readOnly: true
-          storeId:
-            type: string
-            readOnly: true
+
   EsPagedStoreItem:
     type: object
     properties:
@@ -759,19 +785,27 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsStoreItem'
+  
   EsCart:
     type: object
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
-          quantity:
-            type: integer
-          subtotal:
-            type: integer
-          discountTotal:
-            type: integer
           currency:
             type: string
+            readOnly: true
+          quantity:
+            type: integer
+            readOnly: true
+          subtotal:
+            type: integer
+            readOnly: true
+  
+  EsCartDetail:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsCart'
+      - properties:
           merchants:
             type: array
             items:
@@ -780,6 +814,7 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsCartItem'
+  
   EsCartItemInput:
     type: object
     properties:
@@ -794,11 +829,13 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
+          currencyCode:
+            type: string
           merchantId:
             type: string
-          itemType:
+          merchantName:
             type: string
-          storeId:
+          itemType:
             type: string
           name:
             type: string
@@ -806,59 +843,77 @@ definitions:
             type: string
           description:
             type: string
-          meta:
-            type: object
-          retailPrice:
-            type: integer
-          discountPrice:
+          price:
             type: integer
           quantity:
             type: integer
           subtotal:
             type: integer
-          discounts:
-            type: array
-            items:
-              $ref: '#/definitions/EsDiscount'
-  EsDiscount:
-    type: object
-    properties:
-      discountCode:
-        type: string
-      discountPrice:
-        type: integer
+  # EsDiscount:
+  #   type: object
+  #   properties:
+  #     discountCode:
+  #       type: string
+  #     discountPrice:
+  #       type: integer
   EsPaymentInput:
     type: object
+    required:
+      - source
+      - email
+      - name
     properties:
       source:
         type: string
       email:
         type: string
+      name:
+        type: string
+  
   EsOrderItem:
     type: object
     allOf:
-      - $ref: '#/definitions/EsCartItem'
+      - $ref: '#/definitions/EsBaseId'
       - properties:
+          currencyCode:
+            type: string
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          itemType:
+            type: string
+          name:
+            type: string
+          picture:
+            type: string
+          description:
+            type: string
+          contentPolicy:
+            type: string
+          price:
+            type: integer
+          quantity:
+            type: integer
+          status:
+            type: string
+            enum: [inProcess, complete]
           orderId:
             type: string
-          feeAmount:
-            type: integer
-          discountAmount:
-            type: integer
-          chargeAmount:
-            type: integer
-          paymentRef:
-            type: string
+          
   EsOrder:
     type: object
     allOf:
       - $ref: '#/definitions/EsCart'
       - properties:
+          currencyCode:
+            type: string
+          status:
+            type: string
+            enum: [inProcess, complete]
           quantity:
             type: integer
           subtotal:
-            type: integer
-          discountAmount:
             type: integer
           feeAmount:
             type: integer
@@ -866,12 +921,22 @@ definitions:
             type: integer
           paymentRef:
             type: string
-          merchant:
-            $ref: '#/definitions/EsMerchantSummary'
-          items:
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          orderItems:
             type: array
             items:
-              $ref: '#/definitions/EsOrderItem'
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                quantity:
+                  type: integer
+
   EsPagedOrder:
     type: object
     properties:
