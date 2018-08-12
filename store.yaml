@@ -184,10 +184,9 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/merchants/{merchantId}/permissions/{accountId}/sell':
+  '/merchants/{merchantId}/checkCanSell':
     parameters:
       - $ref: '#/parameters/merchantId'
-      - $ref: '#/parameters/accountId'
     get:
       tags:
         - esMerchants
@@ -664,6 +663,9 @@ definitions:
         type: integer
   EsMerchant:
     type: object
+    required:
+      - name
+      - stripeId
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
@@ -684,10 +686,14 @@ definitions:
             type: string
   EsStoreItemUpdate:
     type: object
+    required:
+      - merchantId
+      - name
+      - itemType
+      - totalInventory
+      - currencyCode
     properties:
       merchantId:
-        type: string
-      merchantName:
         type: string
       itemType:
         type: string
@@ -714,6 +720,8 @@ definitions:
       status:
         type: string
         enum: [open, closed, soldOut]
+        default: open
+      
   
   EsRefund:
     type: object
@@ -734,13 +742,8 @@ definitions:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsStoreItemUpdate'
       - properties:
-          status:
+          merchantName:
             type: string
-            enum:
-              - onSale
-              - notOnSale
-              - soldOut
-            readOnly: true
           totalSold:
             type: integer
             readOnly: true
