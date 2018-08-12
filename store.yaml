@@ -675,11 +675,15 @@ definitions:
       perItem:
         type: boolean
         default: true
+      active:
+        type: boolean
+        default: true
       feeType:
         type: string
         enum:
           - fixed
           - percentage
+          - none
       feeMaximum:
         type: integer
       feeMinimum:
