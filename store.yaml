@@ -302,7 +302,7 @@ paths:
         '204':
           description: Event deleted
           schema:
-            type: object
+            $ref: '#/definitions/EsStoreItem'
         '400':
           description: Invalid ID supplied
         '401':
@@ -769,10 +769,15 @@ definitions:
       - properties:
           merchantId:
             type: string
+            readOnly: true
           merchantName:
             type: string
+            readOnly: true
           totalSold:
             type: integer
+            readOnly: true
+          active:
+            type: boolean
             readOnly: true
 
   EsPagedStoreItem:
