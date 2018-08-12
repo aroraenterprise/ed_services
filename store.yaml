@@ -716,14 +716,11 @@ definitions:
   EsStoreItemUpdate:
     type: object
     required:
-      - merchantId
       - name
       - itemType
       - totalInventory
       - currencyCode
     properties:
-      merchantId:
-        type: string
       itemType:
         type: string
       name:
@@ -770,6 +767,8 @@ definitions:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsStoreItemUpdate'
       - properties:
+          merchantId:
+            type: string
           merchantName:
             type: string
           totalSold:
