@@ -8,7 +8,7 @@ info:
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: 'store-dot-edropin-play.appspot.com'
+host: store-dot-edropin-play.appspot.com
 basePath: /
 tags:
   - name: esMerchants
@@ -38,7 +38,6 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
-  ### Merchants
   '/merchants/{merchantId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -85,14 +84,13 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   '/merchants/{merchantId}/fee-structure':
     parameters:
       - $ref: '#/parameters/merchantId'
     put:
       tags:
         - esMerchants
-      summary: Setup fee structure for merchant [Admin Only]
+      summary: 'Setup fee structure for merchant [Admin Only]'
       operationId: updateFeeStructure
       parameters:
         - in: body
@@ -118,7 +116,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
   '/merchants/{merchantId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -132,7 +129,7 @@ paths:
         '200':
           description: Permissions for account
           schema:
-            $ref: "#/definitions/EsPermission"
+            $ref: '#/definitions/EsPermission'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -187,6 +184,31 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/merchants/{merchantId}/permissions/{accountId}/sell':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - esMerchants
+      summary: Check account has permission
+      operationId: canMerchantSellItem
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: itemType
+      responses:
+        '200':
+          description: Merchant has Permission
+          schema:
+            $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/merchants/{merchantId}/all-permissions':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -210,10 +232,7 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  ### End of Merchants
   
-  
-  ### Store
   '/store/{merchantId}/items':
     get:
       parameters:
@@ -235,7 +254,7 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-    
+  
   '/store/{merchantId}/items/{itemId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -301,10 +320,7 @@ paths:
           description: StoreItem not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Store
-  
-  ### Cart
-  '/cart':
+  /cart:
     get:
       tags:
         - esCart
@@ -376,7 +392,7 @@ paths:
           description: Cart Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/carts/validate':
+  /carts/validate:
     post:
       tags:
         - esCart
@@ -397,7 +413,7 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/carts/checkout':
+  /carts/checkout:
     post:
       tags:
         - esCart
@@ -427,10 +443,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  ### End of Cart
-  
-  ### Orders
   '/merchants/{merchantId}/orders':
     get:
       tags:
@@ -450,8 +462,7 @@ paths:
           description: Invalid ID supplied
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/orders':
+  /orders:
     get:
       tags:
         - esOrder
@@ -492,11 +503,7 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Orders
-  
-  # Customers
-  ### Cart
-  '/customers':
+  /customers:
     get:
       tags:
         - esCustomers
@@ -509,7 +516,6 @@ paths:
             $ref: '#/definitions/EsCustomer'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
 parameters:
   limit:
     name: limit
@@ -565,7 +571,6 @@ responses:
       WWW_Authenticate:
         type: string
 definitions:
-  # Extendable Models
   EsBaseId:
     type: object
     properties:
@@ -582,9 +587,6 @@ definitions:
       version:
         type: string
         readOnly: true
-  ### End Extendable Models
-
-  ### Components
   EsDefaultError:
     required:
       - code
@@ -595,7 +597,6 @@ definitions:
         format: int32
       message:
         type: string
-
   EsPagination:
     type: object
     properties:
@@ -607,8 +608,6 @@ definitions:
       total:
         type: integer
         format: int32
-  
-  ### Permissions
   EsPermission:
     type: object
     properties:
@@ -645,9 +644,6 @@ definitions:
     properties:
       hasPermission:
         type: boolean
-  ### End Permissions
-
-  ### Merchant
   EsFeeStructure:
     type: object
     properties:
@@ -656,7 +652,9 @@ definitions:
         default: true
       feeType:
         type: string
-        enum: [fixed, percentage]
+        enum:
+          - fixed
+          - percentage
       feeMaximum:
         type: integer
       feeMinimum:
@@ -664,7 +662,6 @@ definitions:
         default: 0
       feeAmount:
         type: integer
-        
   EsMerchant:
     type: object
     allOf:
@@ -678,7 +675,6 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
-
   EsMerchantSummary:
     type: object
     allOf:
@@ -686,11 +682,13 @@ definitions:
       - properties:
           name:
             type: string
-
-  ### Store
   EsStoreItemUpdate:
     type: object
     properties:
+      merchantId:
+        type: string
+      merchantName:
+        type: string
       itemType:
         type: string
       name:
@@ -703,26 +701,33 @@ definitions:
         type: integer
       totalInventory:
         type: integer
-      merchantId:
+      currencyCode:
         type: string
-      saleStart:
-        type: integer
-      saleEnd:
-        type: integer
-      forceOpen:
-        type: boolean
-        default: false
-      meta:
-        type: object
-      
+      contentPolicy:
+        type: string
       refundPolicy:
-        type: object
-      onSaleHook:
-        type: object
-      onRefundHook:
-        type: object
-        
- 
+        type: string
+      refundCategories:
+        type: array
+        items:
+          $ref: '#/definitions/EsRefund'
+      status:
+        type: string
+        enum: [open, closed, soldOut]
+  
+  EsRefund:
+    type: object
+    properties:
+      startTimestamp:
+        type: integer
+        format: int32
+      endTimestamp:
+        type: integer
+        format: int32
+      refundFeeAmount:
+        type: integer
+        format: int32
+  
   EsStoreItem:
     type: object
     allOf:
@@ -731,7 +736,10 @@ definitions:
       - properties:
           status:
             type: string
-            enum: [onSale, notOnSale, soldOut]
+            enum:
+              - onSale
+              - notOnSale
+              - soldOut
             readOnly: true
           totalSold:
             type: integer
@@ -739,7 +747,6 @@ definitions:
           storeId:
             type: string
             readOnly: true
-
   EsPagedStoreItem:
     type: object
     properties:
@@ -749,8 +756,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsStoreItem'
-
-  ### Cart
   EsCart:
     type: object
     allOf:
@@ -772,7 +777,6 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsCartItem'
-  
   EsCartItemInput:
     type: object
     properties:
@@ -782,7 +786,6 @@ definitions:
         type: array
         items:
           type: string
-  
   EsCartItem:
     type: object
     allOf:
@@ -814,7 +817,6 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsDiscount'
-  
   EsDiscount:
     type: object
     properties:
@@ -822,7 +824,6 @@ definitions:
         type: string
       discountPrice:
         type: integer
-
   EsPaymentInput:
     type: object
     properties:
@@ -830,7 +831,6 @@ definitions:
         type: string
       email:
         type: string
-  
   EsOrderItem:
     type: object
     allOf:
@@ -846,8 +846,6 @@ definitions:
             type: integer
           paymentRef:
             type: string
-          
-  # Order
   EsOrder:
     type: object
     allOf:
@@ -871,7 +869,6 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsOrderItem'
-
   EsPagedOrder:
     type: object
     properties:
@@ -881,7 +878,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrder'
-          
   EsCustomer:
     type: object
     allOf:
