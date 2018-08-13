@@ -402,7 +402,7 @@ paths:
           description: Cart Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /carts/{currencyCode}/validate:
+  /cart/{currencyCode}/validate:
     parameters: 
       - $ref: '#/parameters/currencyCode'
     post:
@@ -425,7 +425,7 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /carts/{currencyCode}/checkout:
+  /cart/{currencyCode}/checkout:
     parameters: 
       - $ref: '#/parameters/currencyCode'
     post:
