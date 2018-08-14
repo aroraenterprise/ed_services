@@ -435,6 +435,8 @@ paths:
           
   ### Event Tickets
   '/events/{eventId}/tickets':
+    parameters:
+      - $ref: '#/parameters/eventId'
     get:
       tags:
         - eeEventTickets
@@ -457,15 +459,43 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/tickets/{currencyCode}':
+    post:
+      tags:
+        - eeEventTickets
+      summary: Add Ticket to event
+      operationId: addEventTicket
+      parameters:
+        - in: body
+          name: ticketProps
+          description: Ticket to add
+          required: true
+          schema:
+            $ref: '#/definitions/EeTicketUpdate'
+        - in: query
+          name: setAsEventPrice
+          description: Make ticket price the event price
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Event Ticket added
+          schema:
+            $ref: '#/definitions/EeTicket'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/tickets/{ticketId}':
     parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/currencyCode'
+      - $ref: '#/parameters/ticketId'
     get:
       tags:
         - eeEventTickets
       summary: Get a ticket from the directory
-      operationId: getTicket
+      operationId: getEventTicket
       responses:
         '200':
           description: OK
@@ -481,7 +511,7 @@ paths:
       tags:
         - eeEventTickets
       summary: Upsert Ticket to event (One Ticket per currency)
-      operationId: upsertEventTicket
+      operationId: updateEventTicket
       parameters:
         - in: body
           name: ticketProps
@@ -489,6 +519,11 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/EeTicketUpdate'
+        - in: query
+          name: setAsEventPrice
+          description: Make ticket price the event price
+          required: false
+          type: string
       responses:
         '200':
           description: Event Ticket updated
@@ -508,7 +543,7 @@ paths:
       tags:
         - eeEventTickets
       summary: Delete an existing Event
-      operationId: deleteTicket
+      operationId: deleteEventTicket
       responses:
         '204':
           description: Ticket deleted
@@ -764,12 +799,6 @@ parameters:
     description: Course Id
     type: string
     required: true
-  currencyCode:
-    name: currencyCode
-    in: path
-    description: Currency Code
-    type: string
-    required: true
   searchQuery:
     in: query
     name: q
@@ -780,6 +809,13 @@ parameters:
     type: array
     items:
       type: string
+  ticketId:
+    name: ticketId
+    in: path
+    description: Ticket Id
+    type: string
+    required: true
+    
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
@@ -1153,46 +1189,45 @@ definitions:
     properties:
       name:
         type: string
-      isFree:
-        type: boolean
       retailPrice:
         type: integer
         format: int32
-      # discounts:
-      #   type: array
-      #   items:
-      #     $ref: '#/definitions/EeTicketDiscount'
+      discounts:
+        type: array
+        items:
+          $ref: '#/definitions/EeTicketDiscount'
       currencyCode:
         type: string
       totalInventory:
         type: integer
         format: int32
-      # openTimestamp:
-      #   type: integer
-      #   format: int32
-      # closeTimestamp:
-      #   type: integer
-      #   format: int32
+      conflicts:
+        type: object
       description:
         type: string
       contentPolicy:
         type: string
-      refundPolicy:
-        type: string
-      refundCategories:
-        type: array
-        items:
-          $ref: '#/definitions/EeRefund'
+      # refundPolicy:
+      #   type: string
+      # refundCategories:
+      #   type: array
+      #   items:
+      #     $ref: '#/definitions/EeRefund'
       status:
         type: string
         enum: [open, closed, soldOut]
-      # passcode:
-      #   type: string
+      startSaleTimestamp:
+        type: integer
+      endSaleTimestamp:
+        type: integer
 
   EeTicketDiscount:
     type: object
+    required:
+      - discountType
+      - discountPrice
     properties:
-      discountyType:
+      discountType:
         type: string
         enum: [limitedTime, membership, referralCode]
       discountPrice:
@@ -1204,41 +1239,31 @@ definitions:
       endTimestamp:
         type: integer
         format: int32
-      # membershipVerification:
-      #   type: object
-      #   properties:
-      #     name:
-      #       type: string
-      #     link:
-      #       type: string
-      #     apiKey:
-      #       type: string
-      #     maxUsage:
-      #       type: integer
-      #       format: int32
-      # referralCodes:
-      #   type: array
-      #   items:
-      #     type: object
-      #     properties:
-      #       code:
-      #         type: string
-      #       maxUsage:
-      #         type: integer
-      #         format: int32
+      membershipVerification:
+        type: object
+        properties:
+          name:
+            type: string
+          link:
+            type: string
+          apiKey:
+            type: string
+          maxUsage:
+            type: integer
+            format: int32
   
-  EeRefund:
-    type: object
-    properties:
-      startTimestamp:
-        type: integer
-        format: int32
-      endTimestamp:
-        type: integer
-        format: int32
-      refundFeeAmount:
-        type: integer
-        format: int32
+  # EeRefund:
+  #   type: object
+  #   properties:
+  #     startTimestamp:
+  #       type: integer
+  #       format: int32
+  #     endTimestamp:
+  #       type: integer
+  #       format: int32
+  #     refundFeeAmount:
+  #       type: integer
+  #       format: int32
   
   EeTicket:
     type: object
