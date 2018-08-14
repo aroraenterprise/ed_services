@@ -517,6 +517,52 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/order-items':
+    get:
+      tags:
+        - esOrder
+      summary: List user order items
+      operationId: listOrderItems
+      parameters:
+        - in: query
+          name: merchantId
+          required: false
+          type: string
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrderItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/merchants/{merchantId}/order-items':
+    get:
+      tags:
+        - esOrder
+      summary: List merchant order items
+      operationId: listOrderItemsByMerchant
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrderItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /customers:
     get:
       tags:
@@ -709,14 +755,6 @@ definitions:
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
   
-  EsMerchantSummary:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          name:
-            type: string
-  
   EsStoreItemUpdate:
     type: object
     required:
@@ -799,7 +837,7 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
-          currency:
+          currencyCode:
             type: string
             readOnly: true
           quantity:
@@ -808,19 +846,16 @@ definitions:
           subtotal:
             type: integer
             readOnly: true
-  
   EsCartDetail:
     type: object
     allOf:
       - $ref: '#/definitions/EsCart'
       - properties:
-          merchants:
-            type: array
-            items:
-              $ref: '#/definitions/EsMerchantSummary'
           items:
-            type: array
-            items:
+            additionalProperties:
+              $ref: '#/definitions/EsCartItem'
+          saveForLater:
+            additionalProperties:
               $ref: '#/definitions/EsCartItem'
   
   EsCartItemInput:
@@ -828,10 +863,10 @@ definitions:
     properties:
       quantity:
         type: integer
-      discountCodes:
-        type: array
-        items:
-          type: string
+      # discountCodes:
+      #   type: array
+      #   items:
+      #     type: string
   EsCartItem:
     type: object
     allOf:
@@ -849,13 +884,9 @@ definitions:
             type: string
           picture:
             type: string
-          description:
-            type: string
           price:
             type: integer
           quantity:
-            type: integer
-          subtotal:
             type: integer
   # EsDiscount:
   #   type: object
@@ -889,6 +920,12 @@ definitions:
             type: string
           merchantName:
             type: string
+          storeItemId:
+            type: string
+          orderId:
+            type: string
+          chargeId:
+            type: string
           itemType:
             type: string
           name:
@@ -899,15 +936,27 @@ definitions:
             type: string
           contentPolicy:
             type: string
-          price:
+          retailPrice:
             type: integer
           quantity:
             type: integer
+          charge:
+            type: integer
+          edropinFee:
+            type: integer
           status:
             type: string
-            enum: [inProcess, complete]
-          orderId:
-            type: string
+            enum: [pending, inProcess, complete]
+  
+  EsPagedOrderItem:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsOrderItem'
           
   EsOrder:
     type: object
@@ -916,34 +965,26 @@ definitions:
       - properties:
           currencyCode:
             type: string
-          status:
+          email:
             type: string
-            enum: [inProcess, complete]
+          name:
+            type: string
           quantity:
             type: integer
-          subtotal:
+          charge:
             type: integer
-          feeAmount:
+          chargeId:
+            type: string
+          edropinFee:
             type: integer
-          chargeAmount:
+          status:
+            type: string
+            enum: [pending, inProcess, complete]
+          items:
+            additionalProperties:
+              $ref: '#/definitions/EsCartItem'
+          toMerchant:
             type: integer
-          paymentRef:
-            type: string
-          merchantId:
-            type: string
-          merchantName:
-            type: string
-          orderItems:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                name:
-                  type: string
-                quantity:
-                  type: integer
 
   EsPagedOrder:
     type: object
