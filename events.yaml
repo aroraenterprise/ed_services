@@ -541,6 +541,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            type: string
         '400':
           description: Invalid ID supplied
         '500':
@@ -696,7 +698,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/EeEventAttendeeUpdate'
+              $ref: '#/definitions/EeEventAttendeeClaimUpdate'
       responses:
         '200':
           description: Attendee updated
@@ -1267,6 +1269,24 @@ definitions:
       - name
       - email
     properties:
+      name:
+        type: string
+      email:
+        type: string
+      title:
+        type: string
+      phone:
+        type: string
+  
+  EeEventAttendeeClaimUpdate:
+    type: object
+    required:
+      - id
+      - name
+      - email
+    properties:
+      id:
+        type: string
       name:
         type: string
       email:
