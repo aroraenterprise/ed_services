@@ -520,6 +520,32 @@ paths:
           description: Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/tickets/generate-claim':
+    post:
+      tags:
+        - eeTickets
+      security: []
+      parameters:
+        - in: query
+          name: apiKey
+          type: string
+          required: true
+        - in: body
+          name: subData
+          description: 'Base64 encoded message'
+          required: true
+          schema:
+            $ref: '#/definitions/EePubSubMessage'
+      summary: Pub sub to generate claims for event tickets sold
+      operationId: generateTicketClaims
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse' 
+  ### End of Tickets
   
   '/events/{eventId}/attendees':
     parameters:
@@ -632,7 +658,62 @@ paths:
           description: Event Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-    
+  
+  '/attendees/claim':
+    parameters:
+      - in: query
+        name: code
+        type: string
+        required: true
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Get all attendee claims associated with the code in query
+      operationId: getAttendeesByClaim
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventAttendees
+      summary: Update attendees using claim code
+      operationId: updateAttendeesByClaim
+      parameters:
+        - in: body
+          name: attendeeProps
+          description: Attendee objects that needs to be updated
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventAttendeeUpdate'
+      responses:
+        '200':
+          description: Attendee updated
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Attendee not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   limit:
     name: limit
@@ -1213,3 +1294,18 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventAttendee'
+  
+  EePubSubMessage:
+    type: object
+    properties:
+      subscription:
+        type: string
+      message:
+        type: object
+        properties:
+          data:
+            type: string
+          attributes:
+            type: object
+          message_id:
+            type: string
