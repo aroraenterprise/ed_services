@@ -523,7 +523,7 @@ paths:
   '/tickets/generate-claim':
     post:
       tags:
-        - eeTickets
+        - eeEventTickets
       security: []
       parameters:
         - in: query
