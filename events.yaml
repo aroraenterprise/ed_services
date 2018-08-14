@@ -19,6 +19,8 @@ tags:
     description: Courses linked to events
   - name: eeEventTickets
     description: Tickets linked to events
+  - name: eeEventAttendees
+    description: Event Attendees
 schemes:
   - https
 produces:
@@ -518,6 +520,119 @@ paths:
           description: Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/attendees':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventAttendees
+      summary: List all attendees
+      operationId: listAllAttendees
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Attendees for the event
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Add an Attendee to an event
+      operationId: addAttendee
+      parameters:
+        - in: body
+          name: attendeeProps
+          description: Attendee object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAttendeeUpdate'
+      responses:
+        '200':
+          description: Attendee added
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/{attendeeId}':
+    parameters:
+      - $ref: '#/parameters/attendeeId'
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Get an attendee
+      operationId: getAttendee
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventAttendees
+      summary: Update an attendee
+      operationId: updateAttendee
+      parameters:
+        - in: body
+          name: attendeeProps
+          description: Attendee object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAttendeeUpdate'
+      responses:
+        '200':
+          description: Attendee updated
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Attendee not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventAttendees
+      summary: Delete an existing Event Attendee
+      operationId: deleteEventAttendee
+      responses:
+        '204':
+          description: Event Attendee deleted
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    
 parameters:
   limit:
     name: limit
@@ -540,6 +655,12 @@ parameters:
     name: accountId
     in: path
     description: Account Id
+    type: string
+    required: true
+  attendeeId:
+    name: attendeeId
+    in: path
+    description: Attendee Id
     type: string
     required: true
   eventId:
@@ -605,7 +726,6 @@ definitions:
         type: string
         readOnly: true
 
-            
   EePagination:
     type: object
     properties:
@@ -742,6 +862,12 @@ definitions:
   ### Event
   EeEventUpdate:
     type: object
+    required:
+      - organizerId
+      - name
+      - startTimestamp
+      - endTimestamp
+      - timezone
     properties:
       organizerId:
         type: string
@@ -936,6 +1062,11 @@ definitions:
   ### Ticket
   EeTicketUpdate:
     type: object
+    required:
+      - currencyCode
+      - name
+      - totalInventory
+      - retailPrice
     properties:
       name:
         type: string
@@ -974,7 +1105,7 @@ definitions:
         enum: [open, closed, soldOut]
       # passcode:
       #   type: string
-  
+
   EeTicketDiscount:
     type: object
     properties:
@@ -1048,3 +1179,37 @@ definitions:
         items:
           $ref: '#/definitions/EeTicket'
   ### End Event
+  
+  EeEventAttendeeUpdate:
+    type: object
+    required:
+      - name
+      - email
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      title:
+        type: string
+      phone:
+        type: string
+  
+  EeEventAttendee:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeEventAttendeeUpdate'
+      - properties:
+          orderItemId:
+            type: string
+  
+  EePagedEventAttendee:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventAttendee'
