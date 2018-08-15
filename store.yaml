@@ -253,6 +253,10 @@ paths:
     get:
       tags:
         - esStore
+      security:
+        - ClientKey: []
+        - ClientKey: []
+          Authorization: []
       summary: Get a store item from the directory
       operationId: getStoreItem
       responses:
