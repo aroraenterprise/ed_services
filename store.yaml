@@ -353,6 +353,8 @@ paths:
       responses:
         '204':
           description: Cart deleted
+          schema:
+            $ref: '#/definitions/EsCartDetail'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
@@ -580,6 +582,46 @@ paths:
             $ref: '#/definitions/EsCustomer'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - esCustomers
+      summary: Create a customer
+      operationId: addCustomer
+      parameters:
+        - in: body
+          name: paymentProps
+          description: Payment props for checkout
+          required: true
+          schema:
+            $ref: '#/definitions/EsPaymentInput'
+      responses:
+        '200':
+          description: A new Customer
+          schema:
+            $ref: '#/definitions/EsCustomer'
+        '400':
+          description: Invalid attributes
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/customers/{customerId}':
+    parameters:
+      - $ref: '#/parameters/customerId'
+    delete:
+      tags:
+        - esCustomers
+      summary: Remove a customer
+      operationId: removeCustomer
+      responses:
+        '200':
+          description: Customer removed
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   limit:
     name: limit
@@ -602,6 +644,12 @@ parameters:
     name: accountId
     in: path
     description: Account Id
+    type: string
+    required: true
+  customerId:
+    name: customerId
+    in: path
+    description: Customer Id
     type: string
     required: true
   merchantId:
@@ -658,6 +706,13 @@ definitions:
       modifiedOn:
         type: string
         readOnly: true
+  EsSuccess:
+    type: object
+    properties:
+      success:
+        type: boolean
+      message:
+        type: object
   EsDefaultError:
     required:
       - code
@@ -901,11 +956,9 @@ definitions:
   #       type: integer
   EsPaymentInput:
     type: object
-    required:
-      - source
-      - email
-      - name
     properties:
+      customerId:
+        type: string
       source:
         type: string
       email:
