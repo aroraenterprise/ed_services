@@ -579,7 +579,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsCustomer'
+            type: array
+            items:
+              $ref: '#/definitions/EsCustomer'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     post:
@@ -593,7 +595,7 @@ paths:
           description: Payment props for checkout
           required: true
           schema:
-            $ref: '#/definitions/EsPaymentInput'
+            $ref: '#/definitions/EsCustomerInput'
       responses:
         '200':
           description: A new Customer
@@ -954,6 +956,7 @@ definitions:
   #       type: string
   #     discountPrice:
   #       type: integer
+  
   EsPaymentInput:
     type: object
     properties:
@@ -1052,14 +1055,29 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrder'
+  
+  EsCustomerInput:
+    type: object
+    required:
+      - name
+      - email
+      - source
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      source:
+        type: string
+  
   EsCustomer:
     type: object
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
+          name:
+            type: string
           email:
             type: string
-          savedPaymentMethods:
-            type: array
-            items:
-              type: object
+          stripe:
+            type: object
