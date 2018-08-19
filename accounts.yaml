@@ -8,7 +8,7 @@ info:
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: 'edropin-play.appspot.com'
+host: edropin-play.appspot.com
 basePath: /
 tags:
   - name: eaAccounts
@@ -38,7 +38,7 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
-  '/accounts/authenticate/password':
+  /accounts/authenticate/password:
     post:
       tags:
         - eaAccounts
@@ -58,13 +58,12 @@ paths:
           description: Authentication
           schema:
             $ref: '#/definitions/EaAuthentication'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### Accounts
   /accounts:
     get:
       tags:
@@ -97,13 +96,12 @@ paths:
           description: Account updated
           schema:
             $ref: '#/definitions/EaAccount'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Accounts
   '/accounts/{accountId}/claims':
     put:
       tags:
@@ -126,18 +124,15 @@ paths:
           description: Account updated
           schema:
             $ref: '#/definitions/EaAccount'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '404':
           description: Account not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Accounts
-  
-  ### Profiles
-  '/profiles':
+  /profiles:
     get:
       tags:
         - eaProfiles
@@ -174,13 +169,13 @@ paths:
           description: Profile created
           schema:
             $ref: '#/definitions/EaProfile'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/get-multi':
+  /profiles/get-multi:
     get:
       tags:
         - eaProfiles
@@ -197,10 +192,10 @@ paths:
           description: List of Profiles
           schema:
             $ref: '#/definitions/EaPagedProfile'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/profiles/{profileId}':
@@ -237,12 +232,12 @@ paths:
           description: Profile updated
           schema:
             $ref: '#/definitions/EaProfile'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Profile not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
@@ -261,7 +256,68 @@ paths:
           description: Profile not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/invite':
+  '/profiles/{profileId}/email-verification':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    post:
+      tags:
+        - eaProfiles
+      summary: Send email verification
+      operationId: sendProfileEmailVerification
+      responses:
+        '200':
+          description: Email verification sent
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/email-verification/{code}':
+    parameters:
+      - in: path
+        required: true
+        name: code
+        type: string
+    post:
+      tags:
+        - eaProfiles
+      summary: Verifiy profile email
+      operationId: verifyProfileEmail
+      responses:
+        '200':
+          description: Email is verified
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/status':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    put:
+      tags:
+        - eaProfiles
+      summary: Set a profile status
+      operationId: setStatus
+      parameters:
+        - in: body
+          name: profileProps
+          description: Profile object that needs to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileStatus'
+      responses:
+        '200':
+          description: Profile Status
+          schema:
+            $ref: '#/definitions/EaProfileStatus'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /profiles/invite:
     put:
       tags:
         - eaProfiles
@@ -285,7 +341,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/usernamecheck':
+  /profiles/usernamecheck:
     get:
       tags:
         - eaProfiles
@@ -319,11 +375,11 @@ paths:
         '200':
           description: Permissions for account
           schema:
-            $ref: "#/definitions/EaPermission"
-        '401':
-          $ref: '#/responses/UnauthorizedError'
+            $ref: '#/definitions/EaPermission'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     put:
@@ -343,10 +399,10 @@ paths:
           description: Permission set
           schema:
             $ref: '#/definitions/EaPermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/profiles/{profileId}/permissions/{accountId}/check':
@@ -368,10 +424,10 @@ paths:
           description: Account has Permission
           schema:
             $ref: '#/definitions/EaPermissionCheck'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/profiles/{profileId}/all-permissions':
@@ -390,13 +446,13 @@ paths:
           description: List of Users with permissions linked to this profile
           schema:
             $ref: '#/definitions/EaPagedPermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/search':
+  /profiles/search:
     get:
       tags:
         - eaProfiles
@@ -412,15 +468,13 @@ paths:
           description: Profiles
           schema:
             $ref: '#/definitions/EaPagedProfile'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of profiles
-  
-  '/utility/phoneverification/start':
+  /utility/phoneverification/start:
     post:
       tags:
         - eaUtilities
@@ -444,8 +498,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/utility/phoneverification/check':
+  /utility/phoneverification/check:
     post:
       tags:
         - eaUtilities
@@ -469,7 +522,6 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-
 parameters:
   limit:
     name: limit
@@ -510,7 +562,6 @@ parameters:
     type: array
     items:
       type: string
-    
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
@@ -524,7 +575,6 @@ responses:
       WWW_Authenticate:
         type: string
 definitions:
-  # Extendable Models
   EaBaseId:
     type: object
     properties:
@@ -541,7 +591,6 @@ definitions:
       version:
         type: string
         readOnly: true
-            
   EaPagination:
     type: object
     properties:
@@ -553,9 +602,6 @@ definitions:
       total:
         type: integer
         format: int32
-  ### End Extendable Models
-  
-  ### Components
   EaAddress:
     type: object
     properties:
@@ -573,7 +619,6 @@ definitions:
         type: string
       zip:
         type: string
-        
   EaGeoloc:
     type: object
     properties:
@@ -583,7 +628,6 @@ definitions:
       lng:
         type: number
         format: float
-  
   DefaultError:
     required:
       - code
@@ -594,8 +638,6 @@ definitions:
         format: int32
       message:
         type: string
-  
-  ### Permissions
   EaPermission:
     type: object
     properties:
@@ -632,8 +674,6 @@ definitions:
     properties:
       hasPermission:
         type: boolean
-  ### End Permissions
-  
   EaSuccess:
     type: object
     properties:
@@ -641,8 +681,6 @@ definitions:
         type: boolean
       message:
         type: object
-  
-  ### Account
   EaPasswordAuthentication:
     type: object
     properties:
@@ -650,7 +688,6 @@ definitions:
         type: string
       password:
         type: string
-        
   EaAuthentication:
     type: object
     properties:
@@ -658,7 +695,6 @@ definitions:
         type: string
       id:
         type: string
-  
   EaAccountUpdate:
     type: object
     properties:
@@ -671,7 +707,6 @@ definitions:
       bio:
         type: string
         maxLength: 200
-      
   EaAccount:
     type: object
     allOf:
@@ -681,15 +716,11 @@ definitions:
           claims:
             type: object
             readOnly: true
-  
   EaClaims:
     type: object
     properties:
       claims:
         type: object
-  ### End Account
-  
-  ### Profile
   EaProfileBase:
     type: object
     properties:
@@ -722,14 +753,12 @@ definitions:
         type: string
       facebook:
         type: string
-      linkedIn: 
+      linkedIn:
         type: string
       instagram:
         type: string
       _geoloc:
         $ref: '#/definitions/EaGeoloc'
-
-      
   EaProfileUpdate:
     type: object
     allOf:
@@ -739,12 +768,10 @@ definitions:
             type: string
           phoneVerificationToken:
             type: string
-  
   EaProfileInvite:
     type: object
     allOf:
       - $ref: '#/definitions/EaProfileBase'
-        
   EaProfile:
     type: object
     allOf:
@@ -761,13 +788,22 @@ definitions:
             type: boolean
           trustStatus:
             type: string
-            
+  EaProfileStatus:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum: [Pending Review, In Review, Approved, Banned, Suspended]
+      message:
+        type: string
   EaProfileSummary:
     type: object
     properties:
       id:
         type: string
-      name: 
+      name:
         type: string
       picture:
         type: string
@@ -779,7 +815,6 @@ definitions:
         type: string
       inviteFlag:
         type: boolean
-      
   EaPagedProfile:
     type: object
     properties:
@@ -791,7 +826,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaProfileSummary'
-  
   EaPhoneVerificationInput:
     type: object
     properties:
@@ -801,15 +835,15 @@ definitions:
         type: string
       method:
         type: string
-        enum: [sms, call]
+        enum:
+          - sms
+          - call
         default: sms
-          
   EaPhoneVerification:
     type: object
     properties:
       verificationToken:
         type: string
-        
   EaPhoneVerificationCheck:
     type: object
     properties:
