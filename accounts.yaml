@@ -793,10 +793,7 @@ definitions:
     type: object
     required:
       - name
-      - firstName
-      - lastName
       - email
-      - address
     properties:
       name:
         type: string
@@ -831,6 +828,9 @@ definitions:
     required:
       - username
       - phoneVerificationToken
+      - firstName
+      - lastName
+      - address
     allOf:
       - $ref: '#/definitions/EaProfileBase'
       - properties:
