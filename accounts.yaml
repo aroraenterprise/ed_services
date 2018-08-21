@@ -337,7 +337,24 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   /profiles/invite:
-    put:
+    get:
+      tags:
+        - eaProfiles
+      summary: Get all invites that are pending
+      operationId: listProfileInvites
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: All profile Invites
+          schema:
+            $ref: '#/definitions/EaPagedProfileInvite'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
       tags:
         - eaProfiles
       summary: Invite for profile creation
@@ -875,6 +892,17 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaProfileSummary'
+  EaPagedProfileInvite:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      facets:
+        type: object
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaProfileInvite'
   EaPhoneVerificationInput:
     type: object
     required:
