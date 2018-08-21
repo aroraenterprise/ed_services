@@ -353,7 +353,7 @@ paths:
         '200':
           description: Profile invite sent
           schema:
-            $ref: '#/definitions/EaProfile'
+            $ref: '#/definitions/EaProfileInvite'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -776,11 +776,6 @@ definitions:
         type: string
       bio:
         type: string
-      categories:
-        type: array
-        items:
-          type: string
-        maxLength: 30
       address:
         $ref: '#/definitions/EaAddress'
       website:
@@ -803,10 +798,24 @@ definitions:
             type: string
           phoneVerificationToken:
             type: string
+          categories:
+            type: array
+            items:
+              type: string
+            maxLength: 30
   EaProfileInvite:
     type: object
+    required:
+      - invitedBy
     allOf:
       - $ref: '#/definitions/EaProfileBase'
+      - properties:
+          phone:
+            type: string
+          invitedBy:
+            type: string
+          invitedFor:
+            type: string
   EaProfile:
     type: object
     allOf:
