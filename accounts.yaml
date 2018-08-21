@@ -198,6 +198,29 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/get-multi-invites':
+    get:
+      tags:
+        - eaProfiles
+      summary: Get Multiple Profile Invites
+      operationId: getMultipleInvites
+      parameters:
+        - in: query
+          name: inviteIds
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: List of Invites
+          schema:
+            $ref: '#/definitions/EaPagedProfileInvite'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/profiles/{profileId}':
     parameters:
       - $ref: '#/parameters/profileId'
