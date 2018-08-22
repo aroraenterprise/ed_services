@@ -1165,14 +1165,14 @@ definitions:
     required:
       - name
     allOf:
-      - $ref: '#/definitions/EeStoreProps'
+      - $ref: '#/definitions/EeStoreUpdate'
       - properties:
           name:
             type: string
           description:
             type: string
           
-  EeStoreProps:
+  EeStoreUpdate:
     type: object
     required:
       - currencyCode
@@ -1282,6 +1282,14 @@ definitions:
       - $ref: '#/definitions/EeTicketUpdate'
       - properties:
           eventId:
+            type: string
+          eventName:
+            type: string
+          eventPicture:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
             type: string
           totalSold:
             type: integer
