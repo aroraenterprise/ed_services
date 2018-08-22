@@ -175,7 +175,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/get-multi':
+  /profiles/get-multi:
     get:
       tags:
         - eaProfiles
@@ -198,7 +198,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/get-multi-invites':
+  /profiles/get-multi-invites:
     get:
       tags:
         - eaProfiles
@@ -279,7 +279,7 @@ paths:
           description: Profile not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/categories':
+  /profiles/categories:
     get:
       tags:
         - eaProfiles
@@ -831,6 +831,7 @@ definitions:
       - firstName
       - lastName
       - address
+      - agreeTerms
     allOf:
       - $ref: '#/definitions/EaProfileBase'
       - properties:
@@ -843,6 +844,10 @@ definitions:
             items:
               type: string
             maxLength: 30
+          agreeTerms:
+            type: string
+            enum:
+              - v1
   EaProfileInvite:
     type: object
     required:
@@ -862,6 +867,11 @@ definitions:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaProfileBase'
       - properties:
+          categories:
+            type: array
+            items:
+              type: string
+            maxLength: 30
           phone:
             type: string
           location:
@@ -882,7 +892,12 @@ definitions:
     properties:
       status:
         type: string
-        enum: [Pending Review, In Review, Approved, Banned, Suspended]
+        enum:
+          - Pending Review
+          - In Review
+          - Approved
+          - Banned
+          - Suspended
       message:
         type: string
   EaProfileSummary:
@@ -975,8 +990,7 @@ definitions:
               type: string
             count:
               type: integer
-      exhaustiveFacetsCount: 
+      exhaustiveFacetsCount:
         type: boolean
       processingTimeMS:
         type: integer
-    

@@ -8,7 +8,7 @@ info:
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: 'events-dot-edropin-play.appspot.com'
+host: events-dot-edropin-play.appspot.com
 basePath: /
 tags:
   - name: eeEvents
@@ -38,8 +38,7 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
-  ### Events
-  '/events':
+  /events:
     get:
       tags:
         - eeEvents
@@ -55,10 +54,10 @@ paths:
           description: Events
           schema:
             $ref: '#/definitions/EePagedEvent'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     post:
@@ -173,7 +172,25 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-
+  '/events/categories':
+    get:
+      tags:
+        - eeEvents
+      summary: Get Event Categories
+      operationId: getEventCategories
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Categories
+          schema:
+            $ref: '#/definitions/EeFacetSearch'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/events/search':
     get:
       tags:
@@ -196,7 +213,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   '/events/{eventId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -210,7 +226,7 @@ paths:
         '200':
           description: Permissions for account
           schema:
-            $ref: "#/definitions/EePermission"
+            $ref: '#/definitions/EePermission'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -287,7 +303,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  ### End of Events
   '/events/{eventId}/profiles':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -333,12 +348,12 @@ paths:
           description: Event Profile
           schema:
             $ref: '#/definitions/EeEventProfile'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Event not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
@@ -351,15 +366,14 @@ paths:
           description: Removed profile
           schema:
             $ref: '#/definitions/EeSuccess'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Event not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   '/events/{eventId}/courses':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -384,7 +398,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   '/events/{eventId}/courses/{courseId}':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -406,12 +419,12 @@ paths:
           description: Event Course
           schema:
             $ref: '#/definitions/EeEventCourse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Event not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
@@ -424,16 +437,14 @@ paths:
           description: Removed course
           schema:
             $ref: '#/definitions/EeSuccess'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Event not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
-  ### Event Tickets
   '/events/{eventId}/tickets':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -481,13 +492,12 @@ paths:
           description: Event Ticket added
           schema:
             $ref: '#/definitions/EeTicket'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
   '/tickets/{ticketId}':
     parameters:
       - $ref: '#/parameters/ticketId'
@@ -555,7 +565,7 @@ paths:
           description: Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/tickets/generate-claim':
+  /tickets/generate-claim:
     post:
       tags:
         - eeEventTickets
@@ -567,7 +577,7 @@ paths:
           required: true
         - in: body
           name: subData
-          description: 'Base64 encoded message'
+          description: Base64 encoded message
           required: true
           schema:
             $ref: '#/definitions/EePubSubMessage'
@@ -581,9 +591,7 @@ paths:
         '400':
           description: Invalid ID supplied
         '500':
-          $ref: '#/responses/Default500ErrorResponse' 
-  ### End of Tickets
-  
+          $ref: '#/responses/Default500ErrorResponse'
   '/events/{eventId}/attendees':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -602,10 +610,10 @@ paths:
           description: Attendees for the event
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     post:
@@ -695,8 +703,7 @@ paths:
           description: Event Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/attendees/claim':
+  /attendees/claim:
     parameters:
       - in: query
         name: code
@@ -815,7 +822,6 @@ parameters:
     description: Ticket Id
     type: string
     required: true
-    
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
@@ -829,7 +835,6 @@ responses:
       WWW_Authenticate:
         type: string
 definitions:
-  # Extendable Models
   EeBaseId:
     type: object
     properties:
@@ -844,7 +849,6 @@ definitions:
       version:
         type: string
         readOnly: true
-
   EePagination:
     type: object
     properties:
@@ -856,9 +860,6 @@ definitions:
       total:
         type: integer
         format: int32
-  ### End Extendable Models
-  
-  ### Components
   EeDefaultError:
     required:
       - code
@@ -869,7 +870,6 @@ definitions:
         format: int32
       message:
         type: string
-  
   EeAddress:
     type: object
     properties:
@@ -889,7 +889,6 @@ definitions:
         type: string
       _geoloc:
         $ref: '#/definitions/EeGeoloc'
-        
   EeGeoloc:
     type: object
     properties:
@@ -899,10 +898,6 @@ definitions:
       lng:
         type: number
         format: float
-  
-  ### Permissions
-  
-  ### Permissions
   EePermission:
     type: object
     properties:
@@ -939,8 +934,6 @@ definitions:
     properties:
       hasPermission:
         type: boolean
-  ### End Permissions
-  
   EeSuccess:
     type: object
     properties:
@@ -948,20 +941,17 @@ definitions:
         type: boolean
       message:
         type: object
-  
   EeProfile:
     type: object
     properties:
       id:
         type: string
-      name: 
+      name:
         type: string
       location:
         type: string
       profileType:
         type: string
-
-  ### Course
   EeCourse:
     type: object
     properties:
@@ -977,8 +967,6 @@ definitions:
         type: string
       bio:
         type: string
-
-  ### Event
   EeEventUpdate:
     type: object
     required:
@@ -987,6 +975,7 @@ definitions:
       - startTimestamp
       - endTimestamp
       - timezone
+      - agreeTerms
     properties:
       organizerId:
         type: string
@@ -1035,7 +1024,10 @@ definitions:
         $ref: '#/definitions/EeAddress'
       policy:
         type: string
-        
+      agreeTerms:
+        type: string
+        enum:
+          - v1
   EeEvent:
     type: object
     allOf:
@@ -1072,7 +1064,6 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeTicketSummary'
-            
   EeTicketSummary:
     type: object
     properties:
@@ -1083,8 +1074,6 @@ definitions:
       retailPrice:
         type: integer
         format: int32
-      
-          
   EePagedEvent:
     type: object
     properties:
@@ -1096,7 +1085,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
-  
   EeEventProfileUpdate:
     type: object
     properties:
@@ -1106,7 +1094,6 @@ definitions:
           type: string
       isInvited:
         type: boolean
-        
   EeEventProfile:
     type: object
     properties:
@@ -1120,7 +1107,6 @@ definitions:
         type: boolean
       accepted:
         type: boolean
-        
   EePagedEventProfile:
     type: object
     properties:
@@ -1130,7 +1116,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventProfile'
-  
   EeEventCourseUpdate:
     type: object
     properties:
@@ -1147,7 +1132,6 @@ definitions:
               type: string
             ticketName:
               type: string
-        
   EeEventCourse:
     type: object
     properties:
@@ -1166,7 +1150,6 @@ definitions:
               type: string
             ticketName:
               type: string
-          
   EePagedEventCourse:
     type: object
     properties:
@@ -1176,52 +1159,90 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventCourse'
-  ### End Event
   
-  ### Ticket
   EeTicketUpdate:
     type: object
     required:
-      - currencyCode
       - name
+    allOf:
+      - $ref: '#/definitions/EeStoreProps'
+      - properties:
+          name:
+            type: string
+          description:
+            type: string
+          
+  EeStoreProps:
+    type: object
+    required:
+      - currencyCode
       - totalInventory
-      - retailPrice
+      - price
     properties:
-      name:
-        type: string
-      retailPrice:
-        type: integer
-        format: int32
       discounts:
         type: array
         items:
-          $ref: '#/definitions/EeTicketDiscount'
+          $ref: '#/definitions/EeDiscount'
       currencyCode:
         type: string
       totalInventory:
         type: integer
         format: int32
       conflicts:
-        type: object
-      description:
-        type: string
-      contentPolicy:
-        type: string
-      # refundPolicy:
-      #   type: string
-      # refundCategories:
-      #   type: array
-      #   items:
-      #     $ref: '#/definitions/EeRefund'
-      status:
-        type: string
-        enum: [open, closed, soldOut]
+        type: array
+        items:
+          $ref: '#/definitions/EeConflict'
       startSaleTimestamp:
         type: integer
       endSaleTimestamp:
         type: integer
-
-  EeTicketDiscount:
+      policy:
+        $ref: '#/definitions/EePolicy'
+      refunds:
+        type: array
+        items:
+          $ref: '#/definitions/EeRefund'
+      noShowFee:
+        type: integer
+      status:
+        type: string
+        enum:
+          - open
+          - closed
+          - soldOut
+      price:
+        type: integer
+        format: int32
+        
+  EeRefund:
+    type: object
+    required:
+      - startTimestamp
+      - endTimestamp
+      - refundAmount
+    properties:
+      startTimestamp:
+        type: integer
+      endTimestamp:
+        type: integer
+      refundAmount:
+        type: integer
+        
+  EePolicy:
+    type: object
+    required:
+      - policyId
+      - text
+    properties:
+      policyId:
+        type: string
+      text:
+        type: string
+      
+  EeConflict: 
+    type: object
+    
+  EeDiscount:
     type: object
     required:
       - discountType
@@ -1229,7 +1250,10 @@ definitions:
     properties:
       discountType:
         type: string
-        enum: [limitedTime, membership, referralCode]
+        enum:
+          - limitedTime
+          - membership
+          - referralCode
       discountPrice:
         type: integer
         format: int32
@@ -1251,20 +1275,6 @@ definitions:
           maxUsage:
             type: integer
             format: int32
-  
-  # EeRefund:
-  #   type: object
-  #   properties:
-  #     startTimestamp:
-  #       type: integer
-  #       format: int32
-  #     endTimestamp:
-  #       type: integer
-  #       format: int32
-  #     refundFeeAmount:
-  #       type: integer
-  #       format: int32
-  
   EeTicket:
     type: object
     allOf:
@@ -1276,7 +1286,6 @@ definitions:
           totalSold:
             type: integer
             format: int32
-            
   EePagedTicket:
     type: object
     properties:
@@ -1286,8 +1295,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeTicket'
-  ### End Event
-  
   EeEventAttendeeUpdate:
     type: object
     required:
@@ -1302,7 +1309,6 @@ definitions:
         type: string
       phone:
         type: string
-  
   EeEventAttendeeClaimUpdate:
     type: object
     required:
@@ -1320,7 +1326,6 @@ definitions:
         type: string
       phone:
         type: string
-  
   EeEventAttendee:
     type: object
     allOf:
@@ -1329,7 +1334,6 @@ definitions:
       - properties:
           orderItemId:
             type: string
-  
   EePagedEventAttendee:
     type: object
     properties:
@@ -1339,7 +1343,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventAttendee'
-  
   EePubSubMessage:
     type: object
     properties:
@@ -1354,3 +1357,21 @@ definitions:
             type: object
           message_id:
             type: string
+  EeFacetSearch:
+    type: object
+    properties:
+      facetHits:
+        type: array
+        items:
+          type: object
+          properties:
+            value:
+              type: string
+            highlighted:
+              type: string
+            count:
+              type: integer
+      exhaustiveFacetsCount:
+        type: boolean
+      processingTimeMS:
+        type: integer

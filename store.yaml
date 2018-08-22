@@ -199,7 +199,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
   '/merchants/{merchantId}/all-permissions':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -222,8 +221,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  
   '/store/{merchantId}/items':
     get:
       parameters:
@@ -245,7 +242,6 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
   '/store/{merchantId}/items/{itemId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -330,7 +326,7 @@ paths:
               $ref: '#/definitions/EsCart'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /cart/{currencyCode}:
+  '/cart/{currencyCode}':
     parameters:
       - $ref: '#/parameters/currencyCode'
     get:
@@ -408,8 +404,8 @@ paths:
           description: Cart Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /cart/{currencyCode}/validate:
-    parameters: 
+  '/cart/{currencyCode}/validate':
+    parameters:
       - $ref: '#/parameters/currencyCode'
     post:
       tags:
@@ -431,8 +427,8 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /cart/{currencyCode}/checkout:
-    parameters: 
+  '/cart/{currencyCode}/checkout':
+    parameters:
       - $ref: '#/parameters/currencyCode'
     post:
       tags:
@@ -523,8 +519,7 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/order-items':
+  /order-items:
     get:
       tags:
         - esOrder
@@ -772,7 +767,6 @@ definitions:
     properties:
       hasPermission:
         type: boolean
-  
   EsFeeStructure:
     type: object
     required:
@@ -815,7 +809,6 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
-  
   EsStoreItemUpdate:
     type: object
     required:
@@ -832,7 +825,7 @@ definitions:
         type: string
       description:
         type: string
-      retailPrice:
+      price:
         type: integer
       totalInventory:
         type: integer
@@ -840,30 +833,13 @@ definitions:
         type: string
       contentPolicy:
         type: string
-      # refundPolicy:
-      #   type: string
-      # refundCategories:
-      #   type: array
-      #   items:
-      #     $ref: '#/definitions/EsRefund'
       status:
         type: string
-        enum: [open, closed, soldOut]
+        enum:
+          - open
+          - closed
+          - soldOut
         default: open
-      
-  # EsRefund:
-  #   type: object
-  #   properties:
-  #     startTimestamp:
-  #       type: integer
-  #       format: int32
-  #     endTimestamp:
-  #       type: integer
-  #       format: int32
-  #     refundFeeAmount:
-  #       type: integer
-  #       format: int32
-  
   EsStoreItem:
     type: object
     allOf:
@@ -882,7 +858,6 @@ definitions:
           active:
             type: boolean
             readOnly: true
-
   EsPagedStoreItem:
     type: object
     properties:
@@ -892,7 +867,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsStoreItem'
-  
   EsCart:
     type: object
     allOf:
@@ -918,16 +892,11 @@ definitions:
           saveForLater:
             additionalProperties:
               $ref: '#/definitions/EsCartItem'
-  
   EsCartItemInput:
     type: object
     properties:
       quantity:
         type: integer
-      # discountCodes:
-      #   type: array
-      #   items:
-      #     type: string
   EsCartItem:
     type: object
     allOf:
@@ -949,14 +918,6 @@ definitions:
             type: integer
           quantity:
             type: integer
-  # EsDiscount:
-  #   type: object
-  #   properties:
-  #     discountCode:
-  #       type: string
-  #     discountPrice:
-  #       type: integer
-  
   EsPaymentInput:
     type: object
     properties:
@@ -968,7 +929,6 @@ definitions:
         type: string
       name:
         type: string
-  
   EsOrderItem:
     type: object
     allOf:
@@ -1006,8 +966,10 @@ definitions:
             type: integer
           status:
             type: string
-            enum: [pending, inProcess, complete]
-  
+            enum:
+              - pending
+              - inProcess
+              - complete
   EsPagedOrderItem:
     type: object
     properties:
@@ -1017,7 +979,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrderItem'
-          
   EsOrder:
     type: object
     allOf:
@@ -1039,13 +1000,15 @@ definitions:
             type: integer
           status:
             type: string
-            enum: [pending, inProcess, complete]
+            enum:
+              - pending
+              - inProcess
+              - complete
           items:
             additionalProperties:
               $ref: '#/definitions/EsCartItem'
           toMerchant:
             type: integer
-
   EsPagedOrder:
     type: object
     properties:
@@ -1055,7 +1018,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrder'
-  
   EsCustomerInput:
     type: object
     required:
@@ -1069,7 +1031,6 @@ definitions:
         type: string
       source:
         type: string
-  
   EsCustomer:
     type: object
     allOf:
