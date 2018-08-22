@@ -875,7 +875,7 @@ definitions:
     properties:
       formatted:
         type: string
-      streetNumberOrBuilding:
+      landmark:
         type: string
       street:
         type: string
