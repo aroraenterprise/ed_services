@@ -930,7 +930,6 @@ definitions:
   EsStoreItem:
     type: object
     allOf:
-      - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsStoreItemUpdate'
       - properties:
           merchantId:
@@ -943,6 +942,15 @@ definitions:
           price:
             type: integer
             format: int32
+          reindexAt:
+            type: array
+            items:
+              type: integer
+              format: int32
+          membershipDiscounts:
+            type: array
+            items:
+              type: string
   EsPagedStoreItem:
     type: object
     properties:
@@ -1047,7 +1055,7 @@ definitions:
             type: integer
           charge:
             type: integer
-          edropinFee:
+          platformFee:
             type: integer
           status:
             type: string
@@ -1081,7 +1089,7 @@ definitions:
             type: integer
           chargeId:
             type: string
-          edropinFee:
+          platformFee:
             type: integer
           status:
             type: string
