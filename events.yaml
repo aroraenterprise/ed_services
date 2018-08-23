@@ -1167,19 +1167,19 @@ definitions:
     required:
       - name
     allOf:
-      - $ref: '#/definitions/EeStoreUpdate'
+      - $ref: '#/definitions/EeStoreItemUpdate'
       - properties:
           name:
             type: string
           description:
             type: string
           
-  EeStoreUpdate:
+  EeStoreItemUpdate:
     type: object
     required:
       - currencyCode
       - totalInventory
-      - price
+      - retailPrice
     properties:
       discounts:
         type: array

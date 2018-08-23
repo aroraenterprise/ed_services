@@ -816,7 +816,7 @@ definitions:
       - itemType
       - totalInventory
       - currencyCode
-      - price
+      - retailPrice
     properties:
       itemType:
         type: string
