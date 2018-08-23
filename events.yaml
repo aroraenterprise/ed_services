@@ -1069,9 +1069,11 @@ definitions:
     properties:
       id:
         type: string
+      merchantId:
+        type: string
       currencyCode:
         type: string
-      retailPrice:
+      price:
         type: integer
         format: int32
   EePagedEvent:
@@ -1210,7 +1212,7 @@ definitions:
           - open
           - closed
           - soldOut
-      price:
+      retailPrice:
         type: integer
         format: int32
         

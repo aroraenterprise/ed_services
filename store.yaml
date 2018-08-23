@@ -826,7 +826,7 @@ definitions:
         type: string
       description:
         type: string
-      price:
+      retailPrice:
         type: integer
         format: int32
       discounts:
@@ -931,13 +931,14 @@ definitions:
       - properties:
           merchantId:
             type: string
-            readOnly: true
           merchantName:
             type: string
-            readOnly: true
           totalSold:
             type: integer
-            readOnly: true
+            format: int32
+          price:
+            type: integer
+            format: int32
   EsPagedStoreItem:
     type: object
     properties:
