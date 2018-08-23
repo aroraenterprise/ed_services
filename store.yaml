@@ -930,6 +930,7 @@ definitions:
   EsStoreItem:
     type: object
     allOf:
+      - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsStoreItemUpdate'
       - properties:
           merchantId:
