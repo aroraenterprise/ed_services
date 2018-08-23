@@ -1204,8 +1204,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeRefund'
-      noShowFee:
-        type: integer
+      fees:
+        type: object
+      extra:
+        type: object
+        properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
       status:
         type: string
         enum:

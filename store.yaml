@@ -852,14 +852,18 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsRefund'
-      noShowFee:
-        type: integer
+      fees:
+        type: object
+      extra:
+        type: object
       status:
         type: string
         enum:
           - open
           - closed
           - soldOut
+      
+        
         
   EsRefund:
     type: object
