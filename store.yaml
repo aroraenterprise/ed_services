@@ -816,6 +816,7 @@ definitions:
       - itemType
       - totalInventory
       - currencyCode
+      - price
     properties:
       itemType:
         type: string
@@ -827,19 +828,101 @@ definitions:
         type: string
       price:
         type: integer
-      totalInventory:
-        type: integer
+        format: int32
+      discounts:
+        type: array
+        items:
+          $ref: '#/definitions/EsDiscount'
       currencyCode:
         type: string
-      contentPolicy:
-        type: string
+      totalInventory:
+        type: integer
+        format: int32
+      conflicts:
+        type: array
+        items:
+          $ref: '#/definitions/EsConflict'
+      startSaleTimestamp:
+        type: integer
+      endSaleTimestamp:
+        type: integer
+      policy:
+        $ref: '#/definitions/EsPolicy'
+      refunds:
+        type: array
+        items:
+          $ref: '#/definitions/EsRefund'
+      noShowFee:
+        type: integer
       status:
         type: string
         enum:
           - open
           - closed
           - soldOut
-        default: open
+        
+  EsRefund:
+    type: object
+    required:
+      - startTimestamp
+      - endTimestamp
+      - refundAmount
+    properties:
+      startTimestamp:
+        type: integer
+      endTimestamp:
+        type: integer
+      refundAmount:
+        type: integer
+        
+  EsPolicy:
+    type: object
+    required:
+      - policyId
+      - text
+    properties:
+      policyId:
+        type: string
+      text:
+        type: string
+      
+  EsConflict: 
+    type: object
+    
+  EsDiscount:
+    type: object
+    required:
+      - discountType
+      - discountPrice
+    properties:
+      discountType:
+        type: string
+        enum:
+          - limitedTime
+          - membership
+          - referralCode
+      discountPrice:
+        type: integer
+        format: int32
+      startTimestamp:
+        type: integer
+        format: int32
+      endTimestamp:
+        type: integer
+        format: int32
+      membershipVerification:
+        type: object
+        properties:
+          name:
+            type: string
+          link:
+            type: string
+          apiKey:
+            type: string
+          maxUsage:
+            type: integer
+            format: int32
+            
   EsStoreItem:
     type: object
     allOf:
@@ -854,9 +937,6 @@ definitions:
             readOnly: true
           totalSold:
             type: integer
-            readOnly: true
-          active:
-            type: boolean
             readOnly: true
   EsPagedStoreItem:
     type: object
