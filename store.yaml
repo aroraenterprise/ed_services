@@ -981,9 +981,11 @@ definitions:
       - $ref: '#/definitions/EsCart'
       - properties:
           items:
+            type: object
             additionalProperties:
               $ref: '#/definitions/EsCartItem'
           saveForLater:
+            type: object
             additionalProperties:
               $ref: '#/definitions/EsCartItem'
   EsCartItemInput:
@@ -1099,6 +1101,7 @@ definitions:
               - inProcess
               - complete
           items:
+            type: object
             additionalProperties:
               $ref: '#/definitions/EsCartItem'
           toMerchant:
