@@ -1177,56 +1177,67 @@ definitions:
   EeStoreItemUpdate:
     type: object
     required:
-      - currencyCode
+      - name
+      - itemType
       - totalInventory
-      - retailPrice
+      - priceStrategy
+      - endSaleTimestamp
     properties:
-      discounts:
-        type: array
-        items:
-          $ref: '#/definitions/EeDiscount'
-      currencyCode:
+      itemType:
         type: string
+      name:
+        type: string
+      picture:
+        type: string
+      description:
+        type: string
+      priceStrategy:
+        type: "array"
+        items:
+          $ref: "#/definitions/EePriceStrategy"
       totalInventory:
         type: integer
         format: int32
-      conflicts:
-        type: array
-        items:
-          $ref: '#/definitions/EeConflict'
       startSaleTimestamp:
         type: integer
       endSaleTimestamp:
         type: integer
       policy:
-        $ref: '#/definitions/EePolicy'
-      refunds:
-        type: array
-        items:
-          $ref: '#/definitions/EeRefund'
-      fees:
-        type: object
+        type: string
       extra:
         type: object
-        properties:
-          eventId:
-            type: string
-          eventName:
-            type: string
       status:
         type: string
         enum:
           - open
           - closed
           - soldOut
+  
+  EePriceStrategy:
+    type: object
+    required:
+      - retailPrice
+      - currencyCode
+    properties:
       retailPrice:
         type: integer
         format: int32
+      currencyCode:
+        type: string
+      discounts:
+        type: array
+        items:
+          $ref: '#/definitions/EeDiscount'
+      refunds:
+        type: array
+        items:
+          $ref: '#/definitions/EeRefund'
+      fees:
+        type: object
         
   EeRefund:
     type: object
     required:
-      - startTimestamp
       - endTimestamp
       - refundAmount
     properties:
@@ -1234,35 +1245,23 @@ definitions:
         type: integer
       endTimestamp:
         type: integer
-      refundAmount:
+      refundDeduction:
         type: integer
-        
-  EePolicy:
-    type: object
-    required:
-      - policyId
-      - text
-    properties:
-      policyId:
-        type: string
-      text:
-        type: string
-      
-  EeConflict: 
-    type: object
     
   EeDiscount:
     type: object
     required:
       - discountType
       - discountPrice
+      - endTimestamp
     properties:
       discountType:
         type: string
         enum:
           - limitedTime
-          - membership
           - referralCode
+      referralCode:
+        type: string
       discountPrice:
         type: integer
         format: int32
@@ -1272,18 +1271,7 @@ definitions:
       endTimestamp:
         type: integer
         format: int32
-      membershipVerification:
-        type: object
-        properties:
-          name:
-            type: string
-          link:
-            type: string
-          apiKey:
-            type: string
-          maxUsage:
-            type: integer
-            format: int32
+        
   EeTicket:
     type: object
     allOf:
