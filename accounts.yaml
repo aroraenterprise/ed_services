@@ -909,25 +909,6 @@ definitions:
           - Suspended
       message:
         type: string
-  EaProfileSummary:
-    type: object
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-      picture:
-        type: string
-      categories:
-        type: array
-        items:
-          type: string
-      location:
-        type: string
-      _geoloc:
-        $ref: '#/definitions/EaGeoloc'
-      inviteFlag:
-        type: boolean
   EaPagedProfile:
     type: object
     properties:
@@ -938,7 +919,7 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/EaProfileSummary'
+          $ref: '#/definitions/EaProfile'
   EaPagedProfileInvite:
     type: object
     properties:
