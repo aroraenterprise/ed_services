@@ -1178,13 +1178,10 @@ definitions:
     type: object
     required:
       - name
-      - itemType
       - totalInventory
       - priceStrategy
       - endSaleTimestamp
     properties:
-      itemType:
-        type: string
       name:
         type: string
       picture:

@@ -827,7 +827,9 @@ definitions:
       description:
         type: string
       priceStrategy:
-        $ref: '#/definitions/EsPriceStrategy'
+        type: array
+        items:
+          $ref: '#/definitions/EsPriceStrategy'
       totalInventory:
         type: integer
         format: int32
