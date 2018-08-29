@@ -815,8 +815,8 @@ definitions:
       - name
       - itemType
       - totalInventory
-      - currencyCode
-      - retailPrice
+      - priceStrategy
+      - endSaleTimestamp
     properties:
       itemType:
         type: string
@@ -826,34 +826,17 @@ definitions:
         type: string
       description:
         type: string
-      retailPrice:
-        type: integer
-        format: int32
-      discounts:
-        type: array
-        items:
-          $ref: '#/definitions/EsDiscount'
-      currencyCode:
-        type: string
+      priceStrategy:
+        $ref: '#/definitions/EsPriceStrategy'
       totalInventory:
         type: integer
         format: int32
-      conflicts:
-        type: array
-        items:
-          $ref: '#/definitions/EsConflict'
       startSaleTimestamp:
         type: integer
       endSaleTimestamp:
         type: integer
       policy:
-        $ref: '#/definitions/EsPolicy'
-      refunds:
-        type: array
-        items:
-          $ref: '#/definitions/EsRefund'
-      fees:
-        type: object
+        type: string
       extra:
         type: object
       status:
@@ -862,13 +845,33 @@ definitions:
           - open
           - closed
           - soldOut
+  EsPriceStrategy:
+    type: object
+    required:
+      - retailPrice
+      - currencyCode
+    properties:
+      retailPrice:
+        type: integer
+        format: int32
+      currencyCode:
+        type: string
+      discounts:
+        type: array
+        items:
+          $ref: '#/definitions/EsDiscount'
+      refunds:
+        type: array
+        items:
+          $ref: '#/definitions/EsRefund'
+      fees:
+        type: object
       
         
         
   EsRefund:
     type: object
     required:
-      - startTimestamp
       - endTimestamp
       - refundAmount
     properties:
@@ -876,34 +879,20 @@ definitions:
         type: integer
       endTimestamp:
         type: integer
-      refundAmount:
+      refundDeduction:
         type: integer
-        
-  EsPolicy:
-    type: object
-    required:
-      - policyId
-      - text
-    properties:
-      policyId:
-        type: string
-      text:
-        type: string
-      
-  EsConflict: 
-    type: object
     
   EsDiscount:
     type: object
     required:
       - discountType
       - discountPrice
+      - endTimestamp
     properties:
       discountType:
         type: string
         enum:
           - limitedTime
-          - membership
           - referralCode
       discountPrice:
         type: integer
@@ -914,18 +903,6 @@ definitions:
       endTimestamp:
         type: integer
         format: int32
-      membershipVerification:
-        type: object
-        properties:
-          name:
-            type: string
-          link:
-            type: string
-          apiKey:
-            type: string
-          maxUsage:
-            type: integer
-            format: int32
             
   EsStoreItem:
     type: object
@@ -940,18 +917,28 @@ definitions:
           totalSold:
             type: integer
             format: int32
-          price:
-            type: integer
-            format: int32
-          reindexAt:
+          priceSummary:
             type: array
             items:
-              type: integer
-              format: int32
-          membershipDiscounts:
-            type: array
-            items:
-              type: string
+              $ref: '#/definitions/EsPriceSummary'
+              
+  EsPriceSummary:
+    type: object
+    properties:
+      currencyCode:
+        type: string
+      price:
+        type: integer
+        format: int32
+      discounts:
+        type: array
+        items:
+          type: string
+      membershipDiscounts:
+        type: array
+        items: 
+          type: string
+  
   EsPagedStoreItem:
     type: object
     properties:
