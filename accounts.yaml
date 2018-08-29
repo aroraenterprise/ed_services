@@ -141,6 +141,7 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/enhanced'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -229,6 +230,8 @@ paths:
         - eaProfiles
       summary: Get a profile from the directory
       operationId: getProfile
+      parameters:
+        - $ref: '#/parameters/enhanced'
       responses:
         '200':
           description: Profile
@@ -605,6 +608,12 @@ parameters:
     description: Account Id
     type: string
     required: true
+  enhanced:
+    name: enhanced
+    in: query
+    description: Gives you a more detailed entity but requires admin permissions usually
+    type: boolean
+    required: false
   profileId:
     name: profileId
     in: path
