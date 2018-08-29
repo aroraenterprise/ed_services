@@ -311,6 +311,33 @@ paths:
           description: StoreItem not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/store/get-multi':
+    get:
+      tags:
+        - esStore
+      security:
+        - ClientKey: []
+        - ClientKey: []
+          Authorization: []
+      parameters:
+        - in: query
+          name: storeIds
+          type: array
+          items:
+            type: string
+      summary: Get multip store items from the directory
+      operationId: getMultipleStoreItems
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /cart:
     get:
       tags:
@@ -827,9 +854,9 @@ definitions:
       description:
         type: string
       priceStrategy:
-        type: array
+        type: "array"
         items:
-          $ref: '#/definitions/EsPriceStrategy'
+          $ref: "#/definitions/EsPriceStrategy"
       totalInventory:
         type: integer
         format: int32
@@ -896,6 +923,8 @@ definitions:
         enum:
           - limitedTime
           - referralCode
+      referralCode:
+        type: string
       discountPrice:
         type: integer
         format: int32
