@@ -362,7 +362,7 @@ paths:
           description: Profile not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /profiles/invite:
+  '/profile-invites':
     get:
       tags:
         - eaProfiles
@@ -401,6 +401,64 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profile-invites/{profileId}':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Get a Profile Invite from the directory
+      operationId: getProfileInvite
+      responses:
+        '200':
+          description: Profile Invite
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '404':
+          description: Profile Invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaProfiles
+      summary: Update an existing Profile Invite
+      operationId: updateProfileInvite
+      parameters:
+        - in: body
+          name: profileProps
+          description: Profile Invite object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileUpdate'
+      responses:
+        '200':
+          description: Profile Invite updated
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile Invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eaProfiles
+      summary: Delete an existing Profile Invite
+      operationId: deleteProfileInvite
+      responses:
+        '200':
+          description: Profile Invite deleted
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Profile Invite not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   /profiles/usernamecheck:
