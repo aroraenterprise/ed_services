@@ -391,7 +391,7 @@ paths:
           description: Profile object for invite
           required: true
           schema:
-            $ref: '#/definitions/EaProfileInvite'
+            $ref: '#/definitions/EaProfileInviteUpdate'
       responses:
         '200':
           description: Profile invite sent
@@ -431,7 +431,7 @@ paths:
           description: Profile Invite object that needs to be updated
           required: true
           schema:
-            $ref: '#/definitions/EaProfileUpdate'
+            $ref: '#/definitions/EaProfileInviteUpdate'
       responses:
         '200':
           description: Profile Invite updated
@@ -915,7 +915,7 @@ definitions:
             type: string
             enum:
               - v1
-  EaProfileInvite:
+  EaProfileInviteUpdate:
     type: object
     required:
       - invitedBy
@@ -928,6 +928,14 @@ definitions:
             type: string
           invitedFor:
             type: string
+  EaProfileInvite:
+    type: object
+    required:
+      - invitedBy
+    allOf:
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaProfileInviteUpdate'
+
   EaProfile:
     type: object
     allOf:
