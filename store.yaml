@@ -338,28 +338,14 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /cart:
-    get:
-      tags:
-        - esCart
-      summary: Get all user carts (all currency codes)
-      operationId: listAllCarts
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/EsCart'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+
   '/cart/{currencyCode}':
     parameters:
       - $ref: '#/parameters/currencyCode'
     get:
       tags:
         - esCart
-      summary: Get the users cart for currency code
+      summary: Get the users active cart for currency code
       operationId: getCartForCurrencyCode
       responses:
         '200':
@@ -384,14 +370,16 @@ paths:
           description: Cart not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/cart/upsert/merchants/{merchantId}/items/{itemId}':
+  
+  '/cart/{currencyCode}/addItem/{merchantId}/{itemId}':
     parameters:
+      - $ref: '#/parameters/currencyCode'
       - $ref: '#/parameters/merchantId'
       - $ref: '#/parameters/itemId'
     put:
       tags:
         - esCart
-      summary: Upsert item to cart (Item will go into the right currency cart)
+      summary: Upsert item to cart
       operationId: upsertCartItem
       parameters:
         - in: body
@@ -486,6 +474,7 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
   '/merchants/{merchantId}/orders':
     get:
       tags:
@@ -668,6 +657,12 @@ parameters:
     name: accountId
     in: path
     description: Account Id
+    type: string
+    required: true
+  cartId:
+    name: cartId
+    in: path
+    description: Cart Id
     type: string
     required: true
   customerId:
