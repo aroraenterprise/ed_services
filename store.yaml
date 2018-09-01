@@ -371,7 +371,7 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/cart/{currencyCode}/addItem/{merchantId}/{itemId}':
+  '/cart/{currencyCode}/items/{merchantId}/{itemId}':
     parameters:
       - $ref: '#/parameters/currencyCode'
       - $ref: '#/parameters/merchantId'
@@ -580,11 +580,12 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
   /customers:
     get:
       tags:
         - esCustomers
-      summary: Get the users customer information
+      summary: Get the users current customer information
       operationId: getUserCustomer
       responses:
         '200':
@@ -595,15 +596,15 @@ paths:
               $ref: '#/definitions/EsCustomer'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-    post:
+    put:
       tags:
         - esCustomers
-      summary: Create a customer
-      operationId: addCustomer
+      summary: Update a customer
+      operationId: updateCustomer
       parameters:
         - in: body
-          name: paymentProps
-          description: Payment props for checkout
+          name: customerProps
+          description: Customer input
           required: true
           schema:
             $ref: '#/definitions/EsCustomerInput'
@@ -618,9 +619,34 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/customers/{customerId}':
+  '/customers/payment-methods':
+    post:
+      tags:
+        - esCustomers
+      summary: Add Payment method for customer
+      operationId: addPaymentMethod
+      parameters:
+        - in: body
+          name: paymentProps
+          description: Payment props for checkout
+          required: true
+          schema:
+            $ref: '#/definitions/EsPaymentInput'
+      responses:
+        '200':
+          description: A new Customer
+          schema:
+            $ref: '#/definitions/EsPaymentMethod'
+        '400':
+          description: Invalid attributes
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/customers/payment-methods/{paymentId}':
     parameters:
-      - $ref: '#/parameters/customerId'
+      - $ref: '#/parameters/paymentId'
     delete:
       tags:
         - esCustomers
@@ -665,10 +691,10 @@ parameters:
     description: Cart Id
     type: string
     required: true
-  customerId:
-    name: customerId
+  paymentId:
+    name: paymentId
     in: path
-    description: Customer Id
+    description: Payment Method Id
     type: string
     required: true
   merchantId:
@@ -1027,17 +1053,36 @@ definitions:
             type: integer
           quantity:
             type: integer
+  
   EsPaymentInput:
     type: object
+    required:
+      - source
+      - email
+      - name
     properties:
-      customerId:
-        type: string
       source:
         type: string
       email:
         type: string
       name:
         type: string
+  
+  EsPaymentMethod:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          last4:
+            type: string
+          email:
+            type: string
+          name:
+            type: string
+  
+  
+  
+  
   EsOrderItem:
     type: object
     allOf:
@@ -1131,24 +1176,22 @@ definitions:
   EsCustomerInput:
     type: object
     required:
-      - name
-      - email
-      - source
+      - defaultCurrency
     properties:
+      defaultCurrency:
+        type: string
+        enum: [cad, usd]
+      lastCurrency:
+        type: string
+        enum: [cad, usd]
+      defaultPaymentId:
+        type: string
       name:
         type: string
       email:
-        type: string
-      source:
         type: string
   EsCustomer:
     type: object
     allOf:
       - $ref: '#/definitions/EsBaseId'
-      - properties:
-          name:
-            type: string
-          email:
-            type: string
-          stripe:
-            type: object
+      - $ref: '#/definitions/EsCustomerInput'
