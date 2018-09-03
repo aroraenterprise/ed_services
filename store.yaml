@@ -724,7 +724,9 @@ parameters:
     in: path
     description: Currency Code
     type: string
-    enum: [cad, usd]
+    enum: 
+      - cad
+      - usd
     required: true
 responses:
   Default500ErrorResponse:
