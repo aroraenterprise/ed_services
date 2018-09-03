@@ -351,7 +351,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsCartDetail'
+            $ref: '#/definitions/EsCart'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
@@ -363,7 +363,7 @@ paths:
         '204':
           description: Cart deleted
           schema:
-            $ref: '#/definitions/EsCartDetail'
+            $ref: '#/definitions/EsCart'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
@@ -392,7 +392,7 @@ paths:
         '200':
           description: Cart Item upserted
           schema:
-            $ref: '#/definitions/EsCartDetail'
+            $ref: '#/definitions/EsCart'
         '400':
           description: Invalid ID supplied
         '401':
@@ -412,7 +412,7 @@ paths:
         '204':
           description: Cart Item deleted
           schema:
-            $ref: '#/definitions/EsCartDetail'
+            $ref: '#/definitions/EsCart'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
@@ -431,7 +431,7 @@ paths:
         '200':
           description: Cart Item validated
           schema:
-            $ref: '#/definitions/EsCartDetail'
+            $ref: '#/definitions/EsCart'
         '400':
           description: Invalid ID supplied
         '401':
@@ -535,17 +535,15 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /order-items:
+  '/orders/{orderId}/items':
+    parameters:
+      - $ref: '#/parameters/orderId'
     get:
       tags:
         - esOrder
-      summary: List user order items
+      summary: List order items
       operationId: listOrderItems
       parameters:
-        - in: query
-          name: merchantId
-          required: false
-          type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -726,6 +724,7 @@ parameters:
     in: path
     description: Currency Code
     type: string
+    enum: [cad, usd]
     required: true
 responses:
   Default500ErrorResponse:
@@ -1014,50 +1013,25 @@ definitions:
           subtotal:
             type: integer
             readOnly: true
-  EsCartDetail:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsCart'
-      - properties:
+          validationExpiry:
+            type: integer
           items:
             type: object
             additionalProperties:
-              $ref: '#/definitions/EsCartItem'
+              $ref: '#/definitions/EsOrderItem'
           saveForLater:
             type: object
             additionalProperties:
-              $ref: '#/definitions/EsCartItem'
+              $ref: '#/definitions/EsOrderItem'
   EsCartItemInput:
     type: object
     properties:
       quantity:
         type: integer
-  EsCartItem:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          currencyCode:
-            type: string
-          merchantId:
-            type: string
-          merchantName:
-            type: string
-          itemType:
-            type: string
-          name:
-            type: string
-          picture:
-            type: string
-          price:
-            type: integer
-          quantity:
-            type: integer
   
   EsPaymentInput:
     type: object
     required:
-      - source
       - email
       - name
     properties:
@@ -1067,6 +1041,8 @@ definitions:
         type: string
       name:
         type: string
+      paymentMethodId:
+        type: string 
   
   EsPaymentMethod:
     type: object
@@ -1080,50 +1056,53 @@ definitions:
           name:
             type: string
   
-  
-  
-  
   EsOrderItem:
     type: object
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
+          orderId:
+            type: string
+          storeItemId:
+            type: string
+          chargeId:
+            type: string
+            
           currencyCode:
             type: string
+          name:
+            type: string
+          itemType:
+            type: string
+          description:
+            type: string
+          picture:
+            type: string
+          retailPrice:
+            type: integer
+          status:
+            type: string
+          statusMessage:
+            type: array
+            items:
+              - $ref: '#/definitions/EsStatusMessage'
           merchantId:
             type: string
           merchantName:
             type: string
-          storeItemId:
-            type: string
-          orderId:
-            type: string
-          chargeId:
-            type: string
-          itemType:
-            type: string
-          name:
-            type: string
-          picture:
-            type: string
-          description:
-            type: string
-          contentPolicy:
-            type: string
-          retailPrice:
-            type: integer
           quantity:
-            type: integer
-          charge:
             type: integer
           platformFee:
             type: integer
-          status:
+          subtotal:
+            type: integer
+          sripeFee:
+            type: integer
+          policy:
             type: string
-            enum:
-              - pending
-              - inProcess
-              - complete
+          extra:
+            type: object
+            
   EsPagedOrderItem:
     type: object
     properties:
@@ -1136,7 +1115,7 @@ definitions:
   EsOrder:
     type: object
     allOf:
-      - $ref: '#/definitions/EsCart'
+      - $ref: '#/definitions/EsBaseId'
       - properties:
           currencyCode:
             type: string
@@ -1146,24 +1125,30 @@ definitions:
             type: string
           quantity:
             type: integer
-          charge:
+          stripeFee:
             type: integer
-          chargeId:
-            type: string
           platformFee:
             type: integer
-          status:
+          subtotal:
+            type: integer
+          checkoutStatus:
             type: string
-            enum:
-              - pending
-              - inProcess
-              - complete
+          checkoutStatusMessages:
+            type: array
+            items:
+              - $ref: '#/definitions/EsStatusMessage'
           items:
             type: object
             additionalProperties:
-              $ref: '#/definitions/EsCartItem'
-          toMerchant:
-            type: integer
+              $ref: '#/definitions/EsOrderItem'
+  EsStatusMessage:
+    type: object
+    properties:
+      timestamp:
+        type: integer
+      message:
+        type: string
+  
   EsPagedOrder:
     type: object
     properties:
