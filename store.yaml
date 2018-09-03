@@ -1056,6 +1056,14 @@ definitions:
           name:
             type: string
   
+  EsStatusMessage:
+    type: object
+    properties:
+      timestamp:
+        type: integer
+      message:
+        type: string
+        
   EsOrderItem:
     type: object
     allOf:
@@ -1082,10 +1090,10 @@ definitions:
             type: integer
           status:
             type: string
-          statusMessage:
+          statusMessages:
             type: array
             items:
-              - $ref: '#/definitions/EsStatusMessage'
+              $ref: '#/definitions/EsStatusMessage'
           merchantId:
             type: string
           merchantName:
@@ -1136,18 +1144,11 @@ definitions:
           checkoutStatusMessages:
             type: array
             items:
-              - $ref: '#/definitions/EsStatusMessage'
+              $ref: '#/definitions/EsStatusMessage'
           items:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsOrderItem'
-  EsStatusMessage:
-    type: object
-    properties:
-      timestamp:
-        type: integer
-      message:
-        type: string
   
   EsPagedOrder:
     type: object
