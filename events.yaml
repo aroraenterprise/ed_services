@@ -598,7 +598,7 @@ paths:
     get:
       tags:
         - eeEventAttendees
-      summary: List all attendees
+      summary: List all event attendees
       operationId: listAllAttendees
       parameters:
         - $ref: '#/parameters/searchQuery'
@@ -616,6 +616,10 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/tickets/{ticketId}/attendees':
+    parameters:
+      - $ref: '#/parameters/ticketId'
     post:
       tags:
         - eeEventAttendees
@@ -703,7 +707,7 @@ paths:
           description: Event Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /attendees/claim:
+  '/attendees/claim':
     parameters:
       - in: query
         name: code
@@ -1319,9 +1323,15 @@ definitions:
   EeEventAttendeeUpdate:
     type: object
     required:
+      - ticketId
       - name
       - email
     properties:
+      sendClaim:
+        type: boolean
+        default: false
+      ticketId:
+        type: string
       name:
         type: string
       email:
@@ -1354,6 +1364,12 @@ definitions:
       - $ref: '#/definitions/EeEventAttendeeUpdate'
       - properties:
           orderItemId:
+            type: string
+          eventName:
+            type: string
+          eventId:
+            type: string
+          eventPicture:
             type: string
   EePagedEventAttendee:
     type: object
