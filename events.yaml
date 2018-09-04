@@ -742,9 +742,7 @@ paths:
           description: Attendee objects that needs to be updated
           required: true
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EeEventAttendeeClaimUpdate'
+            $ref: '#/definitions/EeEventAttendeeClaimUpdate'
       responses:
         '200':
           description: Attendee updated
@@ -1339,21 +1337,26 @@ definitions:
         type: string
   EeEventAttendeeClaimUpdate:
     type: object
-    required:
-      - id
-      - name
-      - email
     properties:
-      id:
-        type: string
-      name:
-        type: string
-      email:
-        type: string
-      title:
-        type: string
-      phone:
-        type: string
+      attendees:
+        type: array
+        items:
+          type: object
+          required:
+            - id
+            - name
+            - email
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+            title:
+              type: string
+            phone:
+              type: string
   EeEventAttendee:
     type: object
     allOf:
