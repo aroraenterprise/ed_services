@@ -1323,15 +1323,12 @@ definitions:
   EeEventAttendeeUpdate:
     type: object
     required:
-      - ticketId
       - name
       - email
     properties:
       sendClaim:
         type: boolean
         default: false
-      ticketId:
-        type: string
       name:
         type: string
       email:
