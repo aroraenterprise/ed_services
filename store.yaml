@@ -461,9 +461,7 @@ paths:
         '200':
           description: List of orderItems grouped by merchant as Order that the user has checked out
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EsOrder'
+            $ref: '#/definitions/EsCheckout'
         '400':
           description: Invalid ID supplied
         '401':
@@ -1018,10 +1016,51 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsOrderItem'
+          inProcessItems:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsCartItem'
+          merchantErrors:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsDefaultError'
+          failedItems:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsCartItem'
           saveForLater:
             type: object
             additionalProperties:
-              $ref: '#/definitions/EsOrderItem'
+              $ref: '#/definitions/EsCartItem'
+          lockedUntil:
+            type: integer
+          
+  EsCartItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          storeItemId:
+            type: string
+          currencyCode:
+            type: string
+          name:
+            type: string
+          itemType:
+            type: string
+          picture:
+            type: string
+          retailPrice:
+            type: integer
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          quantity:
+            type: integer
+          extra:
+            type: object
+            
   EsCartItemInput:
     type: object
     properties:
@@ -1180,3 +1219,14 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsCustomerInput'
+      
+  EsCheckout:
+    type: object
+    properties:
+      order:
+        $ref: '#/definitions/EsOrder'
+      cart:
+        $ref: '#/definitions/EsCart'
+      error:
+        $ref: '#/definitions/EsDefaultError'
+          
