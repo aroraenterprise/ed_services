@@ -1199,7 +1199,8 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsCartItem'
-  
+          claimCode:
+            type: string
   EsPagedOrder:
     type: object
     properties:
