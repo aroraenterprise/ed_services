@@ -521,6 +521,10 @@ paths:
       tags:
         - esOrder
       summary: Get order by id
+      security:
+        - ClientKey: []
+        - ClientKey: []
+          Authorization: []
       operationId: getOrder
       responses:
         '200':
