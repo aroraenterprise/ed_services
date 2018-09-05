@@ -1186,6 +1186,12 @@ definitions:
           items:
             type: object
             additionalProperties:
+              type: array
+              items:
+                type: string
+          orderItems:
+            type: array
+            items:
               $ref: '#/definitions/EsOrderItem'
   
   EsPagedOrder:
