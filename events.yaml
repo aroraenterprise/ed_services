@@ -816,9 +816,8 @@ parameters:
   searchFacets:
     in: query
     name: facets
-    type: array
-    items:
-      type: string
+    type: string
+    description: 'e.g [profiledIds:edropin],[profileIds:agdontario]'
   ticketId:
     name: ticketId
     in: path
