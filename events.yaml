@@ -1062,6 +1062,11 @@ definitions:
           totalTicketSold:
             type: integer
             format: int32
+          primaryTicket:
+            type: object
+            description: 'currencyCode: ticketId'
+            additionalProperties:
+              type: string
           tickets:
             type: array
             items:
@@ -1071,32 +1076,15 @@ definitions:
     properties:
       id:
         type: string
-      merchantId:
-        type: string
-      merchantName:
-        type: string
-      price:
-        type: array
-        items:
-          $ref: '#/definitions/EePriceSummary'
-  
-  EePriceSummary:
-    type: object
-    properties:
       currencyCode:
         type: string
       price:
         type: integer
         format: int32
-      discounts:
+      memberships:
         type: array
         items:
           type: string
-      membershipDiscounts:
-        type: array
-        items: 
-          type: string
-          
   EePagedEvent:
     type: object
     properties:
