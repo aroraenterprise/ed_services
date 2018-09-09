@@ -565,7 +565,30 @@ paths:
           description: Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  '/tickets/{ticketId}/set-primary/{currencyCode}':
+    parameters:
+      - $ref: '#/parameters/ticketId'
+      - $ref: '#/parameters/currencyCode'
+    put:
+      tags:
+        - eeTickets
+      summary: Update an existing Event
+      operationId: updateEventPrimaryTicket
+      responses:
+        '200':
+          description: Event updated
+          schema:
+            $ref: '#/definitions/EeEvent'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/events/{eventId}/attendees':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -789,6 +812,12 @@ parameters:
     name: attendeeId
     in: path
     description: Attendee Id
+    type: string
+    required: true
+  currencyCode:
+    name: currencyCode
+    in: path
+    description: Currencey code
     type: string
     required: true
   eventId:
