@@ -571,7 +571,7 @@ paths:
       - $ref: '#/parameters/currencyCode'
     put:
       tags:
-        - eeTickets
+        - eeEventTickets
       summary: Update an existing Event
       operationId: updateEventPrimaryTicket
       responses:
