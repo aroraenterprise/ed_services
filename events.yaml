@@ -1105,25 +1105,11 @@ definitions:
             type: object
             description: 'currencyCode: ticketId'
             additionalProperties:
-              type: string
+              $ref: '#/definitions/EePriceSummary'
           tickets:
             type: array
             items:
-              $ref: '#/definitions/EeTicketSummary'
-  EeTicketSummary:
-    type: object
-    properties:
-      id:
-        type: string
-      currencyCode:
-        type: string
-      price:
-        type: integer
-        format: int32
-      memberships:
-        type: array
-        items:
-          type: string
+              $ref: '#/definitions/EePriceSummary'
   EePagedEvent:
     type: object
     properties:
