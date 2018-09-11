@@ -47,6 +47,11 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
+        - in: query
+          name: currencyCode
+          description: Currency Code to fetch event primary tickets from the store for sale
+          required: false
+          type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -1125,6 +1130,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
+      storeItems:
+        type: array
+        items:
+          $ref: '#/definitions/EeStoreItem'
   EeEventProfileUpdate:
     type: object
     properties:
@@ -1248,6 +1257,41 @@ definitions:
           - closed
           - soldOut
   
+  EeStoreItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeStoreItemUpdate'
+      - properties:
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          totalSold:
+            type: integer
+            format: int32
+          priceSummary:
+            type: array
+            items:
+              $ref: '#/definitions/EePriceSummary'
+  
+  EePriceSummary:
+    type: object
+    properties:
+      currencyCode:
+        type: string
+      price:
+        type: integer
+        format: int32
+      discounts:
+        type: array
+        items:
+          type: string
+      membershipDiscounts:
+        type: array
+        items: 
+          type: string
+          
   EePriceStrategy:
     type: object
     required:
