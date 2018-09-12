@@ -1015,7 +1015,6 @@ definitions:
       - name
       - startTimestamp
       - endTimestamp
-      - timezone
       - agreeTerms
     properties:
       organizerId:
