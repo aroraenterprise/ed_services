@@ -890,6 +890,11 @@ definitions:
         type: string
       instagram:
         type: string
+      categories:
+        type: array
+        items:
+          type: string
+        maxLength: 30
   EaProfileUpdate:
     type: object
     required:
@@ -906,11 +911,6 @@ definitions:
             type: string
           phoneVerificationToken:
             type: string
-          categories:
-            type: array
-            items:
-              type: string
-            maxLength: 30
           agreeTerms:
             type: string
             enum:

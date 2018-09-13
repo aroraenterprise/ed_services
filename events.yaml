@@ -123,6 +123,12 @@ paths:
         - eeEvents
       summary: Get a Event from the directory
       operationId: getEvent
+      parameters:
+        - in: query
+          name: currencyCode
+          description: Currency Code to fetch event primary tickets from the store for sale
+          required: false
+          type: string
       responses:
         '200':
           description: OK
