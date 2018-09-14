@@ -660,8 +660,6 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
   
   '/attendees':
-    parameters:
-      - $ref: '#/parameters/eventId'
     get:
       tags:
         - eeEventAttendees
