@@ -1210,6 +1210,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrder'
+      orderItems:
+        type: array
+        items:
+          $ref: '#/definitions/EsOrderItem'
   EsCustomerInput:
     type: object
     required:
@@ -1232,7 +1236,6 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsCustomerInput'
-      
   EsCheckout:
     type: object
     properties:
