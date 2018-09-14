@@ -1187,6 +1187,10 @@ definitions:
               type: array
               items:
                 type: string
+          itemIds:
+            type: array
+            items:
+              type: string
           orderItems:
             type: array
             items:
@@ -1245,4 +1249,3 @@ definitions:
         $ref: '#/definitions/EsCart'
       error:
         $ref: '#/definitions/EsDefaultError'
-          

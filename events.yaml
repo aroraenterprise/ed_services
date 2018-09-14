@@ -658,6 +658,32 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/attendees':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Search user attendees
+      operationId: listUserAttendees
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Get attendees for user
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
   '/attendees/{attendeeId}':
     parameters:
       - $ref: '#/parameters/attendeeId'
