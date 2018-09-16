@@ -1351,7 +1351,6 @@ definitions:
   EeRefund:
     type: object
     required:
-      - endTimestamp
       - refundDeduction
     properties:
       startTimestamp:

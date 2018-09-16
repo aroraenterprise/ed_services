@@ -419,6 +419,36 @@ paths:
           description: Cart Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/cart/{currencyCode}/promotionalCodes':
+    parameters:
+      - $ref: '#/parameters/currencyCode'
+    post:
+      tags:
+        - esCart
+      summary: Promotional codes and memberships can be entered here
+      operationId: verifyAndAddPromotion
+      parameters:
+        - in: body
+          name: cartItemProps
+          description: Cart Item that needs to be upserted
+          required: true
+          schema:
+            $ref: '#/definitions/EsPromotionInput'
+      responses:
+        '200':
+          description: Updated Cart
+          schema:
+            $ref: '#/definitions/EsCart'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Cart Store Item not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/cart/{currencyCode}/validate':
     parameters:
       - $ref: '#/parameters/currencyCode'
@@ -1065,6 +1095,12 @@ definitions:
     properties:
       quantity:
         type: integer
+  
+  EsPromotionInput:
+    type: object
+    properties:
+      referralCode:
+        type: string
   
   EsPaymentInput:
     type: object
