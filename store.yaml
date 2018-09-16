@@ -438,7 +438,7 @@ paths:
         '200':
           description: Updated Cart
           schema:
-            $ref: '#/definitions/EsCart'
+            $ref: '#/definitions/EsCartItemChangeResponse'
         '400':
           description: Invalid ID supplied
         '401':
