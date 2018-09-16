@@ -392,7 +392,7 @@ paths:
         '200':
           description: Cart Item upserted
           schema:
-            $ref: '#/definitions/EsCart'
+            $ref: '#/definitions/EsCartItemChangeResponse'
         '400':
           description: Invalid ID supplied
         '401':
@@ -412,7 +412,7 @@ paths:
         '204':
           description: Cart Item deleted
           schema:
-            $ref: '#/definitions/EsCart'
+            $ref: '#/definitions/EsCartItemChangeResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
@@ -429,8 +429,8 @@ paths:
       operationId: verifyAndAddPromotion
       parameters:
         - in: body
-          name: cartItemProps
-          description: Cart Item that needs to be upserted
+          name: promoProps
+          description: Promotional codes
           required: true
           schema:
             $ref: '#/definitions/EsPromotionInput'
@@ -1031,6 +1031,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsStoreItem'
+  EsCartItemChangeResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+      error:
+        type: object
+      cart:
+        $ref: '#/definitions/EsCart'
   EsCart:
     type: object
     allOf:
@@ -1061,7 +1070,6 @@ definitions:
               $ref: '#/definitions/EsCartItem'
           lockedUntil:
             type: integer
-          
   EsCartItem:
     type: object
     allOf:
