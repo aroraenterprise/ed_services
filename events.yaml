@@ -1249,6 +1249,7 @@ definitions:
       - name
       - totalInventory
       - priceStrategy
+      - startSaleTimestamp
       - endSaleTimestamp
     properties:
       name:
@@ -1351,7 +1352,7 @@ definitions:
     type: object
     required:
       - endTimestamp
-      - refundAmount
+      - refundDeduction
     properties:
       startTimestamp:
         type: integer
@@ -1365,6 +1366,7 @@ definitions:
     required:
       - discountType
       - discountPrice
+      - startTimestamp
       - endTimestamp
     properties:
       discountType:
