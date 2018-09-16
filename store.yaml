@@ -1075,7 +1075,7 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
-          storeItemId:
+          id:
             type: string
           currencyCode:
             type: string
@@ -1087,22 +1087,40 @@ definitions:
             type: string
           retailPrice:
             type: integer
+          salePrice:
+            type: integer
           merchantId:
             type: string
           merchantName:
             type: string
           quantity:
             type: integer
+          subtotal:
+            type: integer
           extra:
             type: object
           error:
             type: string
+          appliedPromotion:
+            $ref: '#/definitions/EsAppliedPromotion'
             
   EsCartItemInput:
     type: object
     properties:
       quantity:
         type: integer
+  
+  EsAppliedPromotion:
+    type: object
+    properties:
+      discountType:
+        type: string
+      discountPrice:
+        type: integer
+      timestamp:
+        type: integer
+      referralCode:
+        type: string
   
   EsPromotionInput:
     type: object
