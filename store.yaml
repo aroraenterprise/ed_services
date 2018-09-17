@@ -996,15 +996,20 @@ definitions:
   
   EsRefundInput:
     type: object
+    required:
+      - reason
+      - agreedDeduction
     properties:
       reason:
         type: string
+        enum:
+          - 'requested_by_customer'
+          - 'duplicate'
+          - 'fraudulent'
+      agreedDeduction:
+        type: integer
       message:
         type: string
-      agreeTerms:
-        type: string
-        enum: 
-          - 'v1'
       
   EsDiscount:
     type: object
