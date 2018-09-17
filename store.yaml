@@ -610,7 +610,34 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  '/order-items/{orderItemId}/start-refund':
+    parameters:
+      - $ref: '#/parameters/orderItemId'
+    post:
+      tags:
+        - esOrder
+      summary: Start the refund process for item
+      parameters:
+        - in: body
+          name: refundProps
+          description: Refund options
+          required: true
+          schema:
+            $ref: '#/definitions/EsRefundInput'
+      operationId: startRefundForItem
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItem'
+        '400':
+          description: Invalid Request
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Order Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /customers:
     get:
       tags:
@@ -737,6 +764,12 @@ parameters:
     name: orderId
     in: path
     description: Order Id
+    type: string
+    required: true
+  orderItemId:
+    name: orderItemId
+    in: path
+    description: Order Item Id
     type: string
     required: true
   itemId:
@@ -947,8 +980,6 @@ definitions:
           $ref: '#/definitions/EsRefund'
       fees:
         type: object
-      
-        
         
   EsRefund:
     type: object
@@ -961,7 +992,19 @@ definitions:
         type: integer
       refundDeduction:
         type: integer
-    
+  
+  EsRefundInput:
+    type: object
+    properties:
+      reason:
+        type: string
+      message:
+        type: string
+      agreeTerms:
+        type: string
+        enum: 
+          - 'v1'
+      
   EsDiscount:
     type: object
     required:
@@ -1174,7 +1217,6 @@ definitions:
             type: string
           chargeId:
             type: string
-            
           currencyCode:
             type: string
           name:
@@ -1203,12 +1245,14 @@ definitions:
             type: integer
           subtotal:
             type: integer
-          sripeFee:
+          stripeFee:
             type: integer
           policy:
             type: string
           extra:
             type: object
+          appliedPromotion:
+            $ref: '#/definitions/EsAppliedPromotion'
             
   EsPagedOrderItem:
     type: object
