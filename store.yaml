@@ -610,8 +610,9 @@ paths:
           description: Store Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/order-items/{orderItemId}/start-refund':
+  '/orders/{orderId}/order-items/{orderItemId}/start-refund':
     parameters:
+      - $ref: '#/parameters/orderId'
       - $ref: '#/parameters/orderItemId'
     post:
       tags:
