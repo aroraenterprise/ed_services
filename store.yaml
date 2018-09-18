@@ -997,9 +997,12 @@ definitions:
   EsRefundInput:
     type: object
     required:
+      - quantity
       - reason
       - agreedDeduction
     properties:
+      quantity:
+        type: integer
       reason:
         type: string
         enum:
@@ -1215,7 +1218,23 @@ definitions:
         type: integer
       message:
         type: string
-        
+  
+  EsOrderItemStatus:
+    type: object
+    properties:
+      id:
+        type: string
+      active:
+        type: boolean
+        default: true
+      refund:
+        type: object
+      isRefunded:
+        type: boolean
+        default: false
+      usedRefundPolicy:
+        $ref: '#/definitions/EsRefund'
+     
   EsOrderItem:
     type: object
     allOf:
@@ -1259,17 +1278,14 @@ definitions:
             type: integer
           policy:
             type: string
+          itemStatus:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItemStatus'
           refunds:
             type: array
             items:
               $ref: '#/definitions/EsRefund'
-          isRefunded:
-            type: boolean
-            default: false
-          refund:
-            type: object
-          userRefundPolicy:
-            $ref: '#/definitions/EsRefund'
           extra:
             type: object
           appliedPromotion:
