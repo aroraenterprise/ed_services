@@ -1232,11 +1232,29 @@ definitions:
       active:
         type: boolean
         default: true
-      refund:
-        type: object
       isRefunded:
         type: boolean
         default: false
+      refundId:
+        type: string
+      
+  EsOrderItemRefund:
+    type: object
+    properties:
+      id:
+        type: string
+      amount:
+        type: integer
+      charge:
+        type: string
+      created:
+        type: integer
+      currency:
+        type: string
+      reason: 
+        type: string
+      status:
+        type: string
       usedRefundPolicy:
         $ref: '#/definitions/EsRefund'
      
@@ -1290,6 +1308,10 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsOrderItemStatus'
+          submittedRefunds:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItemRefund'
           refunds:
             type: array
             items:
@@ -1301,7 +1323,7 @@ definitions:
             type: object
           appliedPromotion:
             $ref: '#/definitions/EsAppliedPromotion'
-            
+          
   EsPagedOrderItem:
     type: object
     properties:
