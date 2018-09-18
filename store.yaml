@@ -30,6 +30,10 @@ securityDefinitions:
     type: apiKey
     in: header
     name: Authorization
+  AuthorizationOptional:
+    type: apiKey
+    in: header
+    name: Authorization
   ClientKey:
     type: apiKey
     in: header
@@ -553,6 +557,7 @@ paths:
       summary: Get order by id
       security:
         - ClientKey: []
+          AuthorizationOptional: []
         - ClientKey: []
           Authorization: []
       operationId: getOrder
