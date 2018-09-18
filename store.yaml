@@ -1150,6 +1150,10 @@ definitions:
             type: object
           error:
             type: string
+          refunds:
+            type: array
+            items:
+              $ref: '#/definitions/EsRefund'
           appliedPromotion:
             $ref: '#/definitions/EsAppliedPromotion'
             
@@ -1255,6 +1259,17 @@ definitions:
             type: integer
           policy:
             type: string
+          refunds:
+            type: array
+            items:
+              $ref: '#/definitions/EsRefund'
+          isRefunded:
+            type: boolean
+            default: false
+          refund:
+            type: object
+          userRefundPolicy:
+            $ref: '#/definitions/EsRefund'
           extra:
             type: object
           appliedPromotion:
