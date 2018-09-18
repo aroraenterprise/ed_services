@@ -1270,6 +1270,9 @@ definitions:
             type: string
           quantity:
             type: integer
+          availableQuantity:
+            type: integer
+            description: Number of items available after refunds
           platformFee:
             type: integer
           subtotal:
@@ -1286,6 +1289,9 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsRefund'
+          refundTotal:
+            type: integer
+            description: Total amount of money refunded for this order item
           extra:
             type: object
           appliedPromotion:
