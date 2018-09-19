@@ -813,9 +813,7 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EeEventAttendee'
+            $ref: '#/definitions/EePagedEventAttendee'
         '400':
           description: Invalid ID supplied
         '404':
@@ -1508,6 +1506,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventAttendee'
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/EeEvent'
   EePubSubMessage:
     type: object
     properties:
