@@ -1487,12 +1487,18 @@ definitions:
       - properties:
           orderItemId:
             type: string
+          orderItemStatusId:
+            type: string
           eventName:
             type: string
           eventId:
             type: string
           eventPicture:
             type: string
+          active:
+            type: boolean
+          isRefunded:
+            type: boolean
   EePagedEventAttendee:
     type: object
     properties:
