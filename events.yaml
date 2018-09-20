@@ -1495,6 +1495,8 @@ definitions:
             type: boolean
           isRefunded:
             type: boolean
+          isClaimed:
+            type: boolean
   EePagedEventAttendee:
     type: object
     properties:
