@@ -836,9 +836,7 @@ paths:
         '200':
           description: Attendee updated
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EeEventAttendee'
+            $ref: '#/definitions/EePagedEventAttendee'
         '400':
           description: Invalid ID supplied
         '401':
