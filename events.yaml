@@ -630,6 +630,31 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  '/events/{eventId}/attendees/export':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventAttendees
+      summary: List all event attendees
+      operationId: exportAttendees
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Export attendees for the event
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/tickets/{ticketId}/attendees':
     parameters:
       - $ref: '#/parameters/ticketId'
