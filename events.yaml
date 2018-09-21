@@ -639,15 +639,12 @@ paths:
       summary: List all event attendees
       operationId: exportAttendees
       parameters:
-        - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: Export attendees for the event
+          description: Export attendees for the event as a csv
           schema:
-            $ref: '#/definitions/EePagedEventAttendee'
+            $ref: '#/definitions/EeCsv'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -1567,3 +1564,10 @@ definitions:
         type: boolean
       processingTimeMS:
         type: integer
+  EeCsv:
+    type: object
+    properties:
+      csv:
+        type: string
+      filename:
+        type: string
