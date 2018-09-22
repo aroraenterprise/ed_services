@@ -1592,11 +1592,16 @@ definitions:
     type: object
     required:
       - name
+      - agreeTerms
     properties:
       name:
         type: string
       description:
         type: string
+      agreeTerms:
+        type: string
+        enum:
+          - v1
   
   EsMembership:
     type: object
