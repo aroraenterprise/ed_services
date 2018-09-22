@@ -21,6 +21,8 @@ tags:
     description: Order items for user
   - name: esCustomers
     description: Customers of eDropin
+  - name: esMemberships
+    description: Memberships managed in eDropin
 schemes:
   - https
 produces:
@@ -724,6 +726,149 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  /memberships:
+    get:
+      tags:
+        - esMemberships
+      summary: Get Memberships
+      operationId: getAllMemberships
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Memberships
+          schema:
+            $ref: '#/definitions/EsPagedMembership'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - esMemberships
+      summary: Create Membership
+      operationId: createMembership
+      parameters:
+        - in: body
+          name: membershipProps
+          description: Membership object that needs to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EsMembershipUpdate'
+      responses:
+        '200':
+          description: Membership created
+          schema:
+            $ref: '#/definitions/EsMembership'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/memberships/{membershipId}':
+    parameters:
+      - $ref: '#/parameters/membershipId'
+    get:
+      tags:
+        - esMemberships
+      summary: Get a membership from eDropin
+      operationId: getMembership
+      responses:
+        '200':
+          description: Membership
+          schema:
+            $ref: '#/definitions/EsMembership'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esMemberships
+      summary: Update an existing membership
+      operationId: updateMembership
+      parameters:
+        - in: body
+          name: membershipProps
+          description: Membership object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EsMembershipUpdate'
+      responses:
+        '200':
+          description: Membership updated
+          schema:
+            $ref: '#/definitions/EsMembership'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esMemberships
+      summary: Delete an existing membership
+      operationId: deleteMembership
+      responses:
+        '200':
+          description: Membership deleted
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/memberships/{membershipId}/members':
+    parameters:
+      - $ref: '#/parameters/membershipId'
+    get:
+      tags:
+        - esMemberships
+      summary: Get members for a membership
+      operationId: getMembers
+      responses:
+        '200':
+          description: Members belonging to this membership
+          schema:
+            $ref: '#/definitions/EsPagedMember'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esMemberships
+      summary: Update an existing membership
+      operationId: updateMembers
+      parameters:
+        - in: body
+          name: memberProps
+          description: Members that need to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EsMembersUpdate'
+      responses:
+        '200':
+          description: Membership updated
+          schema:
+            $ref: '#/definitions/EsMembership'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   limit:
     name: limit
@@ -758,6 +903,12 @@ parameters:
     name: paymentId
     in: path
     description: Payment Method Id
+    type: string
+    required: true
+  membershipId:
+    name: membershipId
+    in: path
+    description: Membership Id
     type: string
     required: true
   merchantId:
@@ -796,6 +947,16 @@ parameters:
     description: Currency Code
     type: string
     required: true
+  searchQuery:
+    in: query
+    name: q
+    type: string
+  searchFacets:
+    in: query
+    name: facets
+    type: array
+    items:
+      type: string
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
@@ -1426,3 +1587,75 @@ definitions:
         $ref: '#/definitions/EsCart'
       error:
         $ref: '#/definitions/EsDefaultError'
+         
+  EsMembershipUpdate:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+  
+  EsMembership:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsMembershipUpdate'
+      - properties:
+          totalMembers:
+            type: integer
+          totalActiveMembers:
+            type: integer
+  
+  EsPagedMembership:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      facets:
+        type: object
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsMembership'
+  
+  EsMember:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      active:
+        type: string
+        
+  EsMembersUpdate:
+    type: object
+    properties:
+      members:
+        type: array
+        items:
+          type: object
+          allOf:
+          - $ref: '#/definitions/EsMember'
+          - properties:
+              action:
+                type: string
+                enum:
+                  - 'delete'
+                  - 'update'
+                default: 'update'
+  
+  EsPagedMember:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsMember'
