@@ -835,6 +835,9 @@ paths:
         - esMemberships
       summary: Get members for a membership
       operationId: getMembers
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Members belonging to this membership
