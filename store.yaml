@@ -1593,8 +1593,11 @@ definitions:
     required:
       - name
       - agreeTerms
+      - organizerId
     properties:
       name:
+        type: string
+      organizerId:
         type: string
       description:
         type: string
