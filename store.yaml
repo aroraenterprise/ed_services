@@ -957,9 +957,9 @@ parameters:
   searchFacets:
     in: query
     name: facets
-    type: array
-    items:
-      type: string
+    type: string
+    description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
+
 responses:
   Default500ErrorResponse:
     description: An unexpected error occured.
