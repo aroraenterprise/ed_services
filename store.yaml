@@ -1639,24 +1639,37 @@ definitions:
       email:
         type: string
       active:
-        type: string
+        type: boolean
+        default: true
         
   EsMembersUpdate:
     type: object
+    required:
+      - members
     properties:
       members:
         type: array
         items:
           type: object
-          allOf:
-          - $ref: '#/definitions/EsMember'
-          - properties:
-              action:
-                type: string
-                enum:
-                  - 'delete'
-                  - 'update'
-                default: 'update'
+          required:
+            - action
+            - memberId
+          properties:
+            action:
+              type: string
+              enum:
+                - 'delete'
+                - 'update'
+              default: 'update'
+            memberId:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+            active:
+              type: boolean
+              default: true
   
   EsPagedMember:
     type: object
