@@ -1194,7 +1194,7 @@ definitions:
       discountType:
         type: string
         enum:
-          - limitedTime
+          - membership
           - referralCode
       referralCode:
         type: string
@@ -1207,6 +1207,10 @@ definitions:
       endTimestamp:
         type: integer
         format: int32
+      membershipId:
+        type: string
+      membershipName:
+        type: string
             
   EsStoreItem:
     type: object
@@ -1346,11 +1350,21 @@ definitions:
         type: integer
       referralCode:
         type: string
+      membershipId:
+        type: string
+      membershipName:
+        type: string
+      memberId:
+        type: string
   
   EsPromotionInput:
     type: object
     properties:
       referralCode:
+        type: string
+      membershipId:
+        type: string
+      memberId:
         type: string
   
   EsPaymentInput:
