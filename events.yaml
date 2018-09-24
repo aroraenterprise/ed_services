@@ -1416,7 +1416,7 @@ definitions:
       discountType:
         type: string
         enum:
-          - limitedTime
+          - membership
           - referralCode
       referralCode:
         type: string
@@ -1429,6 +1429,10 @@ definitions:
       endTimestamp:
         type: integer
         format: int32
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
         
   EeTicket:
     type: object
