@@ -1241,11 +1241,7 @@ definitions:
       discounts:
         type: array
         items:
-          type: string
-      membershipDiscounts:
-        type: array
-        items: 
-          type: string
+          $ref: '#/definitions/EsDiscount'
   
   EsPagedStoreItem:
     type: object
