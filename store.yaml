@@ -863,7 +863,7 @@ paths:
         '200':
           description: Membership updated
           schema:
-            $ref: '#/definitions/EsMembership'
+            $ref: '#/definitions/EsPagedMember'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
