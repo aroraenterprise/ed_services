@@ -1179,13 +1179,12 @@ definitions:
             type: object
             description: 'currencyCode: ticketId'
             additionalProperties:
-              $ref: '#/definitions/EeTicketSummary'
+              type: string
           tickets:
             type: array
             items:
               $ref: '#/definitions/EeTicketSummary'
-          storeItem:
-            $ref: '#/definitions/EeStoreItem'  
+          
   EePagedEvent:
     type: object
     properties:
@@ -1287,16 +1286,19 @@ definitions:
             type: string
           description:
             type: string
-          
+  
   EeStoreItemUpdate:
     type: object
     required:
       - name
+      - itemType
       - totalInventory
       - priceStrategy
       - startSaleTimestamp
       - endSaleTimestamp
     properties:
+      itemType:
+        type: string
       name:
         type: string
       picture:
@@ -1324,7 +1326,6 @@ definitions:
           - open
           - closed
           - soldOut
-  
   EeStoreItem:
     type: object
     allOf:
@@ -1342,35 +1343,7 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EePriceSummary'
-  
-  EePriceSummary:
-    type: object
-    properties:
-      currencyCode:
-        type: string
-      price:
-        type: integer
-        format: int32
-      discounts:
-        type: array
-        items:
-          type: string
-      membershipDiscounts:
-        type: array
-        items: 
-          type: string
-  EeTicketSummary:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EePriceSummary'
-      - properties:
-          id:
-            type: string
-          name:
-            type: string
-          uid:
-            type: string
-          
+              
   EePriceStrategy:
     type: object
     required:
@@ -1386,25 +1359,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeDiscount'
-      refunds:
+      refundPolicies:
         type: array
         items:
-          $ref: '#/definitions/EeRefund'
+          $ref: '#/definitions/EeRefundPolicy'
       fees:
-        type: object
-        
-  EeRefund:
-    type: object
-    required:
-      - refundDeduction
-    properties:
-      startTimestamp:
-        type: integer
-      endTimestamp:
-        type: integer
-      refundDeduction:
-        type: integer
-    
+        type: array
+        items:
+          $ref: '#/definitions/EeFee'
+  
   EeDiscount:
     type: object
     required:
@@ -1434,11 +1397,70 @@ definitions:
       membershipName:
         type: string
         
+  EeRefundPolicy:
+    type: object
+    required:
+      - startTimestamp
+      - endTimestamp
+      - refundDeduction
+    properties:
+      startTimestamp:
+        type: integer
+      endTimestamp:
+        type: integer
+      refundDeduction:
+        type: integer
+        
+  EeFee:
+    type: object
+    required:
+      - feeAmount
+      - reason
+    properties:
+      feeAmount:
+        type: integer
+      reason:
+        type: string
+      description:
+        type: string
+          
+  EePriceSummary:
+    type: object
+    properties:
+      currencyCode:
+        type: string
+      retailPrice:
+        type: integer
+        format: int32
+      adDiscounts:
+        type: array
+        items:
+          $ref: '#/definitions/EeDiscount'
+      refundPolicies:
+        type: array
+        items:
+          $ref: '#/definitions/EeRefundPolicy'
+          
+  
+  EeTicketSummary:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EePriceSummary'
+      - properties:
+          id:
+            type: string
+          name:
+            type: string
+          uid:
+            type: string
+          
+  
   EeTicket:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
       - $ref: '#/definitions/EeTicketUpdate'
+      - $ref: '#/definitions/EeStoreItem'
       - properties:
           eventId:
             type: string
@@ -1453,6 +1475,7 @@ definitions:
           totalSold:
             type: integer
             format: int32
+
   EePagedTicket:
     type: object
     properties:
@@ -1462,6 +1485,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeTicket'
+
   EeEventAttendeeUpdate:
     type: object
     required:
