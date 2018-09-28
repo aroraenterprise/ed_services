@@ -535,12 +535,15 @@ paths:
       summary: Get orders for current user
       parameters:
         - in: query
-          name: merchantId
+          name: orderBy
           required: false
           type: string
+          enum:
+            - 'modified'
+            - 'created'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
-      operationId: listOrders
+      operationId: listUserOrders
       responses:
         '200':
           description: OK
@@ -1144,16 +1147,20 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsDiscount'
-      refunds:
+      refundPolicies:
         type: array
         items:
-          $ref: '#/definitions/EsRefund'
+          $ref: '#/definitions/EsRefundPolicy'
       fees:
-        type: object
+        type: array
+        items:
+          $ref: '#/definitions/EsFee'
         
-  EsRefund:
+  EsRefundPolicy:
     type: object
     required:
+      - startTimestamp
+      - endTimestamp
       - refundDeduction
     properties:
       startTimestamp:
@@ -1162,6 +1169,19 @@ definitions:
         type: integer
       refundDeduction:
         type: integer
+        
+  EsFee:
+    type: object
+    required:
+      - feeAmount
+      - reason
+    properties:
+      feeAmount:
+        type: integer
+      reason:
+        type: string
+      description:
+        type: string
   
   EsRefundInput:
     type: object
@@ -1235,13 +1255,17 @@ definitions:
     properties:
       currencyCode:
         type: string
-      price:
+      retailPrice:
         type: integer
         format: int32
-      discounts:
+      adDiscounts:
         type: array
         items:
           $ref: '#/definitions/EsDiscount'
+      refundPolicies:
+        type: array
+        items:
+          $ref: '#/definitions/EsRefundPolicy'
   
   EsPagedStoreItem:
     type: object
@@ -1322,10 +1346,10 @@ definitions:
             type: object
           error:
             type: string
-          refunds:
+          refundPolicies:
             type: array
             items:
-              $ref: '#/definitions/EsRefund'
+              $ref: '#/definitions/EsRefundPolicy'
           appliedPromotion:
             $ref: '#/definitions/EsAppliedPromotion'
             
@@ -1430,7 +1454,7 @@ definitions:
       status:
         type: string
       usedRefundPolicy:
-        $ref: '#/definitions/EsRefund'
+        $ref: '#/definitions/EsRefundPolicy'
      
   EsOrderItem:
     type: object
@@ -1486,10 +1510,10 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsOrderItemRefund'
-          refunds:
+          refundPolicies:
             type: array
             items:
-              $ref: '#/definitions/EsRefund'
+              $ref: '#/definitions/EsRefundPolicy'
           refundTotal:
             type: integer
             description: Total amount of money refunded for this order item

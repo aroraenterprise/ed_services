@@ -1,0 +1,20 @@
+{
+  "name": "services",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+"cors-demo": "CLOUDSDK_CORE_ACCOUNT=edropin19@gmail.com gsutil cors set cors.json gs://edropin-play.appspot.com"  
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aroraenterprise/ed_services.git"
+  },
+  "author": "Saj Arora <dev@edropin.com> (http://edropin.com)",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/aroraenterprise/ed_services/issues"
+  },
+  "homepage": "https://github.com/aroraenterprise/ed_services#readme"
+}
