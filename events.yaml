@@ -1449,10 +1449,12 @@ definitions:
       - properties:
           id:
             type: string
+            description: 'storeItemId'
           name:
             type: string
           uid:
             type: string
+            description: 'storeItemId-currencyCode'
           
   
   EeTicket:
