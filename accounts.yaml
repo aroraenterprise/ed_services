@@ -841,6 +841,9 @@ definitions:
       bio:
         type: string
         maxLength: 200
+      email:
+        type: string
+
   EaAccount:
     type: object
     allOf:
