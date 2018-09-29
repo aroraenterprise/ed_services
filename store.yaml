@@ -326,6 +326,7 @@ paths:
         - esStore
       security:
         - ClientKey: []
+          AuthorizationOptional: []
         - ClientKey: []
           Authorization: []
       parameters:
@@ -334,6 +335,7 @@ paths:
           type: array
           items:
             type: string
+        - $ref: '#/parameters/enhanced'
       summary: Get multip store items from the directory
       operationId: getMultipleStoreItems
       responses:
