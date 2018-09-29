@@ -259,6 +259,8 @@ paths:
         - ClientKey: []
         - ClientKey: []
           Authorization: []
+      parameters: 
+        - $ref: '#/parameters/enhanced'
       summary: Get a store item from the directory
       operationId: getStoreItem
       responses:
@@ -905,6 +907,12 @@ parameters:
     description: Cart Id
     type: string
     required: true
+  enhanced:
+    name: enhanced
+    in: query
+    description: Gives you a more detailed entity but requires admin permissions usually
+    type: boolean
+    required: false
   paymentId:
     name: paymentId
     in: path
