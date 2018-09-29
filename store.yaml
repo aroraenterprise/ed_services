@@ -1357,6 +1357,10 @@ definitions:
             type: object
           error:
             type: string
+          adDiscounts:
+            type: array
+            items:
+              $ref: '#/definitions/EsDiscount'
           refundPolicies:
             type: array
             items:
