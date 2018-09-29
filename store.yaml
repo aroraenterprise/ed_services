@@ -257,6 +257,7 @@ paths:
         - esStore
       security:
         - ClientKey: []
+          AuthorizationOptional: []
         - ClientKey: []
           Authorization: []
       parameters: 
