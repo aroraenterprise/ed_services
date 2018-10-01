@@ -1505,6 +1505,8 @@ definitions:
         type: string
       phone:
         type: string
+      memberId:
+        type: string
   EeEventAttendeeClaimUpdate:
     type: object
     properties:
