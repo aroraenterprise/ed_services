@@ -1,0 +1,630 @@
+swagger: '2.0'
+info:
+  description: Pre-release contract for eDropin Profile invitation system
+  version: 1.0.0
+  title: eDropin Profile invitation
+  license:
+    name: UNLICENSED
+  contact:
+    name: Saj Arora/Jayde Silva
+    email: dev@edropin.com
+host: localhost:9001
+basePath: /
+tags:
+  - name: eaProfileInvites
+    description: Profile invitations
+  - name: eaProfileTags
+    description: Tag requests, accept and decline
+  - name: eeEventProfileInvites
+    description: Tagging profiles and invites in an event
+  - name: eeEventProfiles
+    description: Manage all the profiles tagged in an event
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    in: header
+    name: Authorization
+  AuthorizationOptional:
+    type: apiKey
+    in: header
+    name: Authorization
+  ClientKey:
+    type: apiKey
+    in: header
+    name: X-Client-Key
+security:
+  - ClientKey: []
+    Authorization: []
+paths:
+  '/profile-invites':
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Paginate over all invitations made by requested user
+      operationId: listProfileInvites
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileInvites
+      summary: Create a new profile invite
+      operationId: createProfileInvite
+      parameters:
+        - in: body
+          name: profileInviteProps
+          description: Profile to invite
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileInviteCreate'
+      responses:
+        '200':
+          description: Profile invite created
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '400':
+          description: Invalid input
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profile-invites/{inviteId}':
+    parameters:
+      - $ref: '#/parameters/inviteId'
+    delete:
+      tags:
+        - eaProfileInvites
+      summary: Archive a profile invitation
+      operationId: archiveProfileInvite
+      responses:
+        '200':
+          description: Archived a profile invitation
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '404':
+          description: Profile Invitation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+
+  '/profile-invites/referral/{referralCode}':
+    parameters:
+      - $ref: '#/parameters/referralCode'
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Get the pre-filled fields for on-boarding an invite
+      operationId: getProfileInviteReferral
+      responses:
+        '200':
+          description: Profile invitation with pre-fillable fields
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileInvites
+      summary: Create a profile from a profile invite
+      operationId: createProfileFromInvite
+      parameters:
+        - in: body
+          name: profileProps
+          description: Information to create profile
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileUpdate'
+      responses:
+        '200':
+          description: Profile created
+          schema:
+            $ref: '#/definitions/EaProfile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/profiles/{profileId}/profile-tags':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eaProfileTags
+      summary: Paginate over all tag requests for the profile
+      operationId: listTagRequests
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of all tag requests
+          schema:
+            $ref: '#/definitions/EaPagedTagRequest'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileTags
+      summary: Request to tag a profile in an entity e.g. Event, Course, etc.
+      operationId: upsertProfileTagRequest
+      parameters:
+        - in: body
+          name: profileTagProps
+          description: Model to create/update a profile tag request
+          required: true
+          schema:
+            $ref: '#/definitions/EaTagRequestCreate'
+      responses:
+        '200':
+          description: Profile tag request updated/created
+          schema:
+            $ref: '#/definitions/EaTagRequest'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/profile-tags/{profileTagId}':
+    parameters:
+      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/profileTagId'
+    put:
+      tags:
+        - eaProfileTags
+      summary: Accept or decline a profile tag request
+      operationId: respondToProfileTagRequest
+      parameters:
+        - in: body
+          name: profileTagProps
+          description: Accept or decline tagging request
+          required: true
+          schema:
+            $ref: '#/definitions/EaTagRespond'
+      responses:
+        '200':
+          description: Profile tag request updated
+          schema:
+            $ref: '#/definitions/EaTagRequest'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/profiles':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventProfiles
+      summary: Get Profiles linked to event
+      operationId: listEventProfiles
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Event Profiles
+          schema:
+            $ref: '#/definitions/EePagedEventProfile'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Event not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/profile-invites/{inviteId}':
+    parameters:
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/inviteId'
+    put:
+      tags:
+        - eeEventProfileInvites
+      summary: Set invited profile role in event
+      operationId: upsertEventProfileInvite
+      parameters:
+        - in: body
+          name: roleProp
+          description: Profile Invite role to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventProfileUpdate'
+      responses:
+        '200':
+          description: Tagged Event Profile
+          schema:
+            $ref: '#/definitions/EeEventProfile'
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventProfileInvites
+      summary: Remove profile invite role from event
+      operationId: removeEventProfileInvite
+      responses:
+        '200':
+          description: Removed profile invite
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Event/Invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+parameters:
+  limit:
+    name: limit
+    in: query
+    description: Number of items returned
+    type: integer
+    format: int32
+    minimum: 0
+    exclusiveMinimum: true
+    maximum: 50
+    exclusiveMaximum: false
+    multipleOf: 10
+    default: 20
+  cursor:
+    name: cursor
+    in: query
+    description: Start Cursor for query
+    type: string
+  eventId:
+    name: eventId
+    in: path
+    description: Event Id
+    type: string
+    required: true
+  profileId:
+    name: profileId
+    in: path
+    description: Profile Id
+    type: string
+    required: true
+  inviteId:
+    name: inviteId
+    in: path
+    description: Profile Invitation Id
+    type: string
+    required: true
+  referralCode:
+    name: referralCode
+    in: path
+    description: Profile invitation referral code
+    type: string
+    required: true
+  profileTagId:
+    name: profileTagId
+    in: path
+    description: Profile Tag Id
+    type: string
+    required: true
+responses:
+  Default500ErrorResponse:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/EaDefaultError'
+  InvalidInputResponse:
+    description: Validation exception
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+definitions:
+  EaAddress:
+    type: object
+    properties:
+      formatted:
+        type: string
+      streetNumberOrBuilding:
+        type: string
+      street:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+      zip:
+        type: string
+      _geoloc:
+        $ref: '#/definitions/EaGeoloc'
+  EaGeoloc:
+    type: object
+    properties:
+      lat:
+        type: number
+        format: float
+      lng:
+        type: number
+        format: float
+        
+  EaBaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      createdOn:
+        type: string
+        readOnly: true
+      modifiedOn:
+        type: string
+        readOnly: true
+  EaDefaultError:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+  EaPagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
+      total:
+        type: integer
+        format: int32
+  EePagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
+      total:
+        type: integer
+        format: int32
+  EeSuccess:
+    type: object
+    properties:
+      success:
+        type: boolean
+      message:
+        type: object
+  EaSuccess:
+    type: object
+    properties:
+      success:
+        type: boolean
+      message:
+        type: object
+  
+  
+  EaProfileInviteCreate:
+    type: object
+    required: 
+      - email
+      - profileType
+      - name
+    properties:
+      email:
+        type: string
+      profileType:
+        type: string
+      name:
+        type: string
+      bio:
+        type: string
+      picture:
+        type: string
+      inviteById:
+        type: string
+      inviteFor:
+        type: string
+        description: e.g. Event Name
+  
+  EaProfileInvite:
+    type: object
+    allOf: 
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaProfileInviteCreate'
+      - properties:
+          inviteName:
+            type: string
+  
+  EaProfileBase:
+    type: object
+    required:
+      - name
+      - email
+    properties:
+      name:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      profileType:
+        type: string
+      picture:
+        type: string
+      videoLink:
+        type: string
+      pictures:
+        type: string
+      bio:
+        type: string
+      address:
+        $ref: '#/definitions/EaAddress'
+      website:
+        type: string
+      facebook:
+        type: string
+      linkedIn:
+        type: string
+      instagram:
+        type: string
+      categories:
+        type: array
+        items:
+          type: string
+        maxLength: 30
+  EaProfileUpdate:
+    type: object
+    required:
+      - username
+      - phoneVerificationToken
+      - firstName
+      - lastName
+      - address
+      - agreeTerms
+    allOf:
+      - $ref: '#/definitions/EaProfileBase'
+      - properties:
+          username:
+            type: string
+          phoneVerificationToken:
+            type: string
+          agreeTerms:
+            type: string
+            enum:
+              - v1
+  EaProfile:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaProfileBase'
+      - properties:
+          categories:
+            type: array
+            items:
+              type: string
+            maxLength: 30
+          phone:
+            type: string
+          location:
+            type: string
+          isEmailVerified:
+            type: boolean
+          status:
+            type: string
+          statusMessages:
+            type: array
+            items:
+              type: object
+          isInvited:
+            type: boolean
+              
+  EeEventProfileInvite:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      location:
+        type: string
+      profileType:
+        type: string
+  
+  EaTagRequestCreate:
+    type: object
+    required:
+      - itemType
+      - profileId
+    properties:
+      itemType:
+        type: string
+        enum:
+          - Event
+      profileId:
+        type: string
+        description: Invited by profileId
+      extra:
+        type: object
+        description: key/value for the tagging entity (e.g. eventId/eventName)
+    
+  EaTagRequest:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaTagRequestCreate'
+      - properties:
+          profileName:
+            type: string
+          acceptedWhen: 
+            type: number
+          declinedWhen:
+            type: number
+  
+  EaTagRespond:
+    type: object
+    properties:
+      acceptRequest:
+        type: boolean
+        default: false
+        
+  EaPagedTagRequest:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaTagRequest'
+    
+  EeProfile:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      location:
+        type: string
+      bio:
+        type: string
+      profileType:
+        type: string
+        
+  EeEventProfileUpdate:
+    type: object
+    properties:
+      roles:
+        type: array
+        items:
+          type: string
+      isInvited:
+        type: boolean
+  
+  EeEventProfile:
+    type: object
+    properties:
+      profile:
+        $ref: '#/definitions/EeProfile'
+      roles:
+        type: array
+        items:
+          type: string
+      isInvited:
+        type: boolean
+      acceptedWhen:
+        type: number
+      declinedWhen:
+        type: number
+
+  EePagedEventProfile:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventProfile'
