@@ -15,6 +15,8 @@ tags:
     description: Events
   - name: eeEventProfiles
     description: Profiles linked to events
+  - name: eeEventProfileInvites
+    description: Tagging profiles and invites in an event
   - name: eeEventCourses
     description: Courses linked to events
   - name: eeEventTickets
@@ -390,6 +392,47 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+          
+  '/events/{eventId}/profile-invites/{inviteId}':
+    parameters:
+      - $ref: '#/parameters/eventId'
+      - $ref: '#/parameters/inviteId'
+    put:
+      tags:
+        - eeEventProfileInvites
+      summary: Set invited profile role in event
+      operationId: upsertEventProfileInvite
+      parameters:
+        - in: body
+          name: roleProp
+          description: Profile Invite role to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventProfileUpdate'
+      responses:
+        '200':
+          description: Tagged Event Profile
+          schema:
+            $ref: '#/definitions/EeEventProfile'
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventProfileInvites
+      summary: Remove profile invite role from event
+      operationId: removeEventProfileInvite
+      responses:
+        '200':
+          description: Removed profile invite
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Event/Invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/events/{eventId}/courses':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -923,6 +966,12 @@ parameters:
     description: Course Id
     type: string
     required: true
+  inviteId:
+    name: inviteId
+    in: path
+    description: Invite Id
+    type: string
+    required: true
   searchQuery:
     in: query
     name: q
@@ -1068,6 +1117,9 @@ definitions:
         type: string
       profileType:
         type: string
+      bio:
+        type: string
+        
   EeCourse:
     type: object
     properties:
@@ -1200,6 +1252,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeStoreItem'
+  
   EeEventProfileUpdate:
     type: object
     properties:
@@ -1209,6 +1262,7 @@ definitions:
           type: string
       isInvited:
         type: boolean
+        
   EeEventProfile:
     type: object
     properties:
@@ -1220,8 +1274,11 @@ definitions:
           type: string
       isInvited:
         type: boolean
-      accepted:
-        type: boolean
+      acceptedWhen:
+        type: number
+      declinedWhen:
+        type: number
+        
   EePagedEventProfile:
     type: object
     properties:

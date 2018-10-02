@@ -15,6 +15,10 @@ tags:
     description: User accounts on eDropin
   - name: eaProfiles
     description: Profiles such as course providers and businesses
+  - name: eaProfileInvites
+    description: Profile invitations
+  - name: eaProfileTags
+    description: Tag requests, accept and decline
   - name: eaUtilities
     description: eDropin Utilities
 schemes:
@@ -199,29 +203,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /profiles/get-multi-invites:
-    get:
-      tags:
-        - eaProfiles
-      summary: Get Multiple Profile Invites
-      operationId: getMultipleInvites
-      parameters:
-        - in: query
-          name: inviteIds
-          type: array
-          items:
-            type: string
-      responses:
-        '200':
-          description: List of Invites
-          schema:
-            $ref: '#/definitions/EaPagedProfileInvite'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+          
   '/profiles/{profileId}':
     parameters:
       - $ref: '#/parameters/profileId'
@@ -362,105 +344,6 @@ paths:
           description: Profile not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profile-invites':
-    get:
-      tags:
-        - eaProfiles
-      summary: Get all invites that are pending
-      operationId: listProfileInvites
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: All profile Invites
-          schema:
-            $ref: '#/definitions/EaPagedProfileInvite'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    post:
-      tags:
-        - eaProfiles
-      summary: Invite for profile creation
-      operationId: profileInvite
-      parameters:
-        - in: body
-          name: profileProps
-          description: Profile object for invite
-          required: true
-          schema:
-            $ref: '#/definitions/EaProfileInviteUpdate'
-      responses:
-        '200':
-          description: Profile invite sent
-          schema:
-            $ref: '#/definitions/EaProfileInvite'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/profile-invites/{profileId}':
-    parameters:
-      - $ref: '#/parameters/profileId'
-    get:
-      tags:
-        - eaProfiles
-      summary: Get a Profile Invite from the directory
-      operationId: getProfileInvite
-      responses:
-        '200':
-          description: Profile Invite
-          schema:
-            $ref: '#/definitions/EaProfileInvite'
-        '404':
-          description: Profile Invite not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eaProfiles
-      summary: Update an existing Profile Invite
-      operationId: updateProfileInvite
-      parameters:
-        - in: body
-          name: profileProps
-          description: Profile Invite object that needs to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/EaProfileInviteUpdate'
-      responses:
-        '200':
-          description: Profile Invite updated
-          schema:
-            $ref: '#/definitions/EaProfileInvite'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Profile Invite not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eaProfiles
-      summary: Delete an existing Profile Invite
-      operationId: deleteProfileInvite
-      responses:
-        '200':
-          description: Profile Invite deleted
-          schema:
-            $ref: '#/definitions/EaSuccess'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Profile Invite not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   /profiles/usernamecheck:
     get:
       tags:
@@ -581,6 +464,10 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
+        - in: query
+          name: showInvited
+          type: boolean
+          required: false
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -595,6 +482,180 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  '/profile-invites':
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Paginate over all invitations made by requested user
+      operationId: listProfileInvites
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileInvites
+      summary: Create a new profile invite
+      operationId: createProfileInvite
+      parameters:
+        - in: body
+          name: profileInviteProps
+          description: Profile to invite
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileInviteCreate'
+      responses:
+        '200':
+          description: Profile invite created
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '400':
+          description: Invalid input
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profile-invites/{inviteId}':
+    parameters:
+      - $ref: '#/parameters/inviteId'
+    delete:
+      tags:
+        - eaProfileInvites
+      summary: Archive a profile invitation
+      operationId: archiveProfileInvite
+      responses:
+        '200':
+          description: Archived a profile invitation
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '404':
+          description: Profile Invitation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+
+  '/profile-invites/referral/{referralCode}':
+    parameters:
+      - $ref: '#/parameters/referralCode'
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Get the pre-filled fields for on-boarding an invite
+      operationId: getProfileInviteReferral
+      responses:
+        '200':
+          description: Profile invitation with pre-fillable fields
+          schema:
+            $ref: '#/definitions/EaProfileInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileInvites
+      summary: Create a profile from a profile invite
+      operationId: createProfileFromInvite
+      parameters:
+        - in: body
+          name: profileProps
+          description: Information to create profile
+          required: true
+          schema:
+            $ref: '#/definitions/EaProfileUpdate'
+      responses:
+        '200':
+          description: Profile created
+          schema:
+            $ref: '#/definitions/EaProfile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/profiles/{profileId}/profile-tags':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eaProfileTags
+      summary: Paginate over all tag requests for the profile
+      operationId: listTagRequests
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of all tag requests
+          schema:
+            $ref: '#/definitions/EaPagedTagRequest'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileTags
+      summary: Request to tag a profile in an entity e.g. Event, Course, etc.
+      operationId: upsertProfileTagRequest
+      parameters:
+        - in: body
+          name: profileTagProps
+          description: Model to create/update a profile tag request
+          required: true
+          schema:
+            $ref: '#/definitions/EaTagRequestCreate'
+      responses:
+        '200':
+          description: Profile tag request updated/created
+          schema:
+            $ref: '#/definitions/EaTagRequest'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/profile-tags/{profileTagId}':
+    parameters:
+      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/profileTagId'
+    put:
+      tags:
+        - eaProfileTags
+      summary: Accept or decline a profile tag request
+      operationId: respondToProfileTagRequest
+      parameters:
+        - in: body
+          name: profileTagProps
+          description: Accept or decline tagging request
+          required: true
+          schema:
+            $ref: '#/definitions/EaTagRespond'
+      responses:
+        '200':
+          description: Profile tag request updated
+          schema:
+            $ref: '#/definitions/EaTagRequest'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /profiles/multi-invites:
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Get Multiple Profile Invites
+      operationId: getMultipleInvites
+      parameters:
+        - in: query
+          name: inviteIds
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: List of Invites
+          schema:
+            $ref: '#/definitions/EaPagedProfileInvite'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+   
   /utility/phoneverification/start:
     post:
       tags:
@@ -677,6 +738,24 @@ parameters:
     name: profileId
     in: path
     description: Profile Id
+    type: string
+    required: true
+  inviteId:
+    name: inviteId
+    in: path
+    description: Profile Invitation Id
+    type: string
+    required: true
+  profileTagId:
+    name: profileTagId
+    in: path
+    description: Profile Tag Id
+    type: string
+    required: true
+  referralCode:
+    name: referralCode
+    in: path
+    description: Profile invitation referral code
     type: string
     required: true
   searchQuery:
@@ -919,26 +998,6 @@ definitions:
             type: string
             enum:
               - v1
-  EaProfileInviteUpdate:
-    type: object
-    required:
-      - invitedBy
-    allOf:
-      - $ref: '#/definitions/EaProfileBase'
-      - properties:
-          phone:
-            type: string
-          invitedBy:
-            type: string
-          invitedFor:
-            type: string
-  EaProfileInvite:
-    type: object
-    required:
-      - invitedBy
-    allOf:
-      - $ref: '#/definitions/EaBaseId'
-      - $ref: '#/definitions/EaProfileInviteUpdate'
 
   EaProfile:
     type: object
@@ -963,6 +1022,9 @@ definitions:
             type: array
             items:
               type: object
+          isInvited:
+            type: boolean
+            
   EaProfileStatus:
     type: object
     required:
@@ -990,17 +1052,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaProfile'
-  EaPagedProfileInvite:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EaPagination'
-      facets:
-        type: object
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EaProfileInvite'
+  
   EaPhoneVerificationInput:
     type: object
     required:
@@ -1054,3 +1106,94 @@ definitions:
         type: boolean
       processingTimeMS:
         type: integer
+
+  EaProfileInviteCreate:
+    type: object
+    required: 
+      - email
+      - profileType
+      - name
+    properties:
+      email:
+        type: string
+      profileType:
+        type: string
+      name:
+        type: string
+      bio:
+        type: string
+      picture:
+        type: string
+      inviteById:
+        type: string
+      inviteFor:
+        type: string
+        description: e.g. Event Name
+  
+  EaProfileInvite:
+    type: object
+    allOf: 
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaProfileInviteCreate'
+      - properties:
+          inviteName:
+            type: string
+  
+  EaPagedProfileInvite:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      facets:
+        type: object
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaProfileInvite'
+         
+  EaTagRequestCreate:
+    type: object
+    required:
+      - itemType
+      - profileId
+    properties:
+      itemType:
+        type: string
+        enum:
+          - Event
+      profileId:
+        type: string
+        description: Invited by profileId
+      extra:
+        type: object
+        description: key/value for the tagging entity (e.g. eventId/eventName)
+    
+  EaTagRequest:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaTagRequestCreate'
+      - properties:
+          profileName:
+            type: string
+          acceptedWhen: 
+            type: number
+          declinedWhen:
+            type: number
+  
+  EaTagRespond:
+    type: object
+    properties:
+      acceptRequest:
+        type: boolean
+        default: false
+        
+  EaPagedTagRequest:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaTagRequest'
