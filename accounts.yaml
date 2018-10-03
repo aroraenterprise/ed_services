@@ -543,6 +543,8 @@ paths:
     get:
       tags:
         - eaProfileInvites
+      security:
+        - ClientKey: []
       summary: Get the pre-filled fields for on-boarding an invite
       operationId: getProfileInviteReferral
       responses:
@@ -1113,22 +1115,23 @@ definitions:
       - email
       - profileType
       - name
+      - inviteById
     properties:
       email:
         type: string
       profileType:
-        type: string
-      name:
-        type: string
-      bio:
-        type: string
-      picture:
         type: string
       inviteById:
         type: string
       inviteFor:
         type: string
         description: e.g. Event Name
+      name:
+        type: string
+      bio:
+        type: string
+      picture:
+        type: string
   
   EaProfileInvite:
     type: object
@@ -1136,7 +1139,7 @@ definitions:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaProfileInviteCreate'
       - properties:
-          inviteName:
+          inviteByName:
             type: string
   
   EaPagedProfileInvite:
