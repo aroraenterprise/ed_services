@@ -1175,16 +1175,12 @@ definitions:
       - itemId
       - itemType
       - itemName
-      - profileId
       - taggedById
     properties:
       itemType:
         type: string
         enum:
           - Event
-      profileId:
-        type: string
-        description: Invited by profileId
       isInvited:
         type: boolean
         default: false
@@ -1208,6 +1204,9 @@ definitions:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaTagRequestCreate'
       - properties:
+          profileId:
+            type: string
+            description: Invited by profileId
           profileName:
             type: string
           taggedByName:
