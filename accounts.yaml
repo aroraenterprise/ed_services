@@ -604,6 +604,7 @@ paths:
       security:
         - ClientKey: []
           ServiceKey: []
+          Authorization: []
       parameters:
         - in: body
           name: profileTagProps
