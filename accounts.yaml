@@ -38,6 +38,10 @@ securityDefinitions:
     type: apiKey
     in: header
     name: X-Admin-Key
+  ServiceKey:
+    type: apiKey
+    in: header
+    name: X-Service-Key
 security:
   - ClientKey: []
     Authorization: []
@@ -597,6 +601,9 @@ paths:
         - eaProfileTags
       summary: Request to tag a profile in an entity e.g. Event, Course, etc.
       operationId: upsertProfileTagRequest
+      security:
+        - ClientKey: []
+          ServiceKey: []
       parameters:
         - in: body
           name: profileTagProps
@@ -1054,6 +1061,14 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaProfile'
+      inviteItems:
+        type: array
+        items:
+          $ref: '#/definitions/EaProfile'
+      inviteFacets:
+        type: object
+      invitePageData:
+        $ref: '#/definitions/EaPagination'
   
   EaPhoneVerificationInput:
     type: object
@@ -1157,8 +1172,11 @@ definitions:
   EaTagRequestCreate:
     type: object
     required:
+      - itemId
       - itemType
+      - itemName
       - profileId
+      - taggedById
     properties:
       itemType:
         type: string
@@ -1167,9 +1185,22 @@ definitions:
       profileId:
         type: string
         description: Invited by profileId
-      extra:
-        type: object
-        description: key/value for the tagging entity (e.g. eventId/eventName)
+      isInvited:
+        type: boolean
+        default: false
+      taggedById:
+        type: string
+      itemId:
+        type: string
+      itemName:
+        type: string
+      roles:
+        type: array
+        items: 
+          type: string
+      itemLink:
+        type: string
+        description: Absolute url to the item that is tagged here
     
   EaTagRequest:
     type: object
@@ -1178,6 +1209,8 @@ definitions:
       - $ref: '#/definitions/EaTagRequestCreate'
       - properties:
           profileName:
+            type: string
+          taggedByName:
             type: string
           acceptedWhen: 
             type: number
