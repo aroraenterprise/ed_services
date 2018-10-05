@@ -642,9 +642,8 @@ paths:
             $ref: '#/definitions/EaTagRequest'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/profile-tags/{profileTagId}':
+  '/profile-tags/{profileTagId}':
     parameters:
-      - $ref: '#/parameters/profileId'
       - $ref: '#/parameters/profileTagId'
     put:
       tags:

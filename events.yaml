@@ -389,7 +389,33 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
+  '/events/eventTagStatusUpdate':
+    post:
+      tags:
+        - eeEventTags
+      security: []
+      parameters:
+        - in: query
+          name: apiKey
+          type: string
+          required: true
+        - in: body
+          name: subData
+          description: Base64 encoded message
+          required: true
+          schema:
+            $ref: '#/definitions/EePubSubMessage'
+      summary: Pub sub to update event tag, accept or decline [used by service account]
+      operationId: updateEventTagStatus
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Invalid ID supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
   '/events/{eventId}/tickets':
     parameters:
