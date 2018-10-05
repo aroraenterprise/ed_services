@@ -523,6 +523,29 @@ paths:
           description: Invalid input
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/profile-invites/get-multi':
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Get Multiple Profile Invites
+      operationId: getMultipleInvites
+      parameters:
+        - in: query
+          name: inviteIds
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: List of Invites
+          schema:
+            $ref: '#/definitions/EaPagedProfileInvite'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/profile-invites/{inviteId}':
     parameters:
       - $ref: '#/parameters/inviteId'
@@ -640,29 +663,6 @@ paths:
           description: Profile tag request updated
           schema:
             $ref: '#/definitions/EaTagRequest'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  /profiles/multi-invites:
-    get:
-      tags:
-        - eaProfileInvites
-      summary: Get Multiple Profile Invites
-      operationId: getMultipleInvites
-      parameters:
-        - in: query
-          name: inviteIds
-          type: array
-          items:
-            type: string
-      responses:
-        '200':
-          description: List of Invites
-          schema:
-            $ref: '#/definitions/EaPagedProfileInvite'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
    

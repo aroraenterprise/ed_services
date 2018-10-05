@@ -1147,8 +1147,10 @@ definitions:
         type: array
         items:
           type: string
+        default: []
       isInvited:
         type: boolean
+        default: false
         
   EeEventTag:
     type: object
