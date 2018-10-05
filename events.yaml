@@ -13,12 +13,8 @@ basePath: /
 tags:
   - name: eeEvents
     description: Events
-  - name: eeEventProfiles
-    description: Profiles linked to events
-  - name: eeEventProfileInvites
+  - name: eeEventTags
     description: Tagging profiles and invites in an event
-  - name: eeEventCourses
-    description: Courses linked to events
   - name: eeEventTickets
     description: Tickets linked to events
   - name: eeEventAttendees
@@ -321,14 +317,15 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/profiles':
+  
+  '/events/{eventId}/tags':
     parameters:
       - $ref: '#/parameters/eventId'
     get:
       tags:
-        - eeEventProfiles
-      summary: Get Profiles linked to event
-      operationId: listEventProfiles
+        - eeEventTags
+      summary: Paginate tags linked to an event
+      operationId: listEventTags
       parameters:
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
@@ -336,7 +333,7 @@ paths:
         '200':
           description: Event Profiles
           schema:
-            $ref: '#/definitions/EePagedEventProfile'
+            $ref: '#/definitions/EePagedEventTag'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
@@ -345,27 +342,27 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/profiles/{profileId}':
+  '/events/{eventId}/tags/{profileId}':
     parameters:
       - $ref: '#/parameters/eventId'
       - $ref: '#/parameters/profileId'
     put:
       tags:
-        - eeEventProfiles
-      summary: Set profile role in event
-      operationId: upsertEventProfile
+        - eeEventTags
+      summary: Create or update a tag in an event [will make tag request if new tag]
+      operationId: upsertEventTag
       parameters:
         - in: body
           name: roleProp
           description: Profile role to update
           required: true
           schema:
-            $ref: '#/definitions/EeEventProfileUpdate'
+            $ref: '#/definitions/EeEventTagUpsert'
       responses:
         '200':
           description: Event Profile
           schema:
-            $ref: '#/definitions/EeEventProfile'
+            $ref: '#/definitions/EeEventTag'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -376,9 +373,9 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeEventProfiles
-      summary: Remove profile role from event
-      operationId: removeEventProfile
+        - eeEventTags
+      summary: Remove tag from event
+      operationId: removeEventTag
       responses:
         '200':
           description: Removed profile
@@ -393,117 +390,7 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
-  '/events/{eventId}/profile-invites/{inviteId}':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/inviteId'
-    put:
-      tags:
-        - eeEventProfileInvites
-      summary: Set invited profile role in event
-      operationId: upsertEventProfileInvite
-      parameters:
-        - in: body
-          name: roleProp
-          description: Profile Invite role to update
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventProfileUpdate'
-      responses:
-        '200':
-          description: Tagged Event Profile
-          schema:
-            $ref: '#/definitions/EeEventProfile'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeEventProfileInvites
-      summary: Remove profile invite role from event
-      operationId: removeEventProfileInvite
-      responses:
-        '200':
-          description: Removed profile invite
-          schema:
-            $ref: '#/definitions/EeSuccess'
-        '404':
-          description: Event/Invite not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-          
-  '/events/{eventId}/courses':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventCourses
-      summary: Get Courses linked to event
-      operationId: listEventCourses
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Event Courses
-          schema:
-            $ref: '#/definitions/EePagedEventCourse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/courses/{courseId}':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/courseId'
-    put:
-      tags:
-        - eeEventCourses
-      summary: Set course in event
-      operationId: upsertEventCourse
-      parameters:
-        - in: body
-          name: courseProp
-          description: Course to upsert
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventCourseUpdate'
-      responses:
-        '200':
-          description: Event Course
-          schema:
-            $ref: '#/definitions/EeEventCourse'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeEventCourses
-      summary: Remove course role from event
-      operationId: removeEventCourse
-      responses:
-        '200':
-          description: Removed course
-          schema:
-            $ref: '#/definitions/EeSuccess'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+  
   '/events/{eventId}/tickets':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -1253,7 +1140,7 @@ definitions:
         items:
           $ref: '#/definitions/EeStoreItem'
   
-  EeEventProfileUpdate:
+  EeEventTagUpsert:
     type: object
     properties:
       roles:
@@ -1263,7 +1150,7 @@ definitions:
       isInvited:
         type: boolean
         
-  EeEventProfile:
+  EeEventTag:
     type: object
     properties:
       profile:
@@ -1279,7 +1166,7 @@ definitions:
       declinedWhen:
         type: number
         
-  EePagedEventProfile:
+  EePagedEventTag:
     type: object
     properties:
       pageData:
@@ -1287,50 +1174,7 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/EeEventProfile'
-  EeEventCourseUpdate:
-    type: object
-    properties:
-      offerings:
-        type: array
-        items:
-          type: object
-          properties:
-            startTimestamp:
-              type: integer
-            endTimestamp:
-              type: integer
-            ticketId:
-              type: string
-            ticketName:
-              type: string
-  EeEventCourse:
-    type: object
-    properties:
-      course:
-        $ref: '#/definitions/EeCourse'
-      offerings:
-        type: array
-        items:
-          type: object
-          properties:
-            startTimestamp:
-              type: integer
-            endTimestamp:
-              type: integer
-            ticketId:
-              type: string
-            ticketName:
-              type: string
-  EePagedEventCourse:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EePagination'
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EeEventCourse'
+          $ref: '#/definitions/EeEventTag'
   
   EeTicketUpdate:
     type: object
