@@ -30,6 +30,10 @@ securityDefinitions:
     type: apiKey
     in: header
     name: Authorization
+  AuthorizationOptional:
+    type: apiKey
+    in: header
+    name: Authorization
   ClientKey:
     type: apiKey
     in: header
@@ -354,6 +358,11 @@ paths:
         - eaProfiles
       summary: Check username availability
       operationId: checkUsernameAvailability
+      security: 
+        - ClientKey: []
+          AuthorizationOptional: []
+        - ClientKey: []
+          Authorization: []
       parameters:
         - in: query
           name: username

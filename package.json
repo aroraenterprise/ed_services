@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-"cors-demo": "CLOUDSDK_CORE_ACCOUNT=edropin19@gmail.com gsutil cors set cors.json gs://edropin-play.appspot.com"  
+"cors-demo": "CLOUDSDK_CORE_ACCOUNT=edropin19@gmail.com gsutil cors set cors.json gs://edropin-play.appspot.com",  
+"cors-dev": "CLOUDSDK_CORE_ACCOUNT=edropin20@gmail.com gsutil cors set cors.json gs://edropin-dev-1.appspot.com"
 },
   "repository": {
     "type": "git",
