@@ -371,6 +371,9 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/event-tags/{tagId}':
+    parameters:
+      - $ref: '#/parameters/tagId'
     delete:
       tags:
         - eeEventTags
@@ -894,6 +897,12 @@ parameters:
     name: facets
     type: string
     description: 'e.g [profiledIds:edropin],[profileIds:agdontario]'
+  tagId:
+    name: tagId
+    in: path
+    description: Tag Id
+    type: string
+    required: true
   ticketId:
     name: ticketId
     in: path

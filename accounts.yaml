@@ -673,6 +673,22 @@ paths:
             $ref: '#/definitions/EaTagRequest'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eaProfileTags
+      security:
+        - ClientKey: []
+          ServiceKey: []
+          Authorization: []
+      summary: Remove a profile tag request
+      operationId: removeProfileTagRequest
+      responses:
+        '200':
+          description: Profile tag request removed
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
    
   /utility/phoneverification/start:
     post:
