@@ -1190,6 +1190,8 @@ definitions:
   EeEventTag:
     type: object
     properties:
+      id:
+        type: string
       profile:
         $ref: '#/definitions/EeProfile'
       roles:
