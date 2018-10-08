@@ -278,6 +278,11 @@ paths:
         - eaProfiles
       summary: Get Profile Categories
       operationId: getProfileCategories
+      security:
+        - ClientKey: []
+          AuthorizationOptional: []
+        - ClientKey: []
+          Authorization: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/cursor'
