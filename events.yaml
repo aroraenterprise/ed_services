@@ -1235,11 +1235,11 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/EeProfile'
-      tags:
+          $ref: '#/definitions/EeEventTag'
+      profiles:
         type: array
         items:
-          $ref: '#/definitions/EeEventTag'
+          $ref: '#/definitions/EeProfile'
   
   EeTicketUpdate:
     type: object
