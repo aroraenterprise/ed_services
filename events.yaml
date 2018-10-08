@@ -358,7 +358,7 @@ paths:
         '200':
           description: Event Profiles
           schema:
-            $ref: '#/definitions/EePagedEventTagSearch'
+            $ref: '#/definitions/EePagedEventTag'
         '404':
           description: Event not found
         '500':
@@ -1209,25 +1209,8 @@ definitions:
         type: number
       declinedWhen:
         type: number
-        
-  EeEventTagProfile:
-    allOf:
-      - $ref: '#/definitions/EeEventTag'
-      - properties:
-          profile:
-            $ref: '#/definitions/EeProfile'
             
   EePagedEventTag:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EePagination'
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EeEventTagProfile'
-  
-  EePagedEventTagSearch:
     type: object
     properties:
       pageData:
