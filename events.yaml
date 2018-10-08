@@ -342,6 +342,27 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/events/{eventId}/tags-search':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventTags
+      summary: Paginate tags linked to an event
+      operationId: searchTagsForEvent
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Event Profiles
+          schema:
+            $ref: '#/definitions/EePagedEventTag'
+        '404':
+          description: Event not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/events/{eventId}/tags/{profileId}':
     parameters:
       - $ref: '#/parameters/eventId'
