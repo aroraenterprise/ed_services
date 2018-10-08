@@ -1064,6 +1064,11 @@ definitions:
         type: string
       picture:
         type: string
+      tagId:
+        type: string
+      isInvited:
+        type: boolean
+
   EeEventUpdate:
     type: object
     required:
@@ -1193,7 +1198,7 @@ definitions:
       isInvited:
         type: boolean
         default: false
-        
+      
   EeEventTag:
     type: object
     properties:
@@ -1203,6 +1208,14 @@ definitions:
         type: array
         items:
           type: string
+      profileId:
+        type: string
+      taggedById:
+        type: string
+      taggedByName:
+        type: string
+      eventId:
+        type: string
       isInvited:
         type: boolean
       acceptedWhen:

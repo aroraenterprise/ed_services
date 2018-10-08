@@ -1181,6 +1181,9 @@ definitions:
       - properties:
           inviteByName:
             type: string
+          isInvited:
+            type: boolean
+            default: true
   
   EaPagedProfileInvite:
     type: object
