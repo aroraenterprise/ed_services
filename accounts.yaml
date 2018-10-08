@@ -328,7 +328,7 @@ paths:
         '200':
           description: Email is verified
           schema:
-            $ref: '#/definitions/EaSuccess'
+            $ref: '#/definitions/EaEmailVerification'
         '404':
           description: Profile not found
         '500':
@@ -1265,3 +1265,11 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaTagRequest'
+          
+  EaEmailVerification:
+    type: object
+    properties:
+      profileName:
+        type: string
+      profileId:
+        type: string
