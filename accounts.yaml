@@ -1228,6 +1228,8 @@ definitions:
         type: string
       itemName:
         type: string
+      picture:
+        type: string
       roles:
         type: array
         items: 
