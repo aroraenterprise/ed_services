@@ -1505,6 +1505,12 @@ definitions:
             type: integer
           status:
             type: string
+          userName:
+            type: string
+          userEmail:
+            type: string
+          userPhone:
+            type: string
           statusMessages:
             type: array
             items:
@@ -1564,9 +1570,11 @@ definitions:
       - properties:
           currencyCode:
             type: string
-          email:
+          userEmail:
             type: string
-          name:
+          userName:
+            type: string
+          userPhone:
             type: string
           quantity:
             type: integer
