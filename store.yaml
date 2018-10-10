@@ -513,26 +513,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/merchants/{merchantId}/orders':
-    get:
-      tags:
-        - esOrder
-      summary: Get orders for by merchant (merchant use only)
-      parameters:
-        - $ref: '#/parameters/merchantId'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      operationId: listOrdersByMerchant
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsPagedOrder'
-        '400':
-          description: Invalid ID supplied
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   /orders:
     get:
       tags:
@@ -612,6 +592,21 @@ paths:
       operationId: listOrderItemsByMerchant
       parameters:
         - $ref: '#/parameters/merchantId'
+        - in: query
+          name: category
+          description: Type of store item category e.g. Event
+          type: string
+          required: false
+        - in: query
+          name: categoryId
+          description: Category id e.g [Event Id]
+          type: string
+          required: false
+        - in: query
+          name: storeItemId
+          description: Store item id e.g. EventTicket-ab2333
+          required: false
+          type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -1482,11 +1477,17 @@ definitions:
             type: string
           chargeId:
             type: string
+          transferId:
+            type: string
           currencyCode:
             type: string
           name:
             type: string
           itemType:
+            type: string
+          category:
+            type: string
+          categoryId:
             type: string
           description:
             type: string
@@ -1512,6 +1513,8 @@ definitions:
             type: integer
             description: Number of items available after refunds
           platformFee:
+            type: integer
+          processingRefundFee:
             type: integer
           subtotal:
             type: integer
