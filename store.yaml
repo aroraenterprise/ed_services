@@ -1103,12 +1103,18 @@ definitions:
     type: object
     required:
       - name
+      - category
+      - categoryId
       - itemType
       - totalInventory
       - priceStrategy
       - startSaleTimestamp
       - endSaleTimestamp
     properties:
+      category:
+        type: string
+      categoryId:
+        type: string
       itemType:
         type: string
       name:
