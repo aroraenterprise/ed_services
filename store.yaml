@@ -23,6 +23,8 @@ tags:
     description: Customers of eDropin
   - name: esMemberships
     description: Memberships managed in eDropin
+  - name: esUserMemberships
+    description: User memberships managed in eDropin
 schemes:
   - https
 produces:
@@ -649,12 +651,43 @@ paths:
           description: Order Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/orders/{orderId}/order-items/{orderItemId}/merchant-refund':
+    parameters:
+      - $ref: '#/parameters/orderId'
+      - $ref: '#/parameters/orderItemId'
+    post:
+      tags:
+        - esOrder
+      summary: Start the refund process for item [merchant]
+      parameters:
+        - in: body
+          name: refundProps
+          description: Refund options
+          required: true
+          schema:
+            $ref: '#/definitions/EsRefundInput'
+      operationId: startMerchantRefundForItem
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItem'
+        '400':
+          description: Invalid Request
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Order Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /customers:
     get:
       tags:
         - esCustomers
       summary: Get the users current customer information
       operationId: getUserCustomer
+      parameters:
+        - $ref: '#/parameters/expand'
       responses:
         '200':
           description: OK
@@ -687,24 +720,22 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/customers/payment-methods':
-    post:
+  '/customers/cards':
+    get:
       tags:
         - esCustomers
-      summary: Add Payment method for customer
-      operationId: addPaymentMethod
-      parameters:
-        - in: body
-          name: paymentProps
-          description: Payment props for checkout
-          required: true
-          schema:
-            $ref: '#/definitions/EsPaymentInput'
+      summary: Retrieve all saved cards for customer
+      operationId: listAllCards
       responses:
         '200':
           description: A new Customer
           schema:
-            $ref: '#/definitions/EsPaymentMethod'
+            type: object
+            properties:
+              items:
+                type: array
+                items: 
+                  $ref: '#/definitions/EsCard'
         '400':
           description: Invalid attributes
         '401':
@@ -712,17 +743,17 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/customers/payment-methods/{paymentId}':
+  '/customers/cards/{cardId}':
     parameters:
-      - $ref: '#/parameters/paymentId'
+      - $ref: '#/parameters/cardId'
     delete:
       tags:
         - esCustomers
-      summary: Remove a customer
-      operationId: removeCustomer
+      summary: Remove a card
+      operationId: removeCard
       responses:
         '200':
-          description: Customer removed
+          description: Card removed
           schema:
             $ref: '#/definitions/EsSuccess'
         '401':
@@ -875,6 +906,93 @@ paths:
           description: Membership not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/user-memberships':
+    get:
+      tags:
+        - esUserMemberships
+      summary: List current user memberships
+      operationId: listUserMemberships
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Customer Memberships
+          schema:
+            $ref: '#/definitions/EsPagedUserMembership'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - esUserMemberships
+      summary: Add a membership to a user
+      operationId: addUserMembership
+      parameters:
+        - in: body
+          name: membershipProps
+          description: Membership object to be added
+          required: true
+          schema:
+            $ref: '#/definitions/EsUserMembershipUpdate'
+      responses:
+        '200':
+          description: Membership created
+          schema:
+            $ref: '#/definitions/EsMembership'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/user-memberships/{userMembershipId}':
+    parameters:
+      - $ref: '#/parameters/userMembershipId'
+    put:
+      tags:
+        - esUserMemberships
+      summary: Update an existing user membership
+      operationId: updateUserMembership
+      parameters:
+        - in: body
+          name: membershipProps
+          description: Membership object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EsUserMembershipUpdate'
+      responses:
+        '200':
+          description: Membership updated
+          schema:
+            $ref: '#/definitions/EsUserMembership'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esUserMemberships
+      summary: Delete an existing membership
+      operationId: removeUserMembership
+      responses:
+        '200':
+          description: Membership deleted
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   limit:
     name: limit
@@ -911,12 +1029,20 @@ parameters:
     description: Gives you a more detailed entity but requires admin permissions usually
     type: boolean
     required: false
-  paymentId:
-    name: paymentId
+  cardId:
+    name: cardId
     in: path
-    description: Payment Method Id
+    description: Card Id
     type: string
     required: true
+  expand:
+    in: query
+    name: expand
+    description: Expands the properties in the array
+    type: array
+    items:
+      type: string
+    required: false
   membershipId:
     name: membershipId
     in: path
@@ -968,6 +1094,12 @@ parameters:
     name: facets
     type: string
     description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
+  userMembershipId:
+    name: userMembershipId
+    in: path
+    description: User membership id
+    type: string
+    required: true
 
 responses:
   Default500ErrorResponse:
@@ -1173,15 +1305,16 @@ definitions:
     required:
       - startTimestamp
       - endTimestamp
-      - refundDeduction
+      - feeAmount
     properties:
       startTimestamp:
         type: integer
       endTimestamp:
         type: integer
-      refundDeduction:
+      feeAmount:
         type: integer
-        
+      isDifferenceCharged:
+        type: integer
   EsFee:
     type: object
     required:
@@ -1649,6 +1782,11 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsCustomerInput'
+      - properties:
+          savedCards:
+            type: array
+            items:
+              $ref: '#/definitions/EsCard'
   EsCheckout:
     type: object
     properties:
@@ -1658,7 +1796,67 @@ definitions:
         $ref: '#/definitions/EsCart'
       error:
         $ref: '#/definitions/EsDefaultError'
-         
+  EsCard:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      brand:
+        type: string
+      country:
+        type: string
+      last4:
+        type: string
+      expiryMonth:
+        type: integer
+      expiryYear:
+        type: integer
+  
+  EsUserMembershipUpdate:
+    type: object
+    required:
+      - membershipId
+      - membershipName
+      - memberId
+    properties:
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
+      memberId:
+        type: string
+        
+  EsUserMembership:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsUserMembershipUpdate'
+      - properties:
+          id:
+            type: string
+          membershipId:
+            type: integer
+          membershipName:
+            type: string
+          memberId:
+            type: string
+  
+  EsPagedUserMembership:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      facets:
+        type: object
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsUserMembership' 
+          
   EsMembershipUpdate:
     type: object
     required:
