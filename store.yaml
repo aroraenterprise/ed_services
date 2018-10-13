@@ -1314,7 +1314,8 @@ definitions:
       feeAmount:
         type: integer
       isDifferenceCharged:
-        type: integer
+        type: boolean
+        default: false
   EsFee:
     type: object
     required:

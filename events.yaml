@@ -1532,7 +1532,8 @@ definitions:
       feeAmount:
         type: integer
       isDifferenceCharged:
-        type: integer
+        type: boolean
+        default: false
         
   EeFee:
     type: object
