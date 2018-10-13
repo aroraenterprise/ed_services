@@ -1502,6 +1502,8 @@ definitions:
               $ref: '#/definitions/EsRefundPolicy'
           appliedPromotion:
             $ref: '#/definitions/EsAppliedPromotion'
+          processingRefundFee:
+            type: integer
             
   EsCartItemInput:
     type: object
