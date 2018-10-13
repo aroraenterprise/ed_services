@@ -1551,18 +1551,6 @@ definitions:
       paymentMethodId:
         type: string 
   
-  EsPaymentMethod:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          last4:
-            type: string
-          email:
-            type: string
-          name:
-            type: string
-  
   EsStatusMessage:
     type: object
     properties:
