@@ -1194,6 +1194,7 @@ definitions:
     required:
       - feeType
       - feeAmount
+      - refundFeeAmount
     properties:
       perItem:
         type: boolean
@@ -1215,6 +1216,8 @@ definitions:
       feeAmount:
         type: integer
         default: 0
+      refundFeeAmount:
+        type: integer
   EsMerchant:
     type: object
     required:
