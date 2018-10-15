@@ -1298,11 +1298,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsRefundPolicy'
-      fees:
-        type: array
-        items:
-          $ref: '#/definitions/EsFee'
-        
+
   EsRefundPolicy:
     type: object
     required:
@@ -1319,18 +1315,6 @@ definitions:
       isDifferenceCharged:
         type: boolean
         default: false
-  EsFee:
-    type: object
-    required:
-      - feeAmount
-      - reason
-    properties:
-      feeAmount:
-        type: integer
-      reason:
-        type: string
-      description:
-        type: string
   
   EsRefundInput:
     type: object
@@ -1434,8 +1418,10 @@ definitions:
         type: object
       cart:
         $ref: '#/definitions/EsCart'
-      orderItem:
-        $ref: '#/definitions/EsOrderItem'
+      orderItems:
+        type: array
+        items:
+          $ref: '#/definitions/EsOrderItem'
   EsCart:
     type: object
     allOf:
@@ -1464,6 +1450,10 @@ definitions:
                   quantity:
                     type: integer
           itemIds:
+            type: 'array'
+            items:
+              type: string
+          storeItemIds:
             type: 'array'
             items:
               type: string
@@ -1729,9 +1719,11 @@ definitions:
   EsCheckout:
     type: object
     properties:
+      success:
+        type: boolean
       order:
         $ref: '#/definitions/EsCart'
-      newCart:
+      cart:
         $ref: '#/definitions/EsCart'
       error:
         $ref: '#/definitions/EsDefaultError'
