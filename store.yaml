@@ -557,7 +557,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsOrder'
+            $ref: '#/definitions/EsCart'
         '400':
           description: Invalid ID supplied
         '404':
@@ -1434,6 +1434,8 @@ definitions:
         type: object
       cart:
         $ref: '#/definitions/EsCart'
+      orderItem:
+        $ref: '#/definitions/EsOrderItem'
   EsCart:
     type: object
     allOf:
@@ -1453,60 +1455,54 @@ definitions:
           items:
             type: object
             additionalProperties:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  subtotal:
+                    type: integer
+                  quantity:
+                    type: integer
+          itemIds:
+            type: 'array'
+            items:
+              type: string
+          orderItems:
+            type: array
+            items:
               $ref: '#/definitions/EsOrderItem'
-          inProcessItems:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsCartItem'
-          saveForLater:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsCartItem'
+          storeItems:
+            type: array
+            items:
+              $ref: '#/definitions/EsStoreItem'
           lockedUntil:
             type: integer
-  EsCartItem:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          id:
+          userEmail:
             type: string
-          currencyCode:
+          userName:
             type: string
-          name:
+          userPhone:
             type: string
-          itemType:
-            type: string
-          picture:
-            type: string
-          retailPrice:
+          stripeFee:
             type: integer
-          salePrice:
+          platformFee:
             type: integer
-          merchantId:
+          status:
             type: string
-          merchantName:
-            type: string
-          quantity:
-            type: integer
-          subtotal:
-            type: integer
-          extra:
+          statusMessages:
+            type: array
+            items:
+              $ref: '#/definitions/EsStatusMessage'
+          merchantErrors:
             type: object
-          error:
+            additionalProperties:
+              $ref: '#/definitions/EsDefaultError'
+          failedItems:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItem'
+          claimCode:
             type: string
-          adDiscounts:
-            type: array
-            items:
-              $ref: '#/definitions/EsDiscount'
-          refundPolicies:
-            type: array
-            items:
-              $ref: '#/definitions/EsRefundPolicy'
-          appliedPromotion:
-            $ref: '#/definitions/EsAppliedPromotion'
-          processingRefundFee:
-            type: integer
             
   EsCartItemInput:
     type: object
@@ -1690,57 +1686,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EsOrderItem'
-  EsOrder:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          currencyCode:
-            type: string
-          userEmail:
-            type: string
-          userName:
-            type: string
-          userPhone:
-            type: string
-          quantity:
-            type: integer
-          stripeFee:
-            type: integer
-          platformFee:
-            type: integer
-          subtotal:
-            type: integer
-          checkoutStatus:
-            type: string
-          checkoutStatusMessages:
-            type: array
-            items:
-              $ref: '#/definitions/EsStatusMessage'
-          items:
-            type: object
-            additionalProperties:
-              type: array
-              items:
-                type: string
-          itemIds:
-            type: array
-            items:
-              type: string
-          orderItems:
-            type: array
-            items:
-              $ref: '#/definitions/EsOrderItem'
-          merchantErrors:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsDefaultError'
-          failedItems:
-            type: array
-            items:
-              $ref: '#/definitions/EsCartItem'
-          claimCode:
-            type: string
   EsPagedOrder:
     type: object
     properties:
@@ -1749,7 +1694,7 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/EsOrder'
+          $ref: '#/definitions/EsCart'
       orderItems:
         type: array
         items:
@@ -1785,8 +1730,8 @@ definitions:
     type: object
     properties:
       order:
-        $ref: '#/definitions/EsOrder'
-      cart:
+        $ref: '#/definitions/EsCart'
+      newCart:
         $ref: '#/definitions/EsCart'
       error:
         $ref: '#/definitions/EsDefaultError'
