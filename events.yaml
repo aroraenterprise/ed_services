@@ -1484,10 +1484,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeRefundPolicy'
-      fees:
-        type: array
-        items:
-          $ref: '#/definitions/EeFee'
+
   
   EeDiscount:
     type: object
@@ -1525,28 +1522,25 @@ definitions:
       - endTimestamp
       - feeAmount
     properties:
+      policyId:
+        type: string
+      disclaimer:
+        type: string
+      appFeeRefundAmount: 
+        type: number
+      platformFee:
+        type: number
       startTimestamp:
         type: integer
       endTimestamp:
         type: integer
       feeAmount:
         type: integer
+      refundAmount:
+        type: integer
       isDifferenceCharged:
         type: boolean
         default: false
-        
-  EeFee:
-    type: object
-    required:
-      - feeAmount
-      - reason
-    properties:
-      feeAmount:
-        type: integer
-      reason:
-        type: string
-      description:
-        type: string
           
   EePriceSummary:
     type: object

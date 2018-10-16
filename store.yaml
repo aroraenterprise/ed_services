@@ -1306,11 +1306,21 @@ definitions:
       - endTimestamp
       - feeAmount
     properties:
+      policyId:
+        type: string
+      disclaimer:
+        type: string
+      appFeeRefundAmount: 
+        type: number
+      platformFee:
+        type: number
       startTimestamp:
         type: integer
       endTimestamp:
         type: integer
       feeAmount:
+        type: integer
+      refundAmount:
         type: integer
       isDifferenceCharged:
         type: boolean
@@ -1321,7 +1331,7 @@ definitions:
     required:
       - quantity
       - reason
-      - agreedDeduction
+      - feeAmount
     properties:
       quantity:
         type: integer
@@ -1427,17 +1437,60 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
+          ownerId:
+            type: string
+          checkedOutWhen:
+            type: integer
+          isCheckedOut: 
+            type: boolean 
+            default: false
+          subtotal: 
+            type: integer 
+            default: 0 
+          quantity: 
+            type: integer 
+            default: 0 
+          validationExpiry: 
+            type: integer 
+            default: 0 
+          lockedUntil: 
+            type: integer 
+            default: 0 
+          customerId: 
+            type: string
+          stripeFee: 
+            type: integer 
+            default: 0 
+          platformFee:
+            type: integer 
+            default: 0 
+          merchantInvoices:
+            type: object
+          availableQuantity: 
+            type: integer 
+            default: 0 
+          refundTotal: 
+            type: integer 
+            default: 0 
+          isRefunded: 
+            type: boolean
+          userEmail: 
+            type: string
+          userName: 
+            type: string
+          userPhone:
+            type: string
+          storeItemIds:
+            type: array
+            items:
+              type: string
+          itemIds:
+            type: array
+            items:
+              type: string
           currencyCode:
             type: string
             readOnly: true
-          quantity:
-            type: integer
-            readOnly: true
-          subtotal:
-            type: integer
-            readOnly: true
-          validationExpiry:
-            type: integer
           items:
             type: object
             additionalProperties:
@@ -1449,34 +1502,6 @@ definitions:
                     type: integer
                   quantity:
                     type: integer
-          itemIds:
-            type: 'array'
-            items:
-              type: string
-          storeItemIds:
-            type: 'array'
-            items:
-              type: string
-          orderItems:
-            type: array
-            items:
-              $ref: '#/definitions/EsOrderItem'
-          storeItems:
-            type: array
-            items:
-              $ref: '#/definitions/EsStoreItem'
-          lockedUntil:
-            type: integer
-          userEmail:
-            type: string
-          userName:
-            type: string
-          userPhone:
-            type: string
-          stripeFee:
-            type: integer
-          platformFee:
-            type: integer
           status:
             type: string
           statusMessages:
@@ -1491,6 +1516,14 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsOrderItem'
+          orderItems:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItem'
+          storeItems:
+            type: array
+            items:
+              $ref: '#/definitions/EsStoreItem'
           claimCode:
             type: string
             
@@ -1590,13 +1623,22 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
-          orderId:
+          cartId:
             type: string
+          isCheckedOut:
+            type: boolean
+            default: false
+          checkedOutWhen:
+            type: integer
           storeItemId:
             type: string
           chargeId:
             type: string
-          transferId:
+          stripeFee:
+            type: integer
+          customerId:
+            type: string
+          feeId:
             type: string
           currencyCode:
             type: string
@@ -1642,8 +1684,6 @@ definitions:
           processingRefundFee:
             type: integer
           subtotal:
-            type: integer
-          stripeFee:
             type: integer
           policy:
             type: string
@@ -1727,6 +1767,8 @@ definitions:
         $ref: '#/definitions/EsCart'
       error:
         $ref: '#/definitions/EsDefaultError'
+      claimCode:
+        type: string
   EsCard:
     type: object
     properties:
