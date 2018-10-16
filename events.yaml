@@ -1524,6 +1524,8 @@ definitions:
     properties:
       policyId:
         type: string
+      policyName:
+        type: string
       disclaimer:
         type: string
       appFeeRefundAmount: 
