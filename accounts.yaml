@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: Accounts service for eDropin
-  version: 1.0.0
+  version: 1.0.7
   title: eDropin Accounts
   license:
     name: UNLICENSED
@@ -1194,6 +1194,8 @@ definitions:
           isInvited:
             type: boolean
             default: true
+          referralCode:
+            type: string
   
   EaPagedProfileInvite:
     type: object
