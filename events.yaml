@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: Events service for eDropin
-  version: 1.0.7
+  version: 1.0.8
   title: eDropin Events
   license:
     name: UNLICENSED
@@ -19,6 +19,8 @@ tags:
     description: Tickets linked to events
   - name: eeEventAttendees
     description: Event Attendees
+  - name: eeEventDropins
+    description: Event Dropins
   - name: eeCertificates
     description: Manage eCertificates - creation, update and deletion of templates
   - name: eeAttendeeCertificates
@@ -589,6 +591,212 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/dropins':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventDropins
+      summary: List all event dropins
+      operationId: listAllEventDropins
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Attendees for the event
+          schema:
+            $ref: '#/definitions/EePagedEventDropin'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEventDropins
+      summary: Add a dropin to an event
+      operationId: addEventDropin
+      parameters:
+        - in: body
+          name: attendeeProps
+          description: Attendee object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventDropinUpdate'
+      responses:
+        '200':
+          description: Attendee added
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '400':
+          description: Invalid request
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/dropins/{dropinId}':
+    parameters:
+      - $ref: '#/parameters/dropinId'
+    get:
+      tags:
+        - eeEventDropins
+      summary: Get a dropin
+      operationId: getEventDropin
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventDropins
+      summary: Update dropin to event
+      operationId: updateEventDropin
+      parameters:
+        - in: body
+          name: ticketProps
+          description: Ticket to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventDropinUpdate'
+      responses:
+        '200':
+          description: Event Dropin updated
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Delete an existing dropin
+      operationId: deleteEventDropin
+      responses:
+        '204':
+          description: Dropin deleted
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/tickets/{ticketId}/dropins':
+    parameters:
+      - $ref: '#/parameters/ticketId'
+      - $ref: '#/parameters/searchQuery'
+      - $ref: '#/parameters/searchFacets'
+      - $ref: '#/parameters/cursor'
+      - $ref: '#/parameters/limit'
+    get:
+      tags:
+        - eeEventDropins
+      summary: List all ticket dropins
+      operationId: listTicketDropins
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EePagedEventDropin'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+        
+  
+  '/tickets/{ticketId}/dropins/{dropinId}':
+    parameters:
+      - $ref: '#/parameters/ticketId'
+      - $ref: '#/parameters/dropinId'
+    put:
+      tags:
+        - eeEventDropins
+      summary: Add dropin to ticket
+      operationId: addDropinToEventTicket
+      responses:
+        '200':
+          description: Event Ticket updated
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '404':
+          description: Dropin or Ticket not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Remove dropin from ticket
+      operationId: removeDropinFromTicket
+      responses:
+        '204':
+          description: Dropin removed
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Dropin or Ticket not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/{attendeeId}/dropins':
+    parameters:
+      - $ref: '#/parameters/attendeeId'
+    get:
+      tags:
+        - eeEventDropins
+      summary: List attendee dropins
+      operationId: listAttendeeDropins
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of certificates assigned to an attendee
+          schema:
+            $ref: '#/definitions/EePagedCertificate'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/{attendeeId}/dropins/{dropinId}':
+    parameters:
+      - $ref: '#/parameters/attendeeId'
+      - $ref: '#/parameters/dropinId'
+    put:
+      tags:
+        - eeEventDropins
+      summary: Assign a dropin to attendee
+      operationId: assignAttendeeToDropin
+      responses:
+        '200':
+          description: Dropin assigned
+          schema:
+            $ref: '#/definitions/EeAttendeeDropin'
+        '404':
+          description: Dropin not found
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Remove an assigned dropin from attendee
+      operationId: removeAttendeeDropin
+      responses:
+        '204':
+          description: Dropin removed
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Dropin not found
   '/events/{eventId}/attendees':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -1043,6 +1251,12 @@ parameters:
     name: currencyCode
     in: path
     description: Currencey code
+    type: string
+    required: true
+  dropinId:
+    name: dropinId
+    in: path
+    description: Dropin Id
     type: string
     required: true
   eventId:
@@ -1782,4 +1996,69 @@ definitions:
       certificate:
         $ref: '#/definitions/EeCertificate'
   
+  EeEventDropinUpdate:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      color:
+        type: string
+      dropinType:
+        type: string
+        enum:
+          - CheckIn
+          - CheckOut
+          - Other
+      startTimestamp:
+        type:
+          integer
+      endTimestamp:
+        type:
+          integer
+      isNotificationEnabled:
+        type:
+          boolean
+        default:
+          true
+      status:
+        type:
+          string
+        enum:
+          - Open
+          - Closed
+      
+  EeEventDropin:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeEventDropinUpdate'
+      - $ref: '#/definitions/EeBaseId'
   
+  EePagedEventDropin:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventDropin'
+          
+  EeAttendeeDropin:
+    type: object
+    properties:
+      attendee:
+        $ref: '#/definitions/EeEventAttendee'
+      dropin:
+        $ref: '#/definitions/EeEventDropin'
+  
+  EePagedAttendeeDropin:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeAttendeeDropin'
