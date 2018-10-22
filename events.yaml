@@ -661,7 +661,7 @@ paths:
       operationId: updateEventDropin
       parameters:
         - in: body
-          name: ticketProps
+          name: dropinProps
           description: Ticket to update
           required: true
           schema:
@@ -689,7 +689,58 @@ paths:
           description: Dropin not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  '/dropins/{dropinId}/attendees':
+    parameters:
+      - $ref: '#/parameters/dropinId'
+    get:
+      tags:
+        - eeEventDropins
+      summary: List all attendees assigned to this dropin
+      operationId: searchAttendeesAssignedToDropin
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of attendees assigned to a dropin
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/dropins/{dropinId}/attendees/{attendeeId}':
+    parameters:
+      - $ref: '#/parameters/dropinId'
+      - $ref: '#/parameters/attendeeId'
+    put:
+      tags:
+        - eeEventDropins
+      summary: Assign a dropin to attendee
+      operationId: assignDropinToAttendee
+      responses:
+        '200':
+          description: Dropin assigned
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
+        '404':
+          description: Dropin not found
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Remove an assigned dropin from attendee
+      operationId: removeDropinFromAttendee
+      responses:
+        '204':
+          description: Dropin removed
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Dropin not found
   '/tickets/{ticketId}/dropins':
     parameters:
       - $ref: '#/parameters/ticketId'
@@ -700,8 +751,8 @@ paths:
     get:
       tags:
         - eeEventDropins
-      summary: List all ticket dropins
-      operationId: listTicketDropins
+      summary: List all dropins assigned to this ticket
+      operationId: searchDropinsAssignedToTicket
       responses:
         '200':
           description: OK
@@ -745,58 +796,7 @@ paths:
           description: Dropin or Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/{attendeeId}/dropins':
-    parameters:
-      - $ref: '#/parameters/attendeeId'
-    get:
-      tags:
-        - eeEventDropins
-      summary: List attendee dropins
-      operationId: listAttendeeDropins
-      parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Paged list of certificates assigned to an attendee
-          schema:
-            $ref: '#/definitions/EePagedCertificate'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/{attendeeId}/dropins/{dropinId}':
-    parameters:
-      - $ref: '#/parameters/attendeeId'
-      - $ref: '#/parameters/dropinId'
-    put:
-      tags:
-        - eeEventDropins
-      summary: Assign a dropin to attendee
-      operationId: assignAttendeeToDropin
-      responses:
-        '200':
-          description: Dropin assigned
-          schema:
-            $ref: '#/definitions/EeAttendeeDropin'
-        '404':
-          description: Dropin not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeEventDropins
-      summary: Remove an assigned dropin from attendee
-      operationId: removeAttendeeDropin
-      responses:
-        '204':
-          description: Dropin removed
-          schema:
-            $ref: '#/definitions/EeSuccess'
-        '404':
-          description: Dropin not found
+  
   '/events/{eventId}/attendees':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -1891,6 +1891,10 @@ definitions:
             type: boolean
           appliedPromotion:
             $ref: '#/definitions/EeAppliedPromotion'
+          dropins:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventDropin'
   EePagedEventAttendee:
     type: object
     properties:
@@ -2000,6 +2004,7 @@ definitions:
     type: object
     required:
       - name
+      - status
     properties:
       name:
         type: string
@@ -2020,20 +2025,35 @@ definitions:
       isNotificationEnabled:
         type:
           boolean
-        default:
-          true
+        default: true
       status:
         type:
           string
         enum:
+          - Auto
           - Open
           - Closed
+        default: Auto
+      customMessage:
+        type:
+          string
+        maxLength: 500
       
   EeEventDropin:
     type: object
     allOf:
       - $ref: '#/definitions/EeEventDropinUpdate'
       - $ref: '#/definitions/EeBaseId'
+      - properties:
+          tickets:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
   
   EePagedEventDropin:
     type: object
@@ -2044,21 +2064,3 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventDropin'
-          
-  EeAttendeeDropin:
-    type: object
-    properties:
-      attendee:
-        $ref: '#/definitions/EeEventAttendee'
-      dropin:
-        $ref: '#/definitions/EeEventDropin'
-  
-  EePagedAttendeeDropin:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EePagination'
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EeAttendeeDropin'
