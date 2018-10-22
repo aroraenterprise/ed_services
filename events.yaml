@@ -623,8 +623,8 @@ paths:
       operationId: addEventDropin
       parameters:
         - in: body
-          name: attendeeProps
-          description: Attendee object to be created
+          name: dropinProps
+          description: Dropin object to be created
           required: true
           schema:
             $ref: '#/definitions/EeEventDropinUpdate'
