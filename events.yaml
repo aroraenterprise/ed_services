@@ -692,6 +692,10 @@ paths:
   '/dropins/{dropinId}/attendees':
     parameters:
       - $ref: '#/parameters/dropinId'
+      - in: query
+        name: isAssigned
+        type: boolean
+        description: If set will only give back attendees that have been assigned to this dropin otherwise gives back all possible attendees that can be assigned this dropin
     get:
       tags:
         - eeEventDropins
