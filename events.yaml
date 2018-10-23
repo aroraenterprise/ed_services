@@ -19,7 +19,7 @@ tags:
     description: Tickets linked to events
   - name: eeEventAttendees
     description: Event Attendees
-  - name: eeEventDropins
+  - name: eeEventDropin
     description: Event Dropins
   - name: eeCertificates
     description: Manage eCertificates - creation, update and deletion of templates
@@ -938,12 +938,8 @@ paths:
             $ref: '#/definitions/EeEventAttendee'
         '400':
           description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '404':
           description: Attendee not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
@@ -960,6 +956,73 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Event Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/{attendeeId}/claims':
+    parameters:
+      - $ref: '#/parameters/attendeeId'
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Get an attendee claim
+      operationId: getAttendeeClaimLink
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              link:
+                type: string
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Send Claim email
+      operationId: sendAttendeeClaimEmail
+      parameters:
+        - in: body
+          name: claimProps
+          description: Claim properties to send link
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+      responses:
+        '200':
+          description: Claim sent
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/attendees/transfer':
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Send Claim email
+      operationId: transferAttendees
+      parameters:
+        - in: body
+          name: transferProps
+          description: Attendee transfer properties
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAttendeeTransfer'
+      responses:
+        '200':
+          description: Claim sent
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/attendees/ticketsale':
@@ -2068,3 +2131,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventDropin'
+          
+  EeEventAttendeeTransfer:
+    type: object
+    properties:
+      attendeeIds:
+        type: array
+        items:
+          type: string
+      fromTicketId:
+        type: string
+      toTicketId:
+        type: string
