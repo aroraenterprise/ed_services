@@ -1007,7 +1007,7 @@ paths:
     post:
       tags:
         - eeEventAttendees
-      summary: Send Claim email
+      summary: Transfer attendees between tickets
       operationId: transferAttendees
       parameters:
         - in: body
@@ -1020,7 +1020,7 @@ paths:
         '200':
           description: Claim sent
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EePagedEventAttendee'
         '404':
           description: Attendee not found
         '500':
@@ -2134,6 +2134,10 @@ definitions:
           
   EeEventAttendeeTransfer:
     type: object
+    required:
+      - attendeeIds
+      - fromTicketId
+      - toTicketId
     properties:
       attendeeIds:
         type: array
