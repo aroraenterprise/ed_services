@@ -781,7 +781,12 @@ paths:
         '200':
           description: Event Ticket updated
           schema:
-            $ref: '#/definitions/EeEventDropin'
+            type: object
+            properties:
+              dropin:
+                $ref: '#/definitions/EeEventDropin'
+              ticket:
+                $ref: '#/definitions/EeTicket'
         '404':
           description: Dropin or Ticket not found
         '500':
@@ -795,7 +800,12 @@ paths:
         '204':
           description: Dropin removed
           schema:
-            $ref: '#/definitions/EeSuccess'
+            type: object
+            properties:
+              dropin:
+                $ref: '#/definitions/EeEventDropin'
+              ticket:
+                $ref: '#/definitions/EeTicket'
         '404':
           description: Dropin or Ticket not found
         '500':
@@ -1007,7 +1017,7 @@ paths:
     post:
       tags:
         - eeEventAttendees
-      summary: Transfer attendees between tickets
+      summary: Send Claim email
       operationId: transferAttendees
       parameters:
         - in: body
@@ -1020,7 +1030,7 @@ paths:
         '200':
           description: Claim sent
           schema:
-            $ref: '#/definitions/EePagedEventAttendee'
+            $ref: '#/definitions/EeSuccess'
         '404':
           description: Attendee not found
         '500':
@@ -1880,6 +1890,19 @@ definitions:
           totalSold:
             type: integer
             format: int32
+          dropins:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                dropinType:
+                  type: string
+                color:
+                  type: string
 
   EePagedTicket:
     type: object
@@ -1947,10 +1970,6 @@ definitions:
           eventName:
             type: string
           eventId:
-            type: string
-          ticketId:
-            type: string
-          ticketName:
             type: string
           eventPicture:
             type: string
@@ -2116,6 +2135,14 @@ definitions:
       - $ref: '#/definitions/EeEventDropinUpdate'
       - $ref: '#/definitions/EeBaseId'
       - properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
+            type: string
           tickets:
             type: array
             items:
@@ -2138,10 +2165,6 @@ definitions:
           
   EeEventAttendeeTransfer:
     type: object
-    required:
-      - attendeeIds
-      - fromTicketId
-      - toTicketId
     properties:
       attendeeIds:
         type: array
