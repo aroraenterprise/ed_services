@@ -1971,6 +1971,10 @@ definitions:
             type: string
           eventId:
             type: string
+          ticketId:
+            type: string
+          ticketName:
+            type: string
           eventPicture:
             type: string
           active:
