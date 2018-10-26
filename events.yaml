@@ -1028,9 +1028,9 @@ paths:
             $ref: '#/definitions/EeEventAttendeeTransfer'
       responses:
         '200':
-          description: Claim sent
+          description: Attendees transfered
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EePagedEventAttendee'
         '404':
           description: Attendee not found
         '500':
