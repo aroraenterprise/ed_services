@@ -19,12 +19,14 @@ tags:
     description: Tickets linked to events
   - name: eeEventAttendees
     description: Event Attendees
-  - name: eeEventDropin
+  - name: eeEventDropins
     description: Event Dropins
   - name: eeCertificates
     description: Manage eCertificates - creation, update and deletion of templates
   - name: eeAttendeeCertificates
     description: Manage eCertificates for attendees-assignment and removal
+  - name: eeKiosk
+    description: Self-serve kiosks
 schemes:
   - https
 produces:
@@ -1288,6 +1290,92 @@ paths:
           description: Certificate removed
         '404':
           description: Certificate not assigned
+  /kiosks:
+    get:
+      tags:
+        - eeKiosk
+      summary: List all user's kiosks
+      operationId: listAllKiosks
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of kiosks
+          schema:
+            $ref: '#/definitions/EePagedKiosk'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeKiosk
+      summary: Activate kiosk [used by kiosk to get its unique id]
+      operationId: activateKiosk
+      responses:
+        '200':
+          description: Kiosk created
+          schema:
+            $ref: '#/definitions/EeKiosk'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/kiosks/{kioskId}':
+    parameters:
+      - $ref: '#/parameters/kioskId'
+    get:
+      tags:
+        - eeKiosk
+      summary: Get a kiosk
+      operationId: getKiosk
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeKiosk'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeKiosk
+      summary: Link a kiosk to my account
+      operationId: linkKiosk
+      parameters:
+        - in: body
+          name: kioskProps
+          description: Kiosk object that needs to be linked
+          required: true
+          schema:
+            $ref: '#/definitions/EeKioskUpdate'
+      responses:
+        '200':
+          description: Kiosk linked
+          schema:
+            $ref: '#/definitions/EeKiosk'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeKiosk
+      summary: Deactivate a kiosk
+      operationId: deactivateKiosk
+      responses:
+        '204':
+          description: Kiosk cleared
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   limit:
     name: limit
@@ -1358,6 +1446,12 @@ parameters:
     name: inviteId
     in: path
     description: Invite Id
+    type: string
+    required: true
+  kioskId:
+    name: kioskId
+    in: path
+    description: Kiosk Id
     type: string
     required: true
   searchQuery:
@@ -2178,3 +2272,35 @@ definitions:
         type: string
       toTicketId:
         type: string
+        
+  EeKioskUpdate:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      color:
+        type: string
+      dropinId:
+        type: string
+        
+  EeKiosk:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeKioskUpdate'
+      - properties:
+          dropin:
+            $ref: '#/definitions/EeEventDropin'
+  EePagedKiosk:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeKiosk'
