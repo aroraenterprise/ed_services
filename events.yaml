@@ -2086,6 +2086,8 @@ definitions:
   EePagedEventAttendee:
     type: object
     properties:
+      facets:
+        type: object
       pageData:
         $ref: '#/definitions/EePagination'
       items:
