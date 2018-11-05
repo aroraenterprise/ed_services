@@ -53,11 +53,7 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
-        - in: query
-          name: currencyCode
-          description: Currency Code to fetch event primary tickets from the store for sale
-          required: false
-          type: string
+        - $ref: '#/parameters/searchCoords'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -217,6 +213,7 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/searchCoords'
         - in: query
           name: currencyCode
           description: Currency Code to fetch event primary tickets from the store for sale
@@ -1458,6 +1455,14 @@ parameters:
     in: query
     name: q
     type: string
+  searchCoords:
+    in: query
+    name: searchCoords
+    description: Coordinates for search
+    type: array
+    required: false
+    items:
+      type: string
   searchFacets:
     in: query
     name: facets
