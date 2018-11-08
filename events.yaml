@@ -1011,6 +1011,30 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/clear-dropins':
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Clear dropins from attendees
+      operationId: clearAttendeeDropins
+      parameters:
+        - in: body
+          name: attendeeIds
+          description: Attendee Ids
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Attendees updated
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
   '/attendees/transfer':
     post:
@@ -2244,6 +2268,10 @@ definitions:
             type: string
           eventName:
             type: string
+          eventLocation:
+            type: string
+          eventPicture:
+            type: string
           organizerId:
             type: string
           organizerName:
@@ -2300,6 +2328,9 @@ definitions:
       - $ref: '#/definitions/EeBaseId'
       - $ref: '#/definitions/EeKioskUpdate'
       - properties:
+          isNew:
+            type: boolean
+            default: false
           dropin:
             $ref: '#/definitions/EeEventDropin'
   EePagedKiosk:
