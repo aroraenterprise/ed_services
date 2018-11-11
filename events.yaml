@@ -1035,6 +1035,28 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/message':
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Send a message to attendees
+      operationId: sendAttendeeNotification
+      parameters:
+        - in: body
+          name: attendeeNotificationProp
+          description: Attendee Notification properties
+          required: true
+          schema:
+            $ref: '#/definitions/EeAttendeeNotification'
+      responses:
+        '200':
+          description: Notification sent
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
   '/attendees/transfer':
     post:
@@ -2342,3 +2364,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeKiosk'
+  
+  EeAttendeeNotification:
+    type: object
+    properties:
+      eventId:
+        type: string
+      attendeeIds:
+        type: array
+        items:
+          type: string
+      message:
+        type: string
