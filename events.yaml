@@ -21,10 +21,8 @@ tags:
     description: Event Attendees
   - name: eeEventDropins
     description: Event Dropins
-  - name: eeCertificates
-    description: Manage eCertificates - creation, update and deletion of templates
-  - name: eeAttendeeCertificates
-    description: Manage eCertificates for attendees-assignment and removal
+  - name: eeEventCertificates
+    description: Manage eCertificates - creation, update and deletion and assigning to attendees
   - name: eeKiosk
     description: Self-serve kiosks
 schemes:
@@ -1184,12 +1182,15 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  /certificates:
+  ### YO
+  '/events/{eventId}/certificates':
+    parameters:
+      - $ref: '#/parameters/eventId'
     get:
       tags:
-        - eeCertificates
-      summary: List Certificates
-      operationId: listCertificates
+        - eeEventCertificates
+      summary: List all event certificates
+      operationId: listAllEventCertificates
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -1197,30 +1198,30 @@ paths:
         - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: Paged list of certificates
+          description: Certificates for the event
           schema:
-            $ref: '#/definitions/EePagedCertificate'
+            $ref: '#/definitions/EePagedEventCertificate'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     post:
       tags:
-        - eeCertificates
-      summary: Create a Certificate
-      operationId: createCertificate
+        - eeEventCertificates
+      summary: Add a certificate to an event
+      operationId: addEventCertificate
       parameters:
         - in: body
-          name: eventProps
-          description: Event object that needs to be created
+          name: certificateProps
+          description: Certificate object to be created
           required: true
           schema:
-            $ref: '#/definitions/EeCertificateUpdate'
+            $ref: '#/definitions/EeEventCertificateUpdate'
       responses:
         '200':
-          description: Certificate created
+          description: Certificate added
           schema:
-            $ref: '#/definitions/EeCertificate'
+            $ref: '#/definitions/EeEventCertificate'
         '400':
-          $ref: '#/responses/InvalidInputResponse'
+          description: Invalid request
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/certificates/{certificateId}':
@@ -1228,57 +1229,61 @@ paths:
       - $ref: '#/parameters/certificateId'
     get:
       tags:
-        - eeCertificates
-      summary: Get a certificate by id
-      operationId: getCertificate
+        - eeEventCertificates
+      summary: Get a certificate
+      operationId: getEventCertificate
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EeEvent'
+            $ref: '#/definitions/EeEventCertificate'
         '404':
           description: Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
-        - eeCertificates
-      summary: Update a certificate
-      operationId: updateCertificate
+        - eeEventCertificates
+      summary: Update certificate to event
+      operationId: updateEventCertificate
       parameters:
         - in: body
           name: certificateProps
-          description: Certificate with updated props
+          description: Certificate to update
           required: true
           schema:
-            $ref: '#/definitions/EeCertificateUpdate'
+            $ref: '#/definitions/EeEventCertificateUpdate'
       responses:
         '200':
-          description: Certificate updated
+          description: Event Certificate updated
           schema:
-            $ref: '#/definitions/EeCertificate'
+            $ref: '#/definitions/EeEventCertificate'
         '404':
           description: Certificate not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeCertificates
-      summary: Delete a certificate by id
-      operationId: deleteCertificate
+        - eeEventCertificates
+      summary: Delete an existing certificate
+      operationId: deleteEventCertificate
       responses:
         '204':
           description: Certificate deleted
+          schema:
+            $ref: '#/definitions/EeSuccess'
         '404':
           description: Certificate not found
-  '/attendees/{attendeeId}/certificates':
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/certificate/{certificateId}/attendees':
     parameters:
-      - $ref: '#/parameters/attendeeId'
+      - $ref: '#/parameters/certificateId'
     get:
       tags:
-        - eeAttendeeCertificates
-      summary: List attendee certificates
-      operationId: listAttendeeCertificates
+        - eeEventCertificates
+      summary: List all attendees assigned to this certificate
+      operationId: searchAttendeesAssignedToCertificate
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -1286,53 +1291,42 @@ paths:
         - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: Paged list of certificates assigned to an attendee
+          description: Paged list of attendees assigned to a certificate
           schema:
-            $ref: '#/definitions/EePagedCertificate'
+            $ref: '#/definitions/EePagedEventAttendee'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/{attendeeId}/certificates/{certificateId}':
+  '/certificates/{certificateId}/attendees/{attendeeId}':
     parameters:
-      - $ref: '#/parameters/attendeeId'
       - $ref: '#/parameters/certificateId'
-    get:
-      tags:
-        - eeAttendeeCertificates
-      summary: Get a certificate by id
-      operationId: getAttendeeCertificate
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeAttendeeCertificate'
-        '404':
-          description: Certificate not found
+      - $ref: '#/parameters/attendeeId'
     put:
       tags:
-        - eeAttendeeCertificates
-      summary: Assign a certificate
-      operationId: assignAttendeeCertificate
+        - eeEventCertificates
+      summary: Assign a certificate to attendee
+      operationId: assignCertificateToAttendee
       responses:
         '200':
           description: Certificate assigned
           schema:
-            $ref: '#/definitions/EeAttendeeCertificate'
+            $ref: '#/definitions/EeEventAttendee'
         '404':
           description: Certificate not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeAttendeeCertificates
-      summary: Remove an assigned certificate for attendee
-      operationId: removeAttendeeCertificate
+        - eeEventCertificates
+      summary: Remove an assigned certificate from attendee
+      operationId: removeCertificateFromAttendee
       responses:
         '204':
           description: Certificate removed
+          schema:
+            $ref: '#/definitions/EeSuccess'
         '404':
-          description: Certificate not assigned
+          description: Certificate not found
+  
   /kiosks:
     get:
       tags:
@@ -2134,6 +2128,10 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeEventDropin'
+          certificates:
+            type: array
+            items:
+              $ref: '#/definitions/EeAttendeeCertificate'
   EePagedEventAttendee:
     type: object
     properties:
@@ -2208,38 +2206,59 @@ definitions:
       filename:
         type: string
         
-  EeCertificateUpdate:
+  EeEventCertificateUpdate:
     type: object
     required:
       - name
     properties:
       name:
         type: string
+      templateUrl:
+        type: string
+      substitutionMap:
+        type: object
     
-  EeCertificate:
+  EeEventCertificate:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeCertificateUpdate'
+      - $ref: '#/definitions/EeEventCertificateUpdate'
       - properties:
-          templateUrl:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          eventLocation:
+            type: string
+          eventPicture:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
             type: string
   
-  EePagedCertificate:
+  EeAttendeeCertificate:
+    type: object
+    properties:
+      certificateId:
+        type: string
+      substitutions:
+        type: object
+      name:
+        type: string
+      generatedLink:
+        type: string
+      timestamp:
+        type: integer
+  
+  EePagedEventCertificate:
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
       items:
         type: array
         items:
-          $ref: '#/definitions/EeCertificate'
-  
-  EeAttendeeCertificate:
-    properties:
-      attendee:
-        $ref: '#/definitions/EeEventAttendee'
-      certificate:
-        $ref: '#/definitions/EeCertificate'
+          $ref: '#/definitions/EeEventCertificate'
   
   EeEventDropinUpdate:
     type: object
