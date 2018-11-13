@@ -1182,7 +1182,27 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  ### YO
+  '/attendees/{attendeeId}/certificates/{certificateId}':
+    parameters:
+      - $ref: '#/parameters/attendeeId'
+      - $ref: '#/parameters/certificateId'
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Download a certificate
+      operationId: downloadCertificate
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeAttendeeCertificate'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee/Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/events/{eventId}/certificates':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -1276,7 +1296,7 @@ paths:
           description: Certificate not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/certificate/{certificateId}/attendees':
+  '/certificates/{certificateId}/attendees':
     parameters:
       - $ref: '#/parameters/certificateId'
     get:
@@ -2127,7 +2147,7 @@ definitions:
           dropins:
             type: array
             items:
-              $ref: '#/definitions/EeEventDropin'
+              $ref: '#/definitions/EeAttendeeDropin'
           certificates:
             type: array
             items:
@@ -2326,6 +2346,19 @@ definitions:
                   type: string
                 name:
                   type: string
+  EeAttendeeDropin:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      color:
+        type: string
+      timestamp:
+        type: integer
   
   EePagedEventDropin:
     type: object
