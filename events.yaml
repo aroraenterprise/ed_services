@@ -1181,27 +1181,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/attendees/{attendeeId}/certificates/{certificateId}':
-    parameters:
-      - $ref: '#/parameters/attendeeId'
-      - $ref: '#/parameters/certificateId'
-    post:
-      tags:
-        - eeEventAttendees
-      summary: Download a certificate
-      operationId: downloadCertificate
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeAttendeeCertificate'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee/Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
           
   '/events/{eventId}/certificates':
     parameters:
@@ -1346,7 +1325,26 @@ paths:
             $ref: '#/definitions/EeSuccess'
         '404':
           description: Certificate not found
-  
+  '/certificates/download/{certificateCode}':
+    parameters:
+      - $ref: '#/parameters/certificateCode'
+    post:
+      tags:
+        - eeEventCertificates
+      summary: Download a certificate [certificateCode is eeEventAttendee.certificates[idx].code]
+      operationId: downloadCertificate
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeAttendeeCertificate'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee/Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   /kiosks:
     get:
       tags:
@@ -1467,6 +1465,12 @@ parameters:
     name: certificateId
     in: path
     description: Certificate Id
+    type: string
+    required: true
+  certificateCode:
+    name: certificateCode
+    in: path
+    description: Certificate Code
     type: string
     required: true
   currencyCode:
@@ -2270,6 +2274,8 @@ definitions:
         type: string
       timestamp:
         type: integer
+      code:
+        type: string
   
   EePagedEventCertificate:
     properties:
