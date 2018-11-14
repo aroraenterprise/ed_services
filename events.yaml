@@ -1428,7 +1428,7 @@ paths:
         - in: body
           name: kioskProps
           description: Kiosk object that needs to be linked
-          required: true
+          required: false
           schema:
             $ref: '#/definitions/EeKioskUpdate'
       responses:
@@ -2423,8 +2423,6 @@ definitions:
         
   EeKioskUpdate:
     type: object
-    required:
-      - name
     properties:
       name:
         type: string
