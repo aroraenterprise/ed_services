@@ -1402,6 +1402,18 @@ paths:
             $ref: '#/definitions/EeKiosk'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeKiosk
+      summary: Deactivate kiosk
+      operationId: deactivateKiosk
+      responses:
+        '200':
+          description: Kiosk deactivated
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/kiosks/{kioskId}':
     parameters:
       - $ref: '#/parameters/kioskId'
@@ -1443,17 +1455,37 @@ paths:
     delete:
       tags:
         - eeKiosk
-      summary: Deactivate a kiosk
-      operationId: deactivateKiosk
+      summary: Remove kiosk dropin
+      operationId: removeKioskDropin
       responses:
         '204':
-          description: Kiosk cleared
+          description: Kiosk dropin removed
           schema:
             $ref: '#/definitions/EeKiosk'
         '404':
           description: Kiosk not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  '/kiosks/{kioskId}/unlink':
+    parameters:
+      - $ref: '#/parameters/kioskId'
+    delete:
+      tags:
+        - eeKiosk
+      summary: Unlink a kiosk
+      operationId: unlinkKiosk
+      responses:
+        '204':
+          description: Unlink a kiosk
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  
 parameters:
   limit:
     name: limit
