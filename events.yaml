@@ -1426,7 +1426,7 @@ paths:
         '204':
           description: Kiosk cleared
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EeKiosk'
         '404':
           description: Kiosk not found
         '500':
