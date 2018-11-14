@@ -1345,6 +1345,29 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
+  '/certificates/inspectTemplate':
+    get:
+      tags:
+        - eeEventCertificates
+      summary: Inspect a template for all the placeholders
+      operationId: inspectTemplate
+      parameters:
+        - in: query
+          name: templateUrl
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeCertificateInspect'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee/Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   /kiosks:
     get:
       tags:
@@ -2276,6 +2299,16 @@ definitions:
         type: integer
       code:
         type: string
+  
+  EeCertificateInspect:
+    type: object
+    properties:
+      templateUrl:
+        type: string
+      placeholders:
+        type: array
+        items:
+          type: string
   
   EePagedEventCertificate:
     properties:
