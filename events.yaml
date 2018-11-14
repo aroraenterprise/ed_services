@@ -2294,6 +2294,8 @@ definitions:
         type: string
       templateUrl:
         type: string
+      variableMap:
+        type: object
       substitutionMap:
         type: object
     
@@ -2338,9 +2340,18 @@ definitions:
       templateUrl:
         type: string
       placeholders:
-        type: array
-        items:
-          type: string
+        type: object
+        properties:
+          matches:
+            type: array
+            items:
+              type: object
+          autofill:
+            type: object
+          tagKeys:
+            type: array
+            items:
+              type: string
   
   EePagedEventCertificate:
     properties:
