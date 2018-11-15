@@ -2294,10 +2294,29 @@ definitions:
         type: string
       templateUrl:
         type: string
+      template:
+        type: string
       variableMap:
-        type: object
+        type: array
+        items:
+          $ref: '#/definitions/EeEventCertificatePlaceholder'
       substitutionMap:
-        type: object
+        type: array
+        items:
+          $ref: '#/definitions/EeEventCertificatePlaceholder'
+  
+  EeEventCertificatePlaceholder:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+      autocomplete:
+        type: boolean
+        
     
   EeEventCertificate:
     type: object
