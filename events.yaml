@@ -1322,7 +1322,41 @@ paths:
         '204':
           description: Certificate removed
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EeEventAttendee'
+        '404':
+          description: Certificate not found
+  '/certificates/{certificateId}/bulk':
+    parameters:
+      - $ref: '#/parameters/certificateId'
+      - in: query
+        name: attendeeIds
+        type: array
+        items:
+          type: string
+    put:
+      tags:
+        - eeEventCertificates
+      summary: Assign certificates to attendees
+      operationId: bulkAssignCertificates
+      responses:
+        '200':
+          description: Certificate assigned
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventCertificates
+      summary: Remove certificates from attendees
+      operationId: bulkRemoveCertificates
+      responses:
+        '204':
+          description: Certificate removed
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
         '404':
           description: Certificate not found
   '/certificates/download/{certificateCode}':
