@@ -1325,9 +1325,13 @@ paths:
             $ref: '#/definitions/EeEventAttendee'
         '404':
           description: Certificate not found
-  '/certificates/{certificateId}/bulk':
+  '/certificates/bulk':
     parameters:
-      - $ref: '#/parameters/certificateId'
+      - in: query
+        name: certificateIds
+        type: array
+        items:
+          type: string
       - in: query
         name: attendeeIds
         type: array
@@ -2376,8 +2380,6 @@ definitions:
     properties:
       certificateId:
         type: string
-      substitutions:
-        type: object
       name:
         type: string
       generatedLink:
