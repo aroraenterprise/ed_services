@@ -52,6 +52,7 @@ paths:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/searchCoords'
+        - $ref: '#/parameters/filterTimestamp'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -212,6 +213,7 @@ paths:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/searchCoords'
+        - $ref: '#/parameters/filterTimestamp'
         - in: query
           name: currencyCode
           description: Currency Code to fetch event primary tickets from the store for sale
@@ -1612,6 +1614,14 @@ parameters:
     in: query
     name: q
     type: string
+  filterTimestamp:
+    in: query
+    name: filterTimestamp
+    description: Filter by start and end time e.g. (starting after 1111 ending before 1234 = 1111,1234)
+    type: array
+    items:
+      type: integer
+    maxLength: 2
   searchCoords:
     in: query
     name: searchCoords
