@@ -1619,6 +1619,37 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  '/automations/{triggerType}/trigger':
+    post:
+      tags:
+        - eeEventAutomations
+      security: []
+      parameters:
+        - in: path
+          name: triggerType
+          type: string
+          required: true
+        - in: query
+          name: apiKey
+          type: string
+          required: true
+        - in: body
+          name: subData
+          description: Base64 encoded message
+          required: true
+          schema:
+            $ref: '#/definitions/EePubSubMessage'
+      summary: Pub sub to trigger an event automation
+      operationId: triggerEventAutomation
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Invalid type/id supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
 parameters:
   limit:
