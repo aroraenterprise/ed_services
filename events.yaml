@@ -1,14 +1,14 @@
 swagger: '2.0'
 info:
   description: Events service for eDropin
-  version: 1.0.8
+  version: 1.0.9
   title: eDropin Events
   license:
     name: UNLICENSED
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: events-dot-edropin-play.appspot.com
+host: events-dot-edropin-test.appspot.com
 basePath: /
 tags:
   - name: eeEvents
@@ -25,6 +25,8 @@ tags:
     description: Manage eCertificates - creation, update and deletion and assigning to attendees
   - name: eeKiosk
     description: Self-serve kiosks
+  - name: eeEventAutomations
+    description: Automated actions based on triggers such as dropin => assign certificate
 schemes:
   - https
 produces:
@@ -1524,6 +1526,98 @@ paths:
           description: Kiosk not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+          
+  '/events/{eventId}/automations':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventAutomations
+      summary: List all event Automations
+      operationId: listAllEventAutomations
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Automations for the event
+          schema:
+            $ref: '#/definitions/EePagedEventAutomation'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEventAutomations
+      summary: Add an automation to an event
+      operationId: addEventAutomation
+      parameters:
+        - in: body
+          name: automationProps
+          description: Automation object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAutomationUpdate'
+      responses:
+        '200':
+          description: Automation added
+          schema:
+            $ref: '#/definitions/EeEventAutomation'
+        '400':
+          description: Invalid request
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/automations/{automationId}':
+    parameters:
+      - $ref: '#/parameters/automationId'
+    get:
+      tags:
+        - eeEventAutomations
+      summary: Get an Automation
+      operationId: getEventAutomation
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEventAutomation'
+        '404':
+          description: Automation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventAutomations
+      summary: Update Automation to event
+      operationId: updateEventAutomation
+      parameters:
+        - in: body
+          name: automationProps
+          description: Automation to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAutomationUpdate'
+      responses:
+        '200':
+          description: Event Automation updated
+          schema:
+            $ref: '#/definitions/EeEventAutomation'
+        '404':
+          description: Automation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventAutomations
+      summary: Delete an existing Automation
+      operationId: deleteEventAutomation
+      responses:
+        '204':
+          description: Automation deleted
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Automation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   
   
 parameters:
@@ -1554,6 +1648,12 @@ parameters:
     name: attendeeId
     in: path
     description: Attendee Id
+    type: string
+    required: true
+  automationId:
+    name: automationId
+    in: path
+    description: Automation Id
     type: string
     required: true
   certificateId:
@@ -2557,6 +2657,8 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
+      facets:
+        type: object
       items:
         type: array
         items:
@@ -2573,3 +2675,51 @@ definitions:
           type: string
       message:
         type: string
+        
+  EeEventAutomationUpdate:
+    type: object
+    properties:
+      triggerType:
+        type: string
+        enum:
+          - 'dropin'
+          - 'certificate'
+      triggerCondition:
+        type: string
+      attendeeStateCondition:
+        type: string
+      actionType:
+        type: string
+        enum:
+          - 'assignCertificate'
+      actionData:
+        type: object
+  
+  EeEventAutomation:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeEventAutomationUpdate'
+      - properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          eventLocation:
+            type: string
+          eventPicture:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
+            type: string
+
+  EePagedEventAutomation:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventAutomation'
