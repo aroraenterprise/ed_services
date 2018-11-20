@@ -2728,6 +2728,13 @@ definitions:
           - 'assignCertificate'
       actionData:
         type: object
+      dropletId:
+        type: string
+      dropletData:
+        type: object
+      active:
+        type: boolean
+        default: true
   
   EeEventAutomation:
     type: object
@@ -2747,10 +2754,6 @@ definitions:
             type: string
           organizerName:
             type: string
-          dropletId:
-            type: string
-          dropletData:
-            type: object
 
   EePagedEventAutomation:
     type: object
