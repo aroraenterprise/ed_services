@@ -2709,6 +2709,9 @@ definitions:
         
   EeEventAutomationUpdate:
     type: object
+    required:
+      - triggerType
+      - actionType
     properties:
       triggerType:
         type: string
@@ -2744,6 +2747,10 @@ definitions:
             type: string
           organizerName:
             type: string
+          dropletId:
+            type: string
+          dropletData:
+            type: object
 
   EePagedEventAutomation:
     type: object
