@@ -861,6 +861,60 @@ paths:
           description: Membership not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/memberships/{membershipId}/permissions/{accountId}':
+    parameters:
+      - $ref: '#/parameters/membershipId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - esMemberships
+      summary: Get all assigned permissions to account for membership
+      operationId: getAccountPermissionForMembership
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsPermission'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esMemberships
+      summary: Set permission for an account to a membership
+      operationId: setMembershipPermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/EsPermission'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/memberships/{membershipId}/all-permissions':
+    parameters:
+      - $ref: '#/parameters/membershipId'
+    get:
+      tags:
+        - esMemberships
+      summary: List all accounts with membership permissions
+      operationId: getMembershipPermissions
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this merchant
+          schema:
+            $ref: '#/definitions/EsPagedPermission'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/memberships/{membershipId}/members':
     parameters:
       - $ref: '#/parameters/membershipId'
@@ -943,10 +997,6 @@ paths:
           description: Membership created
           schema:
             $ref: '#/definitions/EsMembership'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/user-memberships/{userMembershipId}':
@@ -969,10 +1019,6 @@ paths:
           description: Membership updated
           schema:
             $ref: '#/definitions/EsUserMembership'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '404':
           description: Membership not found
         '500':
@@ -987,8 +1033,6 @@ paths:
           description: Membership deleted
           schema:
             $ref: '#/definitions/EsSuccess'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '404':
           description: Membership not found
         '500':
@@ -1878,6 +1922,14 @@ definitions:
     properties:
       id:
         type: string
+      memberId:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      title:
+        type: string
       name:
         type: string
       email:
@@ -1885,6 +1937,8 @@ definitions:
       active:
         type: boolean
         default: true
+      memberSince:
+        type: number
         
   EsMembersUpdate:
     type: object
@@ -1898,22 +1952,15 @@ definitions:
           required:
             - action
             - memberId
-          properties:
-            action:
-              type: string
-              enum:
-                - 'delete'
-                - 'update'
-              default: 'update'
-            memberId:
-              type: string
-            name:
-              type: string
-            email:
-              type: string
-            active:
-              type: boolean
-              default: true
+          allOf:
+            - $ref: '#/definitions/EsMember'
+            - properties:
+                action:
+                  type: string
+                  enum:
+                    - 'delete'
+                    - 'update'
+                  default: 'update'
   
   EsPagedMember:
     type: object
