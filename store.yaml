@@ -943,7 +943,7 @@ paths:
       parameters:
         - in: body
           name: memberProps
-          description: Members that need to be updated
+          description: Members that need to be updated/deleted
           required: true
           schema:
             $ref: '#/definitions/EsMembersUpdate'
@@ -952,10 +952,28 @@ paths:
           description: Membership updated
           schema:
             $ref: '#/definitions/EsPagedMember'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/memberships/{membershipId}/members/tasks':
+    parameters:
+      - $ref: '#/parameters/membershipId'
+    get:
+      tags:
+        - esMemberships
+      summary: Delete all members in the membership [cloud tasks]
+      operationId: deleteMembersTask
+      parameters:
+        - in: query
+          name: apiKey
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Members deleted
+          schema:
+            $ref: '#/definitions/EsSuccess'
         '404':
           description: Membership not found
         '500':
