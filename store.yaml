@@ -172,6 +172,22 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - esPermissions
+      summary: Remove all permissions for account
+      operationId: removePermissionsForAccount
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
           
   '/merchants/{merchantId}':
     parameters:
