@@ -98,7 +98,6 @@ paths:
     parameters:
       - $ref: '#/parameters/entityType'
       - $ref: '#/parameters/entityId'
-      - $ref: '#/parameters/accountId'
     get:
       tags:
         - esPermissions
