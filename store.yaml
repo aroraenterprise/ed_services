@@ -126,7 +126,7 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/permissions/{entityType}/{entityId}/accounts/{accountId}/check':
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
     parameters:
       - $ref: '#/parameters/entityType'
       - $ref: '#/parameters/entityId'
@@ -139,7 +139,7 @@ paths:
       parameters:
         - in: query
           type: string
-          required: true
+          required: false
           name: permission
       responses:
         '200':
@@ -148,28 +148,6 @@ paths:
             $ref: '#/definitions/EsPermissionCheck'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-          
-  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
-    parameters:
-      - $ref: '#/parameters/entityType'
-      - $ref: '#/parameters/entityId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - esPermissions
-      summary: Get permissions for account
-      operationId: getPermissionsForAccount
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EsPermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
