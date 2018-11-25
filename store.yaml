@@ -60,6 +60,14 @@ paths:
         - esPermissions
       summary: 'Accept a permission invite'
       operationId: acceptPermissionInvite
+      parameters:
+        - in: query
+          name: v
+          description: Accept or decline an invite
+          type: string
+          enum:
+            - accept
+            - decline
       responses:
         '200':
           description: OK
@@ -1300,6 +1308,8 @@ definitions:
       - emails
       - permissions
     properties:
+      invitedByName:
+        type: string
       emails:
         type: array
         items:
