@@ -27,6 +27,8 @@ tags:
     description: Self-serve kiosks
   - name: eeEventAutomations
     description: Automated actions based on triggers such as dropin => assign certificate
+  - name: eeQrCode
+    description: Generate qr codes
 schemes:
   - https
 produces:
@@ -1651,6 +1653,27 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  '/qr-code/{data}':
+    parameters:
+      - in: path
+        name: data
+        required: true
+        type: string
+    get:
+      tags:
+        - eeQrCode
+      summary: Get a qr code
+      operationId: getQRCode
+      security: []
+      produces:
+        - image/png
+        - image/gif
+        - image/jpeg
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: file
 parameters:
   limit:
     name: limit
