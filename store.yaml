@@ -11,6 +11,8 @@ info:
 host: store-dot-edropin-play.appspot.com
 basePath: /
 tags:
+  - name: esPermissions
+    description: Permissions manager
   - name: esMerchants
     description: Merchant management
   - name: esStore
@@ -46,6 +48,109 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - in: path
+        name: inviteToken
+        description: Invite Token
+        required: true
+        type: string
+    post:
+      tags:
+        - esPermissions
+      summary: 'Accept a permission invite'
+      operationId: acceptPermissionInvite
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPermissionInvite'
+        '404':
+          description: Permission invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/permissions/send-invite':
+    post:
+      tags:
+        - esPermissions
+      summary: 'Send a permission invite'
+      operationId: sendPermissionInvite
+      parameters:
+        - in: body
+          name: permissionInvite
+          description: Object for permission invite
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInviteCreate'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPermissionInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - esPermissions
+      summary: Check account has permission
+      operationId: hasPermission
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: entityKind
+        - in: query
+          type: string
+          required: true
+          name: entityId
+        - in: query
+          type: string
+          required: true
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{accountId}':
+    parameters:
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - esPermissions
+      summary: Get permissions for account
+      operationId: getPermissionsForAccount
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: entityKind
+        - in: query
+          type: string
+          required: true
+          name: entityId
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/merchants/{merchantId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -959,10 +1064,11 @@ paths:
   '/memberships/{membershipId}/members/tasks':
     parameters:
       - $ref: '#/parameters/membershipId'
-    get:
+    delete:
       tags:
         - esMemberships
       summary: Delete all members in the membership [cloud tasks]
+      security: []
       operationId: deleteMembersTask
       parameters:
         - in: query
@@ -1064,7 +1170,7 @@ parameters:
     format: int32
     minimum: 0
     exclusiveMinimum: true
-    maximum: 50
+    maximum: 100
     exclusiveMaximum: false
     multipleOf: 10
     default: 20
@@ -1251,6 +1357,33 @@ definitions:
     properties:
       hasPermission:
         type: boolean
+        
+  EsPermissionInviteCreate:
+    type: object
+    properties:
+      entityKind:
+        type: string
+      entityId:
+        type: string
+      permission:
+        type: array
+        items:
+          type: string
+          
+  EsPermissionInvite:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsPermissionInviteCreate'
+      - properties:
+          acceptedWhen:
+            type: integer
+          declinedWhen:
+            type: integer
+          acceptedById:
+            type: string
+          acceptedByName:
+            type: string
+  
   EsFeeStructure:
     type: object
     required:
