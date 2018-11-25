@@ -70,9 +70,9 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
-  '/permissions/{entityKind}/{entityId}/send-invite':
+  '/permissions/{entityType}/{entityId}/send-invite':
     parameters:
-      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityType'
       - $ref: '#/parameters/entityId'
     post:
       tags:
@@ -94,9 +94,9 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/permissions/{entityKind}/{entityId}/accounts':
+  '/permissions/{entityType}/{entityId}/accounts':
     parameters:
-      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityType'
       - $ref: '#/parameters/entityId'
       - $ref: '#/parameters/accountId'
     get:
@@ -119,9 +119,9 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/permissions/{entityKind}/{entityId}/accounts/{accountId}/check':
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}/check':
     parameters:
-      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityType'
       - $ref: '#/parameters/entityId'
       - $ref: '#/parameters/accountId'
     get:
@@ -144,9 +144,9 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
-  '/permissions/{entityKind}/{entityId}/accounts/{accountId}':
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
     parameters:
-      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityType'
       - $ref: '#/parameters/entityId'
       - $ref: '#/parameters/accountId'
     get:
@@ -1124,10 +1124,10 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
 parameters:
-  entityKind:
-    name: entityKind
+  entityType:
+    name: entityType
     in: path
-    description: Entity Kind
+    description: Entity Type
     type: string
     required: true
   entityId:
@@ -1298,15 +1298,9 @@ definitions:
   EsPermissionInviteCreate:
     type: object
     required:
-      - entityKind
-      - entityId
       - emails
       - permissions
     properties:
-      entityKind:
-        type: string
-      entityId:
-        type: string
       emails:
         type: array
         items:
@@ -1323,9 +1317,11 @@ definitions:
     properties:
       id:
         type: string
+      modifiedOn:
+        type: string
       creatorId:
         type: string
-      entityKind:
+      entityType:
         type: string
       entityId:
         type: string
