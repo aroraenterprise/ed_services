@@ -64,13 +64,16 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsPermissionInvite'
+            $ref: '#/definitions/EsPermission'
         '404':
           description: Permission invite not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
-  '/permissions/send-invite':
+  '/permissions/{entityKind}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityId'
     post:
       tags:
         - esPermissions
@@ -87,12 +90,39 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsPermissionInvite'
+            $ref: '#/definitions/EsPagedPermission'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/permissions/{accountId}/check':
+  '/permissions/{entityKind}/{entityId}/accounts':
     parameters:
+      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - esPermissions
+      summary: Get permissions for entity
+      operationId: paginatePermissions
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsPagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityKind}/{entityId}/accounts/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityId'
       - $ref: '#/parameters/accountId'
     get:
       tags:
@@ -100,14 +130,6 @@ paths:
       summary: Check account has permission
       operationId: hasPermission
       parameters:
-        - in: query
-          type: string
-          required: true
-          name: entityKind
-        - in: query
-          type: string
-          required: true
-          name: entityId
         - in: query
           type: string
           required: true
@@ -121,24 +143,17 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/permissions/{accountId}':
+          
+  '/permissions/{entityKind}/{entityId}/accounts/{accountId}':
     parameters:
+      - $ref: '#/parameters/entityKind'
+      - $ref: '#/parameters/entityId'
       - $ref: '#/parameters/accountId'
     get:
       tags:
         - esPermissions
       summary: Get permissions for account
       operationId: getPermissionsForAccount
-      parameters:
-        - in: query
-          type: string
-          required: true
-          name: entityKind
-        - in: query
-          type: string
-          required: true
-          name: entityId
       responses:
         '200':
           description: Permissions for account
@@ -966,59 +981,6 @@ paths:
           description: Membership not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/memberships/{membershipId}/permissions/{accountId}':
-    parameters:
-      - $ref: '#/parameters/membershipId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - esMemberships
-      summary: Get all assigned permissions to account for membership
-      operationId: getAccountPermissionForMembership
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EsPermission'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - esMemberships
-      summary: Set permission for an account to a membership
-      operationId: setMembershipPermission
-      parameters:
-        - in: body
-          name: permissionProps
-          description: Permissions
-          required: true
-          schema:
-            $ref: '#/definitions/EsPermissionInput'
-      responses:
-        '200':
-          description: Permission set
-          schema:
-            $ref: '#/definitions/EsPermission'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/memberships/{membershipId}/all-permissions':
-    parameters:
-      - $ref: '#/parameters/membershipId'
-    get:
-      tags:
-        - esMemberships
-      summary: List all accounts with membership permissions
-      operationId: getMembershipPermissions
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: List of Users with permissions linked to this merchant
-          schema:
-            $ref: '#/definitions/EsPagedPermission'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
           
   '/memberships/{membershipId}/members':
     parameters:
@@ -1162,6 +1124,18 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
 parameters:
+  entityKind:
+    name: entityKind
+    in: path
+    description: Entity Kind
+    type: string
+    required: true
+  entityId:
+    name: entityId
+    in: path
+    description: Entity Id
+    type: string
+    required: true
   limit:
     name: limit
     in: query
@@ -1321,6 +1295,29 @@ definitions:
       total:
         type: integer
         format: int32
+  EsPermissionInviteCreate:
+    type: object
+    required:
+      - entityKind
+      - entityId
+      - emails
+      - permissions
+    properties:
+      entityKind:
+        type: string
+      entityId:
+        type: string
+      emails:
+        type: array
+        items:
+          type: string
+      permissions:
+        type: array
+        items:
+          type: string
+      message:
+        type: string
+        
   EsPermission:
     type: object
     properties:
@@ -1334,6 +1331,19 @@ definitions:
         type: string
       permissions:
         type: object
+      email:
+        type: string
+      message:
+        type: string
+      acceptedWhen:
+        type: integer
+      declinedWhen:
+        type: integer
+      acceptedById:
+        type: string
+      acceptedByName:
+        type: string
+      
   EsPermissionInput:
     type: object
     properties:
@@ -1357,32 +1367,6 @@ definitions:
     properties:
       hasPermission:
         type: boolean
-        
-  EsPermissionInviteCreate:
-    type: object
-    properties:
-      entityKind:
-        type: string
-      entityId:
-        type: string
-      permission:
-        type: array
-        items:
-          type: string
-          
-  EsPermissionInvite:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsPermissionInviteCreate'
-      - properties:
-          acceptedWhen:
-            type: integer
-          declinedWhen:
-            type: integer
-          acceptedById:
-            type: string
-          acceptedByName:
-            type: string
   
   EsFeeStructure:
     type: object
