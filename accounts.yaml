@@ -1,16 +1,18 @@
 swagger: '2.0'
 info:
   description: Accounts service for eDropin
-  version: 1.0.7
+  version: 1.0.10
   title: eDropin Accounts
   license:
     name: UNLICENSED
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: edropin-play.appspot.com
+host: edropin-test.appspot.com
 basePath: /
 tags:
+  - name: eaPermissions
+    description: Permissions
   - name: eaAccounts
     description: User accounts on eDropin
   - name: eaProfiles
@@ -50,6 +52,145 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - in: path
+        name: inviteToken
+        description: Invite Token
+        required: true
+        type: string
+    post:
+      tags:
+        - eaPermissions
+      summary: 'Accept a permission invite'
+      operationId: acceptPermissionInvite
+      parameters:
+        - in: query
+          name: v
+          description: Accept or decline an invite
+          type: string
+          enum:
+            - accept
+            - decline
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EaPermissionAccept'
+        '404':
+          description: Permission invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/permissions/{entityType}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    post:
+      tags:
+        - eaPermissions
+      summary: 'Send a permission invite'
+      operationId: sendPermissionInvite
+      parameters:
+        - in: body
+          name: permissionInvite
+          description: Object for permission invite
+          required: true
+          schema:
+            $ref: '#/definitions/EaPermissionInviteCreate'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EaPagedPermissionInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityType}/{entityId}/accounts':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    get:
+      tags:
+        - eaPermissions
+      summary: Get permissions for entity
+      operationId: paginatePermissions
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EaPagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eaPermissions
+      summary: Check account has permission
+      operationId: hasPermission
+      parameters:
+        - in: query
+          type: string
+          required: false
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EaPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaPermissions
+      summary: Set account permission
+      operationId: setPermission
+      parameters:
+        - in: body
+          required: true
+          name: permissionProps
+          schema:
+            $ref: '#/definitions/EaPermissionInput'
+      responses:
+        '200':
+          description: Set Account Permission
+          schema:
+            $ref: '#/definitions/EaPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eaPermissions
+      summary: Remove all permissions for account
+      operationId: removePermissionsForAccount
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   /accounts/authenticate/password:
     post:
       tags:
@@ -144,6 +285,29 @@ paths:
           description: Account not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/accounts/get-multi':
+    get:
+      tags:
+        - eaAccounts
+      summary: Get multiple accounts [service only]
+      security:
+        - ClientKey: []
+        - ServiceKey: []
+      parameters:
+      - in: query
+        name: accountIds
+        type: array
+        items:
+          type: string
+      operationId: getMultipleAccounts
+      responses:
+        '200':
+          description: List of all accounts
+          schema:
+            $ref: '#/definitions/EaPagedAccount'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+
   /profiles:
     get:
       tags:
@@ -388,96 +552,7 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/permissions/{accountId}':
-    parameters:
-      - $ref: '#/parameters/profileId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eaProfiles
-      summary: Get permission for account
-      operationId: getAccountPermissionForProfile
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EaPermission'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eaProfiles
-      summary: Set permission for profile
-      operationId: setProfilePermission
-      parameters:
-        - in: body
-          name: permissionProps
-          description: Permissions
-          required: true
-          schema:
-            $ref: '#/definitions/EaPermissionInput'
-      responses:
-        '200':
-          description: Permission set
-          schema:
-            $ref: '#/definitions/EaPermission'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/permissions/{accountId}/check':
-    parameters:
-      - $ref: '#/parameters/profileId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eaProfiles
-      summary: Check account has permission
-      operationId: checkAccountHasPermission
-      parameters:
-        - in: query
-          type: string
-          required: true
-          name: permission
-      responses:
-        '200':
-          description: Account has Permission
-          schema:
-            $ref: '#/definitions/EaPermissionCheck'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/all-permissions':
-    parameters:
-      - $ref: '#/parameters/profileId'
-    get:
-      tags:
-        - eaProfiles
-      summary: List all profile permissions
-      operationId: getProfilePermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: List of Users with permissions linked to this profile
-          schema:
-            $ref: '#/definitions/EaPagedPermission'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+  
   /profiles/search:
     get:
       tags:
@@ -556,7 +631,7 @@ paths:
             type: string
       responses:
         '200':
-          description: List of Invites
+          description: List of Account
           schema:
             $ref: '#/definitions/EaPagedProfileInvite'
         '400':
@@ -749,6 +824,18 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
 parameters:
+  entityType:
+    name: entityType
+    in: path
+    description: Entity Type
+    type: string
+    required: true
+  entityId:
+    name: entityId
+    in: path
+    description: Entity Id
+    type: string
+    required: true
   limit:
     name: limit
     in: query
@@ -890,26 +977,95 @@ definitions:
         format: int32
       message:
         type: string
-  EaPermission:
+  EaPermissionInviteCreate:
+    type: object
+    required:
+      - emails
+      - permissions
+    properties:
+      invitedByName:
+        type: string
+      emails:
+        type: array
+        items:
+          type: string
+      permissions:
+        type: array
+        items:
+          type: string
+      message:
+        type: string
+        
+  EaPermissionInvite:
     type: object
     properties:
       id:
         type: string
+      modifiedOn:
+        type: string
       creatorId:
         type: string
-      entityKind:
+      entityType:
         type: string
       entityId:
         type: string
       permissions:
         type: object
+      email:
+        type: string
+      message:
+        type: string
+      acceptedWhen:
+        type: integer
+      declinedWhen:
+        type: integer
+      acceptedById:
+        type: string
+      acceptedByName:
+        type: string
+  
+  EaPermission:
+    type: object
+    properties:
+      id:
+        type: string
+      modifiedOn:
+        type: string
+      creatorId:
+        type: string
+      entityType:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+      email:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      accountId:
+        type: string
+      
   EaPermissionInput:
     type: object
-    required:
-      - permissions
     properties:
       permissions:
         type: object
+  EaPagedPermissionInvite:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaPermissionInvite'
   EaPagedPermission:
     type: object
     properties:
@@ -928,6 +1084,16 @@ definitions:
     properties:
       hasPermission:
         type: boolean
+      permission:
+        $ref: '#/definitions/EaPermission'
+  
+  EaPermissionAccept:
+    type: object
+    properties:
+      invite:
+        $ref: '#/definitions/EaPermissionInvite'
+      permission:
+        $ref: '#/definitions/EaPermission'
   EaSuccess:
     type: object
     properties:
@@ -976,6 +1142,15 @@ definitions:
           claims:
             type: object
             readOnly: true
+  EaPagedAccount:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaAccount'
   EaClaims:
     type: object
     required:

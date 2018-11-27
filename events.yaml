@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: Events service for eDropin
-  version: 1.0.9
+  version: 1.0.10
   title: eDropin Events
   license:
     name: UNLICENSED
@@ -11,6 +11,8 @@ info:
 host: events-dot-edropin-test.appspot.com
 basePath: /
 tags:
+  - name: eePermissions
+    description: Permissions
   - name: eeEvents
     description: Events
   - name: eeEventTags
@@ -46,6 +48,145 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - in: path
+        name: inviteToken
+        description: Invite Token
+        required: true
+        type: string
+    post:
+      tags:
+        - eePermissions
+      summary: 'Accept a permission invite'
+      operationId: acceptPermissionInvite
+      parameters:
+        - in: query
+          name: v
+          description: Accept or decline an invite
+          type: string
+          enum:
+            - accept
+            - decline
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EePermissionAccept'
+        '404':
+          description: Permission invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/permissions/{entityType}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    post:
+      tags:
+        - eePermissions
+      summary: 'Send a permission invite'
+      operationId: sendPermissionInvite
+      parameters:
+        - in: body
+          name: permissionInvite
+          description: Object for permission invite
+          required: true
+          schema:
+            $ref: '#/definitions/EePermissionInviteCreate'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EePagedPermissionInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityType}/{entityId}/accounts':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    get:
+      tags:
+        - eePermissions
+      summary: Get permissions for entity
+      operationId: paginatePermissions
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EePagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eePermissions
+      summary: Check account has permission
+      operationId: hasPermission
+      parameters:
+        - in: query
+          type: string
+          required: false
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EePermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eePermissions
+      summary: Set account permission
+      operationId: setPermission
+      parameters:
+        - in: body
+          required: true
+          name: permissionProps
+          schema:
+            $ref: '#/definitions/EePermissionInput'
+      responses:
+        '200':
+          description: Set Account Permission
+          schema:
+            $ref: '#/definitions/EePermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eePermissions
+      summary: Remove all permissions for account
+      operationId: removePermissionsForAccount
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   /events:
     get:
       tags:
@@ -230,96 +371,6 @@ paths:
           description: Events
           schema:
             $ref: '#/definitions/EePagedEvent'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/permissions/{accountId}':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eeEvents
-      summary: Get permission for account
-      operationId: getAccountPermissionForEvent
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EePermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEvents
-      summary: Set permission for event
-      operationId: setEventPermission
-      parameters:
-        - in: body
-          name: permissionProps
-          description: Permissions
-          required: true
-          schema:
-            $ref: '#/definitions/EePermissionInput'
-      responses:
-        '200':
-          description: Permission set
-          schema:
-            $ref: '#/definitions/EePermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/permissions/{accountId}/check':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eeEvents
-      summary: Check account has permission
-      operationId: checkAccountHasPermission
-      parameters:
-        - in: query
-          type: string
-          required: true
-          name: permission
-      responses:
-        '200':
-          description: Account has Permission
-          schema:
-            $ref: '#/definitions/EePermissionCheck'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/all-permissions':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEvents
-      summary: List all event permissions
-      operationId: getEventPermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: List of Users with permissions linked to this event
-          schema:
-            $ref: '#/definitions/EePagedPermission'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '405':
@@ -1675,6 +1726,18 @@ paths:
           schema:
             type: file
 parameters:
+  entityType:
+    name: entityType
+    in: path
+    description: Entity Type
+    type: string
+    required: true
+  entityId:
+    name: entityId
+    in: path
+    description: Entity Id
+    type: string
+    required: true
   limit:
     name: limit
     in: query
@@ -1877,24 +1940,96 @@ definitions:
       lng:
         type: number
         format: float
-  EePermission:
+  
+  EePermissionInviteCreate:
+    type: object
+    required:
+      - emails
+      - permissions
+    properties:
+      invitedByName:
+        type: string
+      emails:
+        type: array
+        items:
+          type: string
+      permissions:
+        type: array
+        items:
+          type: string
+      message:
+        type: string
+        
+  EePermissionInvite:
     type: object
     properties:
       id:
         type: string
+      modifiedOn:
+        type: string
       creatorId:
         type: string
-      entityKind:
+      entityType:
         type: string
       entityId:
         type: string
       permissions:
         type: object
+      email:
+        type: string
+      message:
+        type: string
+      acceptedWhen:
+        type: integer
+      declinedWhen:
+        type: integer
+      acceptedById:
+        type: string
+      acceptedByName:
+        type: string
+  
+  EePermission:
+    type: object
+    properties:
+      id:
+        type: string
+      modifiedOn:
+        type: string
+      creatorId:
+        type: string
+      entityType:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+      email:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      accountId:
+        type: string
+      
   EePermissionInput:
     type: object
     properties:
       permissions:
         type: object
+  EePagedPermissionInvite:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EePermissionInvite'
   EePagedPermission:
     type: object
     properties:
@@ -1913,6 +2048,17 @@ definitions:
     properties:
       hasPermission:
         type: boolean
+      permission:
+        $ref: '#/definitions/EePermission'
+  
+  EePermissionAccept:
+    type: object
+    properties:
+      invite:
+        $ref: '#/definitions/EePermissionInvite'
+      permission:
+        $ref: '#/definitions/EePermission'
+        
   EeSuccess:
     type: object
     properties:

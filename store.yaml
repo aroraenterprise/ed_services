@@ -1,14 +1,14 @@
 swagger: '2.0'
 info:
   description: Store service for eDropin
-  version: 1.0.0
+  version: 1.0.10
   title: eDropin Store
   license:
     name: UNLICENSED
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: store-dot-edropin-play.appspot.com
+host: store-dot-edropin-test.appspot.com
 basePath: /
 tags:
   - name: esPermissions
@@ -72,7 +72,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsPermission'
+            $ref: '#/definitions/EsPermissionAccept'
         '404':
           description: Permission invite not found
         '500':
@@ -98,7 +98,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsPagedPermission'
+            $ref: '#/definitions/EsPagedPermissionInvite'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
@@ -146,6 +146,26 @@ paths:
           description: Account has Permission
           schema:
             $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - esPermissions
+      summary: Set account permission
+      operationId: setPermission
+      parameters:
+        - in: body
+          required: true
+          name: permissionProps
+          schema:
+            $ref: '#/definitions/EsPermissionInput'
+      responses:
+        '200':
+          description: Set Account Permission
+          schema:
+            $ref: '#/definitions/EsPermission'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '500':
@@ -1315,7 +1335,7 @@ definitions:
       message:
         type: string
         
-  EsPermission:
+  EsPermissionInvite:
     type: object
     properties:
       id:
@@ -1342,12 +1362,49 @@ definitions:
         type: string
       acceptedByName:
         type: string
+  
+  EsPermission:
+    type: object
+    properties:
+      id:
+        type: string
+      modifiedOn:
+        type: string
+      creatorId:
+        type: string
+      entityType:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+      email:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      accountId:
+        type: string
       
   EsPermissionInput:
     type: object
     properties:
       permissions:
         type: object
+  EsPagedPermissionInvite:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EsPagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsPermissionInvite'
   EsPagedPermission:
     type: object
     properties:
@@ -1366,6 +1423,16 @@ definitions:
     properties:
       hasPermission:
         type: boolean
+      permission:
+        $ref: '#/definitions/EsPermission'
+  
+  EsPermissionAccept:
+    type: object
+    properties:
+      invite:
+        $ref: '#/definitions/EsPermissionInvite'
+      permission:
+        $ref: '#/definitions/EsPermission'
   
   EsFeeStructure:
     type: object
