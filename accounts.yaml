@@ -292,7 +292,7 @@ paths:
       summary: Get multiple accounts [service only]
       security:
         - ClientKey: []
-        - ServiceKey: []
+          ServiceKey: []
       parameters:
       - in: query
         name: accountIds
