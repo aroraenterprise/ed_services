@@ -579,7 +579,97 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  '/profiles/{profileId}/permissions/{accountId}':
+    parameters:
+      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Get permission for account
+      operationId: getAccountPermissionForProfile
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EaPermission'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaProfiles
+      summary: Set permission for profile
+      operationId: setProfilePermission
+      parameters:
+        - in: body
+          name: permissionProps
+          description: Permissions
+          required: true
+          schema:
+            $ref: '#/definitions/EaPermissionInput'
+      responses:
+        '200':
+          description: Permission set
+          schema:
+            $ref: '#/definitions/EaPermission'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/parameters/profileId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Check account has permission
+      operationId: checkAccountHasPermission
+      parameters:
+        - in: query
+          type: string
+          required: true
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EaPermissionCheck'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/all-permissions':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eaProfiles
+      summary: List all profile permissions
+      operationId: getProfilePermission
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this profile
+          schema:
+            $ref: '#/definitions/EaPagedPermission'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/profile-invites':
     get:
       tags:
