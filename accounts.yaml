@@ -579,6 +579,25 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  /profiles/{profileId}/feed:
+    get:
+      tags:
+        - eaProfiles
+      summary: Profile Feed
+      operationId: paginateProfileFeed
+      parameters:
+        - $ref: '#/parameters/profileId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged Feed Items
+          schema:
+            $ref: '#/definitions/EaPagedFeedItem'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/profiles/{profileId}/permissions/{accountId}':
     parameters:
       - $ref: '#/parameters/profileId'
@@ -1029,6 +1048,33 @@ definitions:
       total:
         type: integer
         format: int32
+  
+  EaFeedItem:
+    type: object
+    properties:
+      id:
+        type: string
+      actor:
+        type: string
+      foreignObject:
+        type: object
+      object:
+        type: object
+      time:
+        type: string
+      verb:
+        type: string
+  
+  EaPagedFeedItem:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaFeedItem'
+      pageData:
+        $ref: '#/definitions/EaPagination'
+  
   EaAddress:
     type: object
     properties:
