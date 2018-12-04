@@ -1055,7 +1055,7 @@ definitions:
       id:
         type: string
       actor:
-        type: string
+        $ref: '#/definitions/EaAccount'
       foreignObject:
         type: object
       object:
