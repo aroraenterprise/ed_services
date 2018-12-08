@@ -21,6 +21,8 @@ tags:
     description: User Cart for store items
   - name: esOrder
     description: Order items for user
+  - name: esMerchantOrder
+    description: Merchant Order items
   - name: esCustomers
     description: Customers of eDropin
   - name: esMemberships
@@ -792,22 +794,15 @@ paths:
           description: Order Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/orders/{orderId}/order-items/{orderItemId}/merchant-refund':
+  
+  '/merchant-orders/{orderItemId}':
     parameters:
-      - $ref: '#/parameters/orderId'
       - $ref: '#/parameters/orderItemId'
     post:
       tags:
-        - esOrder
-      summary: Start the refund process for item [merchant]
-      parameters:
-        - in: body
-          name: refundProps
-          description: Refund options
-          required: true
-          schema:
-            $ref: '#/definitions/EsRefundInput'
-      operationId: startMerchantRefundForItem
+        - esMerchantOrder
+      summary: Get the order item
+      operationId: getOrderItemForMerchant
       responses:
         '200':
           description: Order Item
@@ -821,6 +816,34 @@ paths:
           description: Order Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+          
+  '/merchant-orders/{orderItemId}/refund':
+    parameters:
+      - $ref: '#/parameters/orderItemId'
+    post:
+      tags:
+        - esMerchantOrder
+      summary: Start the refund process for item [merchant]
+      parameters:
+        - in: body
+          name: refundProps
+          description: Refund options
+          required: true
+          schema:
+            $ref: '#/definitions/EsMerchantRefundInput'
+      operationId: refundItem
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItem'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Order Item not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
   /customers:
     get:
       tags:
@@ -1592,6 +1615,20 @@ definitions:
         type: integer
       message:
         type: string
+  
+  EsMerchantRefundInput:
+    type: object
+    required:
+      - statusIds
+    properties:
+      statusIds:
+        type: array
+        items:
+          type: string
+      reason:
+        type: string
+      feeAmount:
+        type: integer
       
   EsDiscount:
     type: object
