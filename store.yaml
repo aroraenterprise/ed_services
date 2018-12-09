@@ -1615,20 +1615,18 @@ definitions:
   EsMerchantOrderUpdate:
     type: object
     properties:
-      deactivateStatusIds:
-        type: array
-        items:
-          type: string
-      activateStatusIds:
+      cancelStatusIds:
         type: array
         items:
           type: string
       reason:
         type: string
-      refundAmount:
+      amount:
         type: integer
-      chargeAmount:
-        type: integer
+        minimum: 0
+      isCharge:
+        type: boolean
+        default: false
       
   EsDiscount:
     type: object
