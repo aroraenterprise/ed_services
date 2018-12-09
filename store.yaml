@@ -1899,7 +1899,24 @@ definitions:
         type: string
       usedRefundPolicy:
         $ref: '#/definitions/EsRefundPolicy'
-     
+  
+  EsOrderItemCharge:
+    type: object
+    properties:
+      id:
+        type: string
+      amount:
+        type: integer
+        minimum: 0
+      created:
+        type: integer
+      paid:
+        type: boolean
+      stripeFee:
+        type: integer
+        minimum: 0
+      
+  
   EsOrderItem:
     type: object
     allOf:
@@ -1974,6 +1991,14 @@ definitions:
             items:
               $ref: '#/definitions/EsOrderItemStatus'
           submittedRefunds:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItemRefund'
+          merchantCharges:
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItemCharge'
+          merchantRefunds:
             type: array
             items:
               $ref: '#/definitions/EsOrderItemRefund'
