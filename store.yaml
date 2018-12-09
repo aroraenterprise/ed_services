@@ -798,7 +798,7 @@ paths:
   '/merchant-orders/{orderItemId}':
     parameters:
       - $ref: '#/parameters/orderItemId'
-    post:
+    get:
       tags:
         - esMerchantOrder
       summary: Get the order item
@@ -816,22 +816,18 @@ paths:
           description: Order Item not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
-  '/merchant-orders/{orderItemId}/refund':
-    parameters:
-      - $ref: '#/parameters/orderItemId'
     post:
       tags:
         - esMerchantOrder
-      summary: Start the refund process for item [merchant]
+      summary: Updater order (e.g. refund, charges, cancel items, re-activate item)
       parameters:
         - in: body
-          name: refundProps
-          description: Refund options
+          name: orderUpdateProps
+          description: Order update options
           required: true
           schema:
-            $ref: '#/definitions/EsMerchantRefundInput'
-      operationId: refundItem
+            $ref: '#/definitions/EsMerchantOrderUpdate'
+      operationId: updateOrderItem
       responses:
         '200':
           description: Order Item
@@ -1616,18 +1612,22 @@ definitions:
       message:
         type: string
   
-  EsMerchantRefundInput:
+  EsMerchantOrderUpdate:
     type: object
-    required:
-      - statusIds
     properties:
-      statusIds:
+      deactivateStatusIds:
+        type: array
+        items:
+          type: string
+      activateStatusIds:
         type: array
         items:
           type: string
       reason:
         type: string
-      feeAmount:
+      refundAmount:
+        type: integer
+      chargeAmount:
         type: integer
       
   EsDiscount:
