@@ -852,9 +852,7 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EsCustomer'
+            $ref: '#/definitions/EsCustomer'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     put:
@@ -871,7 +869,7 @@ paths:
             $ref: '#/definitions/EsCustomerInput'
       responses:
         '200':
-          description: A new Customer
+          description: Customer updated
           schema:
             $ref: '#/definitions/EsCustomer'
         '400':
