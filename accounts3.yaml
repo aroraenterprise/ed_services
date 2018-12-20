@@ -1,0 +1,1663 @@
+openapi: 3.0.0
+info:
+  description: Accounts service for eDropin
+  version: "1.0.10"
+  title: eDropin Accounts
+  license:
+    name: UNLICENSED
+  contact:
+    name: Saj Arora
+    email: dev@edropin.com
+tags:
+  - name: eaPermissions
+    description: Permissions
+  - name: eaAccounts
+    description: User accounts on eDropin
+  - name: eaProfiles
+    description: Profiles such as course providers and businesses
+  - name: eaProfileInvites
+    description: Profile invitations
+  - name: eaProfileTags
+    description: 'Tag requests, accept and decline'
+  - name: eaUtilities
+    description: eDropin Utilities
+security:
+  - ClientKey: []
+    Authorization: []
+paths:
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - in: path
+        name: inviteToken
+        description: Invite Token
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - eaPermissions
+      summary: Accept a permission invite
+      operationId: acceptPermissionInvite
+      parameters:
+        - in: query
+          name: v
+          description: Accept or decline an invite
+          schema:
+            type: string
+            enum:
+              - accept
+              - decline
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPermissionAccept'
+        '404':
+          description: Permission invite not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/permissions/{entityType}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/components/parameters/entityType'
+      - $ref: '#/components/parameters/entityId'
+    post:
+      tags:
+        - eaPermissions
+      summary: Send a permission invite
+      operationId: sendPermissionInvite
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedPermissionInvite'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaPermissionInviteCreate'
+        description: Object for permission invite
+        required: true
+  '/permissions/{entityType}/{entityId}/accounts':
+    parameters:
+      - $ref: '#/components/parameters/entityType'
+      - $ref: '#/components/parameters/entityId'
+    get:
+      tags:
+        - eaPermissions
+      summary: Get permissions for entity
+      operationId: paginatePermissions
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Permissions for account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedPermission'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '405':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
+    parameters:
+      - $ref: '#/components/parameters/entityType'
+      - $ref: '#/components/parameters/entityId'
+      - $ref: '#/components/parameters/accountId'
+    get:
+      tags:
+        - eaPermissions
+      summary: Check account has permission
+      operationId: hasPermission
+      parameters:
+        - in: query
+          required: false
+          name: permission
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account has Permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPermissionCheck'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaPermissions
+      summary: Set account permission
+      operationId: setPermission
+      responses:
+        '200':
+          description: Set Account Permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPermission'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaPermissionInput'
+        required: true
+    delete:
+      tags:
+        - eaPermissions
+      summary: Remove all permissions for account
+      operationId: removePermissionsForAccount
+      responses:
+        '200':
+          description: Permissions for account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '405':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  /accounts/authenticate/password:
+    post:
+      tags:
+        - eaAccounts
+      security:
+        - ClientKey: []
+      summary: Authenticate using email/password
+      operationId: authenticatePassword
+      responses:
+        '200':
+          description: Authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaAuthentication'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaPasswordAuthentication'
+        description: Authentication values
+        required: true
+  /accounts:
+    get:
+      tags:
+        - eaAccounts
+      summary: Get Account
+      operationId: getAccount
+      responses:
+        '200':
+          description: Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaAccount'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaAccounts
+      summary: Create/update existing account
+      operationId: updateAccount
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaAccount'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaAccountUpdate'
+        description: Account object that needs to be updated
+        required: true
+  '/accounts/{accountId}/claims':
+    put:
+      tags:
+        - eaAccounts
+      security:
+        - AdminKey: []
+          ClientKey: []
+      summary: Update account claims
+      operationId: updateAccountClaims
+      parameters:
+        - $ref: '#/components/parameters/accountId'
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaAccount'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Account not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaClaims'
+        description: Claims that need to be updated
+        required: true
+  /accounts/get-multi:
+    get:
+      tags:
+        - eaAccounts
+      summary: 'Get multiple accounts [service only]'
+      security:
+        - ClientKey: []
+          ServiceKey: []
+      parameters:
+        - in: query
+          name: accountIds
+          schema:
+            type: array
+            items:
+              type: string
+      operationId: getMultipleAccounts
+      responses:
+        '200':
+          description: List of all accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedAccount'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  /profiles:
+    get:
+      tags:
+        - eaProfiles
+      summary: Get Profiles
+      operationId: getAllProfiles
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/searchFacets'
+        - $ref: '#/components/parameters/enhanced'
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedProfile'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfiles
+      summary: Create profile
+      operationId: createProfile
+      responses:
+        '200':
+          description: Profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfile'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaProfileUpdate'
+        description: Profile object that needs to be created
+        required: true
+  /profiles/get-multi:
+    get:
+      tags:
+        - eaProfiles
+      summary: Get Multiple Profiles
+      operationId: getMultipleProfiles
+      parameters:
+        - in: query
+          name: profileIds
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: List of Profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedProfile'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/{profileId}':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Get a profile from the directory
+      operationId: getProfile
+      parameters:
+        - $ref: '#/components/parameters/enhanced'
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfile'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaProfiles
+      summary: Update an existing profile
+      operationId: updateProfile
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfile'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaProfileUpdate'
+        description: Profile object that needs to be updated
+        required: true
+    delete:
+      tags:
+        - eaProfiles
+      summary: Delete an existing profile
+      operationId: deleteProfile
+      responses:
+        '200':
+          description: Profile deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  /profiles/categories:
+    get:
+      tags:
+        - eaProfiles
+      summary: Get Profile Categories
+      operationId: getProfileCategories
+      security:
+        - ClientKey: []
+          AuthorizationOptional: []
+        - ClientKey: []
+          Authorization: []
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Categories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaFacetSearch'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/email-verification':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+    post:
+      tags:
+        - eaProfiles
+      summary: Send email verification
+      operationId: sendProfileEmailVerification
+      responses:
+        '200':
+          description: Email verification sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/email-verification/{code}':
+    parameters:
+      - in: path
+        required: true
+        name: code
+        schema:
+          type: string
+    post:
+      tags:
+        - eaProfiles
+      summary: Verifiy profile email
+      operationId: verifyProfileEmail
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
+          AuthorizationOptional: []
+      responses:
+        '200':
+          description: Email is verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaEmailVerification'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/status':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+    put:
+      tags:
+        - eaProfiles
+      summary: Set a profile status
+      operationId: setStatus
+      responses:
+        '200':
+          description: Profile Status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfileStatus'
+        '404':
+          description: Profile not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaProfileStatus'
+        description: Profile object that needs to be created
+        required: true
+  /profiles/usernamecheck:
+    get:
+      tags:
+        - eaProfiles
+      summary: Check username availability
+      operationId: checkUsernameAvailability
+      security:
+        - ClientKey: []
+          AuthorizationOptional: []
+        - ClientKey: []
+          Authorization: []
+      parameters:
+        - in: query
+          name: username
+          description: Username to check for availability
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Username is available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  /profiles/search:
+    get:
+      tags:
+        - eaProfiles
+      summary: Search Profiles
+      operationId: searchProfile
+      parameters:
+        - $ref: '#/components/parameters/searchQuery'
+        - $ref: '#/components/parameters/searchFacets'
+        - in: query
+          name: showInvited
+          required: false
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedProfile'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/feed':
+    get:
+      tags:
+        - eaProfiles
+      summary: Profile Feed
+      operationId: paginateProfileFeed
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Paged Feed Items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedFeedItem'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/permissions/{accountId}':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+      - $ref: '#/components/parameters/accountId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Get permission for account
+      operationId: getAccountPermissionForProfile
+      responses:
+        '200':
+          description: Permissions for account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPermission'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eaProfiles
+      summary: Set permission for profile
+      operationId: setProfilePermission
+      responses:
+        '200':
+          description: Permission set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPermission'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaPermissionInput'
+        description: Permissions
+        required: true
+  '/profiles/{profileId}/permissions/{accountId}/check':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+      - $ref: '#/components/parameters/accountId'
+    get:
+      tags:
+        - eaProfiles
+      summary: Check account has permission
+      operationId: checkAccountHasPermission
+      parameters:
+        - in: query
+          required: true
+          name: permission
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account has Permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPermissionCheck'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profiles/{profileId}/all-permissions':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+    get:
+      tags:
+        - eaProfiles
+      summary: List all profile permissions
+      operationId: getProfilePermission
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: List of Users with permissions linked to this profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedPermission'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  /profile-invites:
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Paginate over all invitations made by requested user
+      operationId: listProfileInvites
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfileInvite'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileInvites
+      summary: Create a new profile invite
+      operationId: createProfileInvite
+      responses:
+        '200':
+          description: Profile invite created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfileInvite'
+        '400':
+          description: Invalid input
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaProfileInviteCreate'
+        description: Profile to invite
+        required: true
+  /profile-invites/get-multi:
+    get:
+      tags:
+        - eaProfileInvites
+      summary: Get Multiple Profile Invites
+      operationId: getMultipleInvites
+      parameters:
+        - in: query
+          name: inviteIds
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: List of Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedProfileInvite'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profile-invites/{inviteId}':
+    parameters:
+      - $ref: '#/components/parameters/inviteId'
+    delete:
+      tags:
+        - eaProfileInvites
+      summary: Archive a profile invitation
+      operationId: archiveProfileInvite
+      responses:
+        '200':
+          description: Archived a profile invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '404':
+          description: Profile Invitation not found
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  '/profile-invites/referral/{referralCode}':
+    parameters:
+      - $ref: '#/components/parameters/referralCode'
+    get:
+      tags:
+        - eaProfileInvites
+      security:
+        - ClientKey: []
+      summary: Get the pre-filled fields for on-boarding an invite
+      operationId: getProfileInviteReferral
+      responses:
+        '200':
+          description: Profile invitation with pre-fillable fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfileInvite'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileInvites
+      summary: Create a profile from a profile invite
+      operationId: createProfileFromInvite
+      responses:
+        '200':
+          description: Profile created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaProfile'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaProfileUpdate'
+        description: Information to create profile
+        required: true
+  '/profiles/{profileId}/profile-tags':
+    parameters:
+      - $ref: '#/components/parameters/profileId'
+    get:
+      tags:
+        - eaProfileTags
+      summary: Paginate over all tag requests for the profile
+      operationId: listTagRequests
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of all tag requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPagedTagRequest'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaProfileTags
+      summary: 'Request to tag a profile in an entity e.g. Event, Course, etc.'
+      operationId: upsertProfileTagRequest
+      security:
+        - ClientKey: []
+          ServiceKey: []
+          Authorization: []
+      responses:
+        '200':
+          description: Profile tag request updated/created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaTagRequest'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaTagRequestCreate'
+        description: Model to create/update a profile tag request
+        required: true
+  '/profile-tags/{profileTagId}':
+    parameters:
+      - $ref: '#/components/parameters/profileTagId'
+    put:
+      tags:
+        - eaProfileTags
+      summary: Accept or decline a profile tag request
+      operationId: respondToProfileTagRequest
+      responses:
+        '200':
+          description: Profile tag request updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaTagRequest'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaTagRespond'
+        description: Accept or decline tagging request
+        required: true
+    delete:
+      tags:
+        - eaProfileTags
+      security:
+        - ClientKey: []
+          ServiceKey: []
+          Authorization: []
+      summary: Remove a profile tag request
+      operationId: removeProfileTagRequest
+      responses:
+        '200':
+          description: Profile tag request removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+  /utility/phoneverification/start:
+    post:
+      tags:
+        - eaUtilities
+      summary: Verify a phone number
+      operationId: startPhoneVerification
+      responses:
+        '200':
+          description: Phone verification code sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaSuccess'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaPhoneVerificationInput'
+        description: Phone number for verification
+        required: true
+  /utility/phoneverification/check:
+    post:
+      tags:
+        - eaUtilities
+      summary: Check phone verification
+      operationId: checkPhoneVerification
+      responses:
+        '200':
+          description: Phone verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EaPhoneVerification'
+        '400':
+          $ref: '#/components/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/Default500ErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EaPhoneVerificationCheck'
+        description: Phone code to complete verification
+        required: true
+servers:
+  - url: 'https://edropin-test.appspot.com/'
+  - url: 'https://edropinapi.appspot.com'
+  - url: 'http://localhost:9001'
+components:
+  parameters:
+    entityType:
+      name: entityType
+      in: path
+      description: Entity Type
+      required: true
+      schema:
+        type: string
+    entityId:
+      name: entityId
+      in: path
+      description: Entity Id
+      required: true
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Number of items returned
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 50
+        exclusiveMinimum: true
+        exclusiveMaximum: false
+        multipleOf: 10
+        default: 20
+    cursor:
+      name: cursor
+      in: query
+      description: Start Cursor for query
+      schema:
+        type: string
+    accountId:
+      name: accountId
+      in: path
+      description: Account Id
+      required: true
+      schema:
+        type: string
+    enhanced:
+      name: enhanced
+      in: query
+      description: Gives you a more detailed entity but requires admin permissions usually
+      required: false
+      schema:
+        type: boolean
+    profileId:
+      name: profileId
+      in: path
+      description: Profile Id
+      required: true
+      schema:
+        type: string
+    inviteId:
+      name: inviteId
+      in: path
+      description: Profile Invitation Id
+      required: true
+      schema:
+        type: string
+    profileTagId:
+      name: profileTagId
+      in: path
+      description: Profile Tag Id
+      required: true
+      schema:
+        type: string
+    referralCode:
+      name: referralCode
+      in: path
+      description: Profile invitation referral code
+      required: true
+      schema:
+        type: string
+    searchQuery:
+      in: query
+      name: q
+      schema:
+        type: string
+    searchFacets:
+      in: query
+      name: facets
+      description: 'e.g [profiledIds:edropin],[profileIds:agdontario]'
+      schema:
+        type: string
+  responses:
+    Default500ErrorResponse:
+      description: An unexpected error occured.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DefaultError'
+    InvalidInputResponse:
+      description: Validation exception
+    UnauthorizedError:
+      description: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      in: header
+      name: Authorization
+    AuthorizationOptional:
+      type: apiKey
+      in: header
+      name: Authorization
+    ClientKey:
+      type: apiKey
+      in: header
+      name: X-Client-Key
+    AdminKey:
+      type: apiKey
+      in: header
+      name: X-Admin-Key
+    ServiceKey:
+      type: apiKey
+      in: header
+      name: X-Service-Key
+  schemas:
+    EaBaseId:
+      type: object
+      properties:
+        id:
+          type: string
+        created:
+          type: integer
+          format: int32
+          readOnly: true
+        modified:
+          type: integer
+          format: int32
+          readOnly: true
+        version:
+          type: string
+          readOnly: true
+    EaPagination:
+      type: object
+      properties:
+        pageSize:
+          type: integer
+          format: int32
+        nextCursor:
+          type: string
+        total:
+          type: integer
+          format: int32
+    EaFeedItem:
+      type: object
+      properties:
+        id:
+          type: string
+        actor:
+          $ref: '#/components/schemas/EaAccount'
+        foreignObject:
+          type: object
+        object:
+          type: object
+        time:
+          type: string
+        verb:
+          type: string
+    EaPagedFeedItem:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaFeedItem'
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+    EaAddress:
+      type: object
+      properties:
+        formatted:
+          type: string
+        streetNumberOrBuilding:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        zip:
+          type: string
+        _geoloc:
+          $ref: '#/components/schemas/EaGeoloc'
+    EaGeoloc:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: float
+        lng:
+          type: number
+          format: float
+    DefaultError:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    EaPermissionInviteCreate:
+      type: object
+      required:
+        - emails
+        - permissions
+      properties:
+        invitedByName:
+          type: string
+        emails:
+          type: array
+          items:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+    EaPermissionInvite:
+      type: object
+      properties:
+        id:
+          type: string
+        modifiedOn:
+          type: string
+        creatorId:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        permissions:
+          type: object
+        email:
+          type: string
+        message:
+          type: string
+        acceptedWhen:
+          type: integer
+        declinedWhen:
+          type: integer
+        acceptedById:
+          type: string
+        acceptedByName:
+          type: string
+    EaPermission:
+      type: object
+      properties:
+        id:
+          type: string
+        modifiedOn:
+          type: string
+        creatorId:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+        permissions:
+          type: object
+        email:
+          type: string
+        name:
+          type: string
+        picture:
+          type: string
+        accountId:
+          type: string
+    EaPermissionInput:
+      type: object
+      properties:
+        permissions:
+          type: object
+    EaPagedPermissionInvite:
+      type: object
+      properties:
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+        allPermission:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaPermissionInvite'
+    EaPagedPermission:
+      type: object
+      properties:
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+        allPermission:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaPermission'
+    EaPermissionCheck:
+      type: object
+      properties:
+        hasPermission:
+          type: boolean
+        permission:
+          $ref: '#/components/schemas/EaPermission'
+    EaPermissionAccept:
+      type: object
+      properties:
+        invite:
+          $ref: '#/components/schemas/EaPermissionInvite'
+        permission:
+          $ref: '#/components/schemas/EaPermission'
+    EaSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: object
+    EaPasswordAuthentication:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    EaAuthentication:
+      type: object
+      properties:
+        idToken:
+          type: string
+        id:
+          type: string
+    EaAccountUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        picture:
+          type: string
+        website:
+          type: string
+        bio:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+    EaAccount:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/EaBaseId'
+        - $ref: '#/components/schemas/EaAccountUpdate'
+        - properties:
+            claims:
+              type: object
+              readOnly: true
+    EaPagedAccount:
+      type: object
+      properties:
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaAccount'
+    EaClaims:
+      type: object
+      required:
+        - claims
+      properties:
+        claims:
+          type: object
+    EaProfileBase:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        profileType:
+          type: string
+        picture:
+          type: string
+        videoLink:
+          type: string
+        pictures:
+          type: string
+        bio:
+          type: string
+        address:
+          $ref: '#/components/schemas/EaAddress'
+        website:
+          type: string
+        facebook:
+          type: string
+        linkedIn:
+          type: string
+        instagram:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+          maxLength: 30
+    EaProfileUpdate:
+      type: object
+      required:
+        - username
+        - phoneVerificationToken
+        - firstName
+        - lastName
+        - address
+        - agreeTerms
+      allOf:
+        - $ref: '#/components/schemas/EaProfileBase'
+        - properties:
+            username:
+              type: string
+            phoneVerificationToken:
+              type: string
+            agreeTerms:
+              type: string
+              enum:
+                - v1
+    EaProfile:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/EaBaseId'
+        - $ref: '#/components/schemas/EaProfileBase'
+        - properties:
+            categories:
+              type: array
+              items:
+                type: string
+              maxLength: 30
+            phone:
+              type: string
+            location:
+              type: string
+            isEmailVerified:
+              type: boolean
+            status:
+              type: string
+            isInvited:
+              type: boolean
+    EaProfileStatus:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          enum:
+            - Pending Review
+            - In Review
+            - Approved
+            - Banned
+            - Suspended
+        message:
+          type: string
+    EaPagedProfile:
+      type: object
+      properties:
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+        facets:
+          type: object
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaProfile'
+        inviteItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaProfile'
+        inviteFacets:
+          type: object
+        invitePageData:
+          $ref: '#/components/schemas/EaPagination'
+    EaPhoneVerificationInput:
+      type: object
+      required:
+        - phone
+        - countryCode
+        - method
+      properties:
+        phone:
+          type: string
+        countryCode:
+          type: string
+        method:
+          type: string
+          enum:
+            - sms
+            - call
+          default: sms
+    EaPhoneVerification:
+      type: object
+      properties:
+        verificationToken:
+          type: string
+    EaPhoneVerificationCheck:
+      type: object
+      required:
+        - phone
+        - countryCode
+        - code
+      properties:
+        phone:
+          type: string
+        countryCode:
+          type: string
+        code:
+          type: string
+    EaFacetSearch:
+      type: object
+      properties:
+        facetHits:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+              highlighted:
+                type: string
+              count:
+                type: integer
+        exhaustiveFacetsCount:
+          type: boolean
+        processingTimeMS:
+          type: integer
+    EaProfileInviteCreate:
+      type: object
+      required:
+        - email
+        - profileType
+        - name
+        - inviteById
+      properties:
+        email:
+          type: string
+        profileType:
+          type: string
+        inviteById:
+          type: string
+        inviteFor:
+          type: string
+          description: e.g. Event Name
+        name:
+          type: string
+        bio:
+          type: string
+        picture:
+          type: string
+    EaProfileInvite:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/EaBaseId'
+        - $ref: '#/components/schemas/EaProfileInviteCreate'
+        - properties:
+            inviteByName:
+              type: string
+            isInvited:
+              type: boolean
+              default: true
+            referralCode:
+              type: string
+    EaPagedProfileInvite:
+      type: object
+      properties:
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+        facets:
+          type: object
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaProfileInvite'
+    EaTagRequestCreate:
+      type: object
+      required:
+        - itemId
+        - itemType
+        - itemName
+        - taggedById
+      properties:
+        itemType:
+          type: string
+          enum:
+            - Event
+        isInvited:
+          type: boolean
+          default: false
+        taggedById:
+          type: string
+        itemId:
+          type: string
+        itemName:
+          type: string
+        picture:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        itemLink:
+          type: string
+          description: Absolute url to the item that is tagged here
+    EaTagRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/EaBaseId'
+        - $ref: '#/components/schemas/EaTagRequestCreate'
+        - properties:
+            profileId:
+              type: string
+              description: Invited by profileId
+            profileName:
+              type: string
+            taggedByName:
+              type: string
+            acceptedWhen:
+              type: number
+            declinedWhen:
+              type: number
+    EaTagRespond:
+      type: object
+      properties:
+        acceptRequest:
+          type: boolean
+          default: false
+    EaPagedTagRequest:
+      type: object
+      properties:
+        pageData:
+          $ref: '#/components/schemas/EaPagination'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EaTagRequest'
+    EaEmailVerification:
+      type: object
+      properties:
+        profileName:
+          type: string
+        profileId:
+          type: string
