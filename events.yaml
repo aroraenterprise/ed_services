@@ -2157,11 +2157,7 @@ definitions:
           profiles:
             type: array
             items:
-              type: string
-          courseIds:
-            type: array
-            items:
-              type: string
+              $ref: '#/definitions/EeEventProfile'
           availableCurrencyCode:
             type: array
             items:
@@ -2187,7 +2183,17 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeTicketSummary'
-          
+  EeEventProfile:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      roles:
+        type: array
+        items:
+          type: string
   EePagedEvent:
     type: object
     properties:
