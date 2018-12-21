@@ -2459,17 +2459,19 @@ definitions:
           dropins:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: string
-                name:
-                  type: string
-                dropinType:
-                  type: string
-                color:
-                  type: string
-
+              $ref: '#/definitions/EeTicketDropin'
+  EeTicketDropin:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      dropinType:
+        type: string
+      color:
+        type: string
+  
   EePagedTicket:
     type: object
     properties:
@@ -2707,10 +2709,10 @@ definitions:
       placeholders:
         type: object
         properties:
-          matches:
-            type: array
-            items:
-              type: object
+          # matches:
+          #   type: array
+          #   items:
+          #     type: object
           autofill:
             type: object
           tagKeys:
@@ -2787,12 +2789,15 @@ definitions:
           tickets:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: string
-                name:
-                  type: string
+              $ref: '#/definitions/EeEventDropinTicket'
+                
+  EeEventDropinTicket:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
   EeAttendeeDropin:
     type: object
     properties:
