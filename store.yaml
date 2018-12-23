@@ -1,2298 +1,2566 @@
-openapi: 3.0.0
+swagger: '2.0'
 info:
+  contact:
+    email: dev@edropin.com
+    name: Saj Arora
   description: Store service for eDropin
-  version: "1.0.11"
-  title: eDropin Store
   license:
     name: UNLICENSED
-  contact:
-    name: Saj Arora
-    email: dev@edropin.com
-tags:
-  - name: esPermissions
-    description: Permissions manager
-  - name: esMerchants
-    description: Merchant management
-  - name: esStore
-    description: Store management
-  - name: esCart
-    description: User Cart for store items
-  - name: esOrder
-    description: Order items for user
-  - name: esMerchantOrder
-    description: Merchant Order items
-  - name: esCustomers
-    description: Customers of eDropin
-  - name: esMemberships
-    description: Memberships managed in eDropin
-  - name: esUserMemberships
-    description: User memberships managed in eDropin
-security:
-  - ClientKey: []
-    Authorization: []
+  title: eDropin Store
+  version: 1.0.11
+host: store-dot-edropin-test.appspot.com
+basePath: /
+schemes:
+  - https
 paths:
-  '/permissions/accept-invite/{inviteToken}':
-    parameters:
-      - in: path
-        name: inviteToken
-        description: Invite Token
-        required: true
-        schema:
-          type: string
-    post:
-      tags:
-        - esPermissions
-      summary: Accept a permission invite
-      operationId: acceptPermissionInvite
-      parameters:
-        - in: query
-          name: v
-          description: Accept or decline an invite
-          schema:
-            type: string
-            enum:
-              - accept
-              - decline
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPermissionAccept'
-        '404':
-          description: Permission invite not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/permissions/{entityType}/{entityId}/send-invite':
-    parameters:
-      - $ref: '#/components/parameters/entityType'
-      - $ref: '#/components/parameters/entityId'
-    post:
-      tags:
-        - esPermissions
-      summary: Send a permission invite
-      operationId: sendPermissionInvite
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedPermissionInvite'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsPermissionInviteCreate'
-        description: Object for permission invite
-        required: true
-  '/permissions/{entityType}/{entityId}/accounts':
-    parameters:
-      - $ref: '#/components/parameters/entityType'
-      - $ref: '#/components/parameters/entityId'
-    get:
-      tags:
-        - esPermissions
-      summary: Get permissions for entity
-      operationId: paginatePermissions
-      parameters:
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
-      responses:
-        '200':
-          description: Permissions for account
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedPermission'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
-    parameters:
-      - $ref: '#/components/parameters/entityType'
-      - $ref: '#/components/parameters/entityId'
-      - $ref: '#/components/parameters/accountId'
-    get:
-      tags:
-        - esPermissions
-      summary: Check account has permission
-      operationId: hasPermission
-      parameters:
-        - in: query
-          required: false
-          name: permission
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Account has Permission
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPermissionCheck'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - esPermissions
-      summary: Set account permission
-      operationId: setPermission
-      responses:
-        '200':
-          description: Set Account Permission
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPermission'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsPermissionInput'
-        required: true
+  /cart:
     delete:
-      tags:
-        - esPermissions
-      summary: Remove all permissions for account
-      operationId: removePermissionsForAccount
-      responses:
-        '200':
-          description: Permissions for account
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsSuccess'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/merchants/{merchantId}':
-    parameters:
-      - $ref: '#/components/parameters/merchantId'
-    get:
-      tags:
-        - esMerchants
-      summary: Get a Merchant from the directory
-      operationId: getMerchant
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - esMerchants
-      summary: Enable billing
-      operationId: enableBilling
-      responses:
-        '200':
-          description: Billing updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Profile not found
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-        description: Stripe Code To Enable Billing
-        required: true
-  '/merchants/{merchantId}/enable-billing':
-    parameters:
-      - $ref: '#/components/parameters/merchantId'
-    post:
-      tags:
-        - esMerchants
-      summary: Enable billing
-      operationId: enableBilling
-      responses:
-        '200':
-          description: Billing updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Profile not found
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-        description: Stripe Code To Enable Billing
-        required: true
-  '/merchants/{merchantId}/fee-structure/{itemType}':
-    parameters:
-      - $ref: '#/components/parameters/merchantId'
-      - $ref: '#/components/parameters/itemType'
-    put:
-      tags:
-        - esMerchants
-      summary: 'Setup fee structure for merchant [Admin Only]'
-      operationId: updateFeeStructure
-      responses:
-        '200':
-          description: Merchant fee structure updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Profile not found
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsFeeStructure'
-        description: Fee structure
-        required: true
-  
-  '/store/{merchantId}/items':
-    get:
-      parameters:
-        - $ref: '#/components/parameters/merchantId'
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
-      tags:
-        - esStore
-      summary: Get all store items for merchant
-      operationId: listStoreItems
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/store/{merchantId}/items/{itemId}':
-    parameters:
-      - $ref: '#/components/parameters/merchantId'
-      - $ref: '#/components/parameters/itemId'
-    get:
-      tags:
-        - esStore
-      security:
-        - ClientKey: []
-          AuthorizationOptional: []
-        - ClientKey: []
-          Authorization: []
-      parameters:
-        - $ref: '#/components/parameters/enhanced'
-      summary: Get a store item from the directory
-      operationId: getStoreItem
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - esStore
-      summary: Upsert a store item
-      operationId: upsertStoreItem
-      responses:
-        '200':
-          description: Store Item updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Store Item not found
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsStoreItemUpdate'
-        description: Store Item that needs to be upserted
-        required: true
-    delete:
-      tags:
-        - esStore
-      summary: Delete an existing Store Item
-      operationId: deleteStoreItem
-      responses:
-        '204':
-          description: Event deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: StoreItem not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  /store/get-multi:
-    get:
-      tags:
-        - esStore
-      security:
-        - ClientKey: []
-          AuthorizationOptional: []
-        - ClientKey: []
-          Authorization: []
-      parameters:
-        - in: query
-          name: storeIds
-          schema:
-            type: array
-            items:
-              type: string
-        - $ref: '#/components/parameters/enhanced'
-      summary: Get multip store items from the directory
-      operationId: getMultipleStoreItems
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/cart':
-    get:
-      tags:
-        - esCart
-      summary: Get the users active cart for currency code
-      operationId: getCart
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrder'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - esCart
-      summary: Update the cart
-      operationId: updateCart
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrder'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsCartUpdate'
-        description: Update Cart
-        required: true
-    delete:
-      tags:
-        - esCart
-      summary: Empty the user cart
-      operationId: emptyCart
+      produces:
+        - application/json
+      parameters: []
       responses:
         '204':
           description: Order cleared
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrder'
+          schema:
+            $ref: '#/definitions/EsOrder'
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/cart/items/{merchantId}/{itemId}':
-    parameters:
-      - $ref: '#/components/parameters/merchantId'
-      - $ref: '#/components/parameters/itemId'
-    put:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
-      summary: Upsert item to cart
-      operationId: addItem
+      operationId: emptyCart
+      summary: Empty the user cart
+    get:
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
-          description: Cart Item upserted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsCartItemChangeResponse'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Cart Store Item not found
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
+          description: OK
+          schema:
+            $ref: '#/definitions/EsOrder'
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsCartItemInput'
-        description: Cart Item that needs to be upserted
-        required: true
-    delete:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
-      summary: Delete a cart item
-      operationId: removeItem
+      operationId: getCart
+      summary: Get the users active cart for currency code
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Update Cart
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsCartUpdate'
       responses:
-        '204':
-          description: Cart Item deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsCartItemChangeResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Cart Item not found
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsOrder'
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/cart/apply-promotion':
-    post:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
-      summary: Promotional codes and memberships can be entered here
-      operationId: applyPromotion
+      operationId: updateCart
+      summary: Update the cart
+  /cart/apply-promotion:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Promotional codes
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPromotionInput'
       responses:
         '200':
           description: Updated Cart
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsCartItemChangeResponse'
+          schema:
+            $ref: '#/definitions/EsCartItemChangeResponse'
         '400':
           description: Invalid ID supplied
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
           description: Cart Store Item not found
         '405':
-          $ref: '#/components/responses/InvalidInputResponse'
+          description: Validation exception
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsPromotionInput'
-        description: Promotional codes
-        required: true
-  '/cart/validate':
-    post:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
-      summary: >-
-        Validate Cart for a currency to ensure all items are available and pricing is all up to date and there are not potential conflicts
-      operationId: validate
-      responses:
-        '200':
-          description: Cart Item validated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrder'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Cart Store Item not found
-        '405':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/cart/checkout':
+      operationId: applyPromotion
+      summary: Promotional codes and memberships can be entered here
+  /cart/checkout:
     post:
-      tags:
-        - esCart
-      summary: Endpoint to charge the customer for the items in their cart.
-      operationId: checkout
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Payment props for checkout
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPaymentInput'
       responses:
         '200':
           description: >-
             List of orderItems grouped by merchant as Order that the user has
             checked out
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsCheckout'
+          schema:
+            $ref: '#/definitions/EsCheckout'
         '400':
           description: Invalid ID supplied
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
           description: Cart Store Item not found
         '405':
-          $ref: '#/components/responses/InvalidInputResponse'
+          description: Validation exception
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsPaymentInput'
-        description: Payment props for checkout
-        required: true
-  /orders:
-    get:
-      tags:
-        - esOrder
-      summary: Get orders for current user
-      parameters:
-        - in: query
-          name: orderBy
-          required: false
+          description: An unexpected error occured.
           schema:
-            type: string
-            enum:
-              - modified
-              - created
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
-      operationId: listUserOrders
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedOrder'
-        '400':
-          description: Invalid ID supplied
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/orders/{orderId}':
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esCart
+      operationId: checkout
+      summary: Endpoint to charge the customer for the items in their cart.
+  '/cart/items/{merchantId}/{itemId}':
     parameters:
-      - $ref: '#/components/parameters/orderId'
-    get:
-      tags:
-        - esOrder
-      summary: Get order by id
-      security:
-        - ClientKey: []
-          AuthorizationOptional: []
-        - ClientKey: []
-          Authorization: []
-      operationId: getOrder
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/itemId'
+    delete:
+      produces:
+        - application/json
+      parameters: []
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrder'
-        '400':
-          description: Invalid ID supplied
+        '204':
+          description: Cart Item deleted
+          schema:
+            $ref: '#/definitions/EsCartItemChangeResponse'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
-          description: Store Item not found
+          description: Cart Item not found
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/orders/{orderId}/items':
-    parameters:
-      - $ref: '#/components/parameters/orderId'
-    get:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
-        - esOrder
-      summary: List order items
-      operationId: listOrderItems
+        - esCart
+      operationId: removeItem
+      summary: Delete a cart item
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
+        - description: Cart Item that needs to be upserted
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsCartItemInput'
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedOrderItem'
+          description: Cart Item upserted
+          schema:
+            $ref: '#/definitions/EsCartItemChangeResponse'
         '400':
           description: Invalid ID supplied
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
-          description: Store Item not found
+          description: Cart Store Item not found
+        '405':
+          description: Validation exception
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/merchants/{merchantId}/order-items':
-    get:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
-        - esOrder
-      summary: List merchant order items
-      operationId: listOrderItemsByMerchant
-      parameters:
-        - $ref: '#/components/parameters/merchantId'
-        - in: query
-          name: category
-          description: Type of store item category e.g. Event
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: categoryId
-          description: 'Category id e.g [Event Id]'
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: storeItemId
-          description: Store item id e.g. EventTicket-ab2333
-          required: false
-          schema:
-            type: string
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedOrderItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/orders/{orderId}/order-items/{orderItemId}/start-refund':
-    parameters:
-      - $ref: '#/components/parameters/orderId'
-      - $ref: '#/components/parameters/orderItemId'
+        - esCart
+      operationId: addItem
+      summary: Upsert item to cart
+  /cart/validate:
     post:
-      tags:
-        - esOrder
-      summary: Start the refund process for item
-      operationId: startRefundForItem
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
-          description: Order Item
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrderItem'
+          description: Cart Item validated
+          schema:
+            $ref: '#/definitions/EsOrder'
         '400':
-          description: Invalid Request
+          description: Invalid ID supplied
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
-          description: Order Item not found
+          description: Cart Store Item not found
+        '405':
+          description: Validation exception
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsRefundRequest'
-        description: Refund options
-        required: true
-  '/merchant-orders/{orderItemId}':
-    parameters:
-      - $ref: '#/components/parameters/orderItemId'
-    get:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
-        - esMerchantOrder
-      summary: Get the order item
-      operationId: getOrderItemForMerchant
-      responses:
-        '200':
-          description: Order Item
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrderItem'
-        '400':
-          description: Invalid Request
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Order Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    post:
-      tags:
-        - esMerchantOrder
-      summary: 'Updater order (e.g. refund, charges, cancel items, re-activate item)'
-      operationId: updateOrderItem
-      responses:
-        '200':
-          description: Order Item
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsOrderItem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Order Item not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsMerchantOrderUpdate'
-        description: Order update options
-        required: true
+        - esCart
+      operationId: validate
+      summary: >-
+        Validate Cart for a currency to ensure all items are available and
+        pricing is all up to date and there are not potential conflicts
   /customers:
     get:
-      tags:
-        - esCustomers
-      summary: Get the users current customer information
-      operationId: getUserCustomer
+      produces:
+        - application/json
       parameters:
-        - $ref: '#/components/parameters/expand'
+        - collectionFormat: multi
+          description: Expands the properties in the array
+          in: query
+          items:
+            type: string
+          name: expand
+          required: false
+          type: array
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsCustomer'
+          schema:
+            $ref: '#/definitions/EsCustomer'
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
-      summary: Update a customer
-      operationId: updateCustomer
+      operationId: getUserCustomer
+      summary: Get the users current customer information
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Customer input
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsCustomerInput'
       responses:
         '200':
           description: Customer updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsCustomer'
+          schema:
+            $ref: '#/definitions/EsCustomer'
         '400':
           description: Invalid attributes
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsCustomerInput'
-        description: Customer input
-        required: true
-  /customers/cards:
-    get:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
-      summary: Retrieve all saved cards for customer
-      operationId: listAllCards
+      operationId: updateCustomer
+      summary: Update a customer
+  /customers/cards:
+    get:
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
           description: A new Customer
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/EsCard'
+          schema:
+            properties:
+              items:
+                items:
+                  $ref: '#/definitions/EsCard'
+                type: array
+            type: object
         '400':
           description: Invalid attributes
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/customers/cards/{cardId}':
-    parameters:
-      - $ref: '#/components/parameters/cardId'
-    delete:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
-      summary: Remove a card
-      operationId: removeCard
+      operationId: listAllCards
+      summary: Retrieve all saved cards for customer
+  '/customers/cards/{cardId}':
+    parameters:
+      - $ref: '#/parameters/cardId'
+    delete:
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
           description: Card removed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsSuccess'
+          schema:
+            $ref: '#/definitions/EsSuccess'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esCustomers
+      operationId: removeCard
+      summary: Remove a card
   /memberships:
     get:
-      tags:
-        - esMemberships
-      summary: Get Memberships
-      operationId: getAllMemberships
+      produces:
+        - application/json
       parameters:
-        - $ref: '#/components/parameters/searchQuery'
-        - $ref: '#/components/parameters/searchFacets'
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
+        - in: query
+          name: q
+          type: string
+        - description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
+          in: query
+          name: facets
+          type: string
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
       responses:
         '200':
           description: Memberships
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedMembership'
+          schema:
+            $ref: '#/definitions/EsPagedMembership'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    post:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
-      summary: Create Membership
-      operationId: createMembership
+      operationId: getAllMemberships
+      summary: Get Memberships
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Membership object that needs to be created
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsMembershipUpdate'
       responses:
         '200':
           description: Membership created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMembership'
+          schema:
+            $ref: '#/definitions/EsMembership'
         '400':
-          $ref: '#/components/responses/InvalidInputResponse'
+          description: Validation exception
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsMembershipUpdate'
-        description: Membership object that needs to be created
-        required: true
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMemberships
+      operationId: createMembership
+      summary: Create Membership
   '/memberships/{membershipId}':
     parameters:
-      - $ref: '#/components/parameters/membershipId'
-    get:
-      tags:
-        - esMemberships
-      summary: Get a membership from eDropin
-      operationId: getMembership
-      responses:
-        '200':
-          description: Membership
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMembership'
-        '404':
-          description: Membership not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - esMemberships
-      summary: Update an existing membership
-      operationId: updateMembership
-      responses:
-        '200':
-          description: Membership updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMembership'
-        '400':
-          $ref: '#/components/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Membership not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsMembershipUpdate'
-        description: Membership object that needs to be updated
-        required: true
+      - $ref: '#/parameters/membershipId'
     delete:
-      tags:
-        - esMemberships
-      summary: Delete an existing membership
-      operationId: deleteMembership
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
           description: Membership deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsSuccess'
+          schema:
+            $ref: '#/definitions/EsSuccess'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
           description: Membership not found
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-  '/memberships/{membershipId}/members':
-    parameters:
-      - $ref: '#/components/parameters/membershipId'
-    get:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
-      summary: Get members for a membership
-      operationId: getMembers
-      parameters:
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
+      operationId: deleteMembership
+      summary: Delete an existing membership
+    get:
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
-          description: Members belonging to this membership
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedMember'
+          description: Membership
+          schema:
+            $ref: '#/definitions/EsMembership'
         '404':
           description: Membership not found
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    put:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
-      summary: Update an existing membership
-      operationId: updateMembers
+      operationId: getMembership
+      summary: Get a membership from eDropin
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Membership object that needs to be updated
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsMembershipUpdate'
       responses:
         '200':
           description: Membership updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedMember'
+          schema:
+            $ref: '#/definitions/EsMembership'
+        '400':
+          description: Validation exception
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
           description: Membership not found
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsMembersUpdate'
-        description: Members that need to be updated/deleted
-        required: true
-  '/memberships/{membershipId}/members/tasks':
-    parameters:
-      - $ref: '#/components/parameters/membershipId'
-    delete:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
-      summary: 'Delete all members in the membership [cloud tasks]'
-      security: []
-      operationId: deleteMembersTask
+      operationId: updateMembership
+      summary: Update an existing membership
+  '/memberships/{membershipId}/members':
+    parameters:
+      - description: Membership Id
+        in: path
+        name: membershipId
+        required: true
+        type: string
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: Members belonging to this membership
+          schema:
+            $ref: '#/definitions/EsPagedMember'
+        '404':
+          description: Membership not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMemberships
+      operationId: getMembers
+      summary: Get members for a membership
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Members that need to be updated/deleted
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsMembersUpdate'
+      responses:
+        '200':
+          description: Membership updated
+          schema:
+            $ref: '#/definitions/EsPagedMember'
+        '404':
+          description: Membership not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMemberships
+      operationId: updateMembers
+      summary: Update an existing membership
+  '/memberships/{membershipId}/members/tasks':
+    parameters:
+      - $ref: '#/parameters/membershipId'
+    delete:
+      produces:
+        - application/json
       parameters:
         - in: query
           name: apiKey
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Members deleted
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '404':
+          description: Membership not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      security: []
+      tags:
+        - esMemberships
+      operationId: deleteMembersTask
+      summary: 'Delete all members in the membership [cloud tasks]'
+  '/merchant-orders/{orderItemId}':
+    parameters:
+      - $ref: '#/parameters/orderItemId'
+    get:
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItem'
+        '400':
+          description: Invalid Request
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Order Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMerchantOrder
+      operationId: getOrderItemForMerchant
+      summary: Get the order item
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Order update options
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsMerchantOrderUpdate'
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItem'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Order Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMerchantOrder
+      operationId: updateOrderItem
+      summary: 'Updater order (e.g. refund, charges, cancel items, re-activate item)'
+  '/merchants/{merchantId}':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+    get:
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMerchants
+      operationId: getMerchant
+      summary: Get a Merchant from the directory
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Update merchant
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsMerchantUpdate'
+      responses:
+        '200':
+          description: Merchant Updated
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '404':
+          description: Profile not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMerchants
+      operationId: updateMerchant
+      summary: Enable billing
+  '/merchants/{merchantId}/enable-billing':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Stripe Code To Enable Billing
+          in: body
+          name: body
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Members deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsSuccess'
+          description: Billing updated
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '400':
+          description: Invalid ID supplied
         '404':
-          description: Membership not found
+          description: Profile not found
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMerchants
+      operationId: enableBilling
+      summary: Enable billing
+  '/merchants/{merchantId}/fee-structure/{itemType}':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/itemType'
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Fee structure
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsFeeStructure'
+      responses:
+        '200':
+          description: Merchant fee structure updated
+          schema:
+            $ref: '#/definitions/EsMerchant'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Profile not found
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esMerchants
+      operationId: updateFeeStructure
+      summary: 'Setup fee structure for merchant [Admin Only]'
+  '/merchants/{merchantId}/order-items':
+    get:
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - description: Type of store item category e.g. Event
+          in: query
+          name: category
+          required: false
+          type: string
+        - description: 'Category id e.g [Event Id]'
+          in: query
+          name: categoryId
+          required: false
+          type: string
+        - description: Store item id e.g. EventTicket-ab2333
+          in: query
+          name: storeItemId
+          required: false
+          type: string
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrderItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrder
+      operationId: listOrderItemsByMerchant
+      summary: List merchant order items
+  /orders:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - enum:
+            - modified
+            - created
+          in: query
+          name: orderBy
+          required: false
+          type: string
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrder'
+        '400':
+          description: Invalid ID supplied
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrder
+      operationId: listUserOrders
+      summary: Get orders for current user
+  '/orders/{orderId}':
+    parameters:
+      - $ref: '#/parameters/orderId'
+    get:
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsOrder'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      security:
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
+      tags:
+        - esOrder
+      operationId: getOrder
+      summary: Get order by id
+  '/orders/{orderId}/items':
+    parameters:
+      - $ref: '#/parameters/orderId'
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrderItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrder
+      operationId: listOrderItems
+      summary: List order items
+  '/orders/{orderId}/order-items/{orderItemId}/start-refund':
+    parameters:
+      - $ref: '#/parameters/orderId'
+      - $ref: '#/parameters/orderItemId'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Refund options
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsRefundRequest'
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItem'
+        '400':
+          description: Invalid Request
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Order Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrder
+      operationId: startRefundForItem
+      summary: Start the refund process for item
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - description: Invite Token
+        in: path
+        name: inviteToken
+        required: true
+        type: string
+    post:
+      produces:
+        - application/json
+      parameters:
+        - description: Accept or decline an invite
+          enum:
+            - accept
+            - decline
+          in: query
+          name: v
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPermissionAccept'
+        '404':
+          description: Permission invite not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: acceptPermissionInvite
+      summary: Accept a permission invite
+  '/permissions/{entityType}/{entityId}/accounts':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsPagedPermission'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: paginatePermissions
+      summary: Get permissions for entity
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+      - $ref: '#/parameters/accountId'
+    delete:
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: removePermissionsForAccount
+      summary: Remove all permissions for account
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: permission
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: hasPermission
+      summary: Check account has permission
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInput'
+      responses:
+        '200':
+          description: Set Account Permission
+          schema:
+            $ref: '#/definitions/EsPermission'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: setPermission
+      summary: Set account permission
+  '/permissions/{entityType}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Object for permission invite
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInviteCreate'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedPermissionInvite'
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: sendPermissionInvite
+      summary: Send a permission invite
+  /store/get-multi:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - collectionFormat: multi
+          in: query
+          items:
+            type: string
+          name: storeIds
+          type: array
+        - description: >-
+            Gives you a more detailed entity but requires admin permissions
+            usually
+          in: query
+          name: enhanced
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      security:
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
+      tags:
+        - esStore
+      operationId: getMultipleStoreItems
+      summary: Get multip store items from the directory
+  '/store/{merchantId}/items':
+    get:
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esStore
+      operationId: listStoreItems
+      summary: Get all store items for merchant
+  '/store/{merchantId}/items/{itemId}':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+      - $ref: '#/parameters/itemId'
+    delete:
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '204':
+          description: Event deleted
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: StoreItem not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esStore
+      operationId: deleteStoreItem
+      summary: Delete an existing Store Item
+    get:
+      produces:
+        - application/json
+      parameters:
+        - description: >-
+            Gives you a more detailed entity but requires admin permissions
+            usually
+          in: query
+          name: enhanced
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      security:
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
+      tags:
+        - esStore
+      operationId: getStoreItem
+      summary: Get a store item from the directory
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Store Item that needs to be upserted
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsStoreItemUpdate'
+      responses:
+        '200':
+          description: Store Item updated
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Store Item not found
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esStore
+      operationId: upsertStoreItem
+      summary: Upsert a store item
   /user-memberships:
     get:
-      tags:
-        - esUserMemberships
-      summary: List current user memberships
-      operationId: listUserMemberships
+      produces:
+        - application/json
       parameters:
-        - $ref: '#/components/parameters/searchQuery'
-        - $ref: '#/components/parameters/searchFacets'
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
+        - in: query
+          name: q
+          type: string
+        - description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
+          in: query
+          name: facets
+          type: string
+        - description: Start Cursor for query
+          in: query
+          name: cursor
+          type: string
+        - default: 20
+          description: Number of items returned
+          exclusiveMaximum: false
+          exclusiveMinimum: true
+          format: int32
+          in: query
+          maximum: 100
+          minimum: 0
+          multipleOf: 10
+          name: limit
+          type: integer
       responses:
         '200':
           description: Customer Memberships
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsPagedUserMembership'
+          schema:
+            $ref: '#/definitions/EsPagedUserMembership'
         '401':
-          $ref: '#/components/responses/UnauthorizedError'
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-    post:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
       tags:
         - esUserMemberships
-      summary: Add a membership to a user
-      operationId: addUserMembership
+      operationId: listUserMemberships
+      summary: List current user memberships
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Membership object to be added
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsUserMembershipUpdate'
       responses:
         '200':
           description: Membership created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsMembership'
+          schema:
+            $ref: '#/definitions/EsMembership'
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsUserMembershipUpdate'
-        description: Membership object to be added
-        required: true
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esUserMemberships
+      operationId: addUserMembership
+      summary: Add a membership to a user
   '/user-memberships/{userMembershipId}':
     parameters:
-      - $ref: '#/components/parameters/userMembershipId'
-    put:
-      tags:
-        - esUserMemberships
-      summary: Update an existing user membership
-      operationId: updateUserMembership
-      responses:
-        '200':
-          description: Membership updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsUserMembership'
-        '404':
-          description: Membership not found
-        '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EsUserMembershipUpdate'
-        description: Membership object that needs to be updated
-        required: true
+      - $ref: '#/parameters/userMembershipId'
     delete:
-      tags:
-        - esUserMemberships
-      summary: Delete an existing membership
-      operationId: removeUserMembership
+      produces:
+        - application/json
+      parameters: []
       responses:
         '200':
           description: Membership deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EsSuccess'
+          schema:
+            $ref: '#/definitions/EsSuccess'
         '404':
           description: Membership not found
         '500':
-          $ref: '#/components/responses/Default500ErrorResponse'
-servers:
-  - url: 'https://store-dot-edropin-test.appspot.com/'
-  - url: 'https://store-dot-edropinapi.appspot.com/'
-  - url: 'https://store-dot-edropin-dev-2.appspot.com/'
-  - url: 'http://localhost:9004'
-components:
-  parameters:
-    entityType:
-      name: entityType
-      in: path
-      description: Entity Type
-      required: true
-      schema:
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esUserMemberships
+      operationId: removeUserMembership
+      summary: Delete an existing membership
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Membership object that needs to be updated
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsUserMembershipUpdate'
+      responses:
+        '200':
+          description: Membership updated
+          schema:
+            $ref: '#/definitions/EsUserMembership'
+        '404':
+          description: Membership not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esUserMemberships
+      operationId: updateUserMembership
+      summary: Update an existing user membership
+
+definitions:
+  EsAppliedPromotion:
+    properties:
+      discountPrice:
+        type: integer
+      discountType:
         type: string
+      memberId:
+        type: string
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
+      referralCode:
+        type: string
+      timestamp:
+        type: integer
+    type: object
+  EsBaseId:
+    properties:
+      createdOn:
+        readOnly: true
+        type: string
+      id:
+        type: string
+      modifiedOn:
+        readOnly: true
+        type: string
+    type: object
+  EsCard:
+    properties:
+      brand:
+        type: string
+      country:
+        type: string
+      email:
+        type: string
+      expiryMonth:
+        type: integer
+      expiryYear:
+        type: integer
+      id:
+        type: string
+      last4:
+        type: string
+      name:
+        type: string
+    type: object
+  EsCartItemChangeResponse:
+    properties:
+      error:
+        type: object
+      order:
+        $ref: '#/definitions/EsOrder'
+      orderItems:
+        items:
+          $ref: '#/definitions/EsOrderItem'
+        type: array
+      success:
+        type: boolean
+    type: object
+  EsCartItemInput:
+    properties:
+      quantity:
+        type: integer
+    type: object
+  EsCartUpdate:
+    properties:
+      currencyCode:
+        enum:
+          - cad
+          - usd
+        type: string
+    type: object
+  EsCheckout:
+    properties:
+      claimCode:
+        type: string
+      error:
+        $ref: '#/definitions/EsDefaultError'
+      order:
+        $ref: '#/definitions/EsOrder'
+      success:
+        type: boolean
+    type: object
+  EsCustomer:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsCustomerInput'
+      - properties:
+          savedCards:
+            items:
+              $ref: '#/definitions/EsCard'
+            type: array
+    type: object
+  EsCustomerInput:
+    properties:
+      defaultCurrency:
+        enum:
+          - cad
+          - usd
+        type: string
+      defaultPaymentId:
+        type: string
+      email:
+        type: string
+      lastCurrency:
+        enum:
+          - cad
+          - usd
+        type: string
+      name:
+        type: string
+    required:
+      - defaultCurrency
+    type: object
+  EsDefaultError:
+    properties:
+      code:
+        format: int32
+        type: integer
+      message:
+        type: string
+    required:
+      - code
+      - message
+  EsDiscount:
+    allOf:
+      - $ref: '#/definitions/EsDiscountInput'
+    type: object
+  EsDiscountInput:
+    properties:
+      discountPrice:
+        format: int32
+        type: integer
+      discountType:
         enum:
           - membership
-          - merchant
-    entityId:
-      name: entityId
-      in: path
-      description: Entity Id
-      required: true
-      schema:
+          - referralCode
+          - limitedTime
         type: string
-    limit:
-      name: limit
-      in: query
-      description: Number of items returned
-      schema:
-        type: integer
+      endTimestamp:
         format: int32
+        type: integer
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
+      referralCode:
+        type: string
+      startTimestamp:
+        format: int32
+        type: integer
+    required:
+      - discountType
+      - discountPrice
+      - startTimestamp
+      - endTimestamp
+    type: object
+  EsFee:
+    allOf:
+      - $ref: '#/definitions/EsFeeInput'
+    type: object
+  EsFeeInput:
+    properties:
+      feeAmount:
         minimum: 0
-        maximum: 100
-        exclusiveMinimum: true
-        exclusiveMaximum: false
-        multipleOf: 10
-        default: 20
-    cursor:
-      name: cursor
-      in: query
-      description: Start Cursor for query
-      schema:
+        type: integer
+      short:
         type: string
-    accountId:
-      name: accountId
-      in: path
-      description: Account Id
-      required: true
-      schema:
-        type: string
-    cartId:
-      name: cartId
-      in: path
-      description: Cart Id
-      required: true
-      schema:
-        type: string
-    enhanced:
-      name: enhanced
-      in: query
-      description: Gives you a more detailed entity but requires admin permissions usually
-      required: false
-      schema:
+    type: object
+  EsFeeStructure:
+    properties:
+      active:
+        default: true
         type: boolean
-    cardId:
-      name: cardId
-      in: path
-      description: Card Id
-      required: true
-      schema:
+      feeAmount:
+        default: 0
+        type: integer
+      feeMaximum:
+        type: integer
+      feeMinimum:
+        default: 0
+        type: integer
+      feeType:
+        enum:
+          - fixed
+          - percentage
+          - none
         type: string
-    expand:
-      in: query
-      name: expand
-      description: Expands the properties in the array
-      required: false
-      schema:
+      perItem:
+        default: true
+        type: boolean
+    required:
+      - feeType
+      - feeAmount
+    type: object
+  EsMember:
+    properties:
+      active:
+        default: true
+        type: boolean
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      memberId:
+        type: string
+      memberSince:
+        type: number
+      name:
+        type: string
+      title:
+        type: string
+    type: object
+  EsMembersUpdate:
+    properties:
+      members:
+        items:
+          allOf:
+            - $ref: '#/definitions/EsMember'
+            - properties:
+                action:
+                  default: update
+                  enum:
+                    - delete
+                    - update
+                  type: string
+          required:
+            - action
+            - memberId
+          type: object
         type: array
-        items:
-          type: string
-    membershipId:
-      name: membershipId
-      in: path
-      description: Membership Id
-      required: true
-      schema:
+    required:
+      - members
+    type: object
+  EsMembership:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsMembershipUpdate'
+      - properties:
+          totalActiveMembers:
+            type: integer
+          totalMembers:
+            type: integer
+    type: object
+  EsMembershipUpdate:
+    properties:
+      agreeTerms:
+        enum:
+          - v1
         type: string
-    merchantId:
-      name: merchantId
-      in: path
-      description: Merchant Id
-      required: true
-      schema:
+      description:
         type: string
-    orderId:
-      name: orderId
-      in: path
-      description: Order Id
-      required: true
-      schema:
+      name:
         type: string
-    orderItemId:
-      name: orderItemId
-      in: path
-      description: Order Item Id
-      required: true
-      schema:
+      organizerId:
         type: string
-    itemId:
-      name: itemId
-      in: path
-      description: Store Item Id
-      required: true
-      schema:
-        type: string
-    itemType:
-      name: itemType
-      in: path
-      description: Store Item Type
-      required: true
-      schema:
-        type: string
-    currencyCode:
-      name: currencyCode
-      in: path
-      description: Currency Code
-      required: true
-      schema:
-        type: string
-    searchQuery:
-      in: query
-      name: q
-      schema:
-        type: string
-    searchFacets:
-      in: query
-      name: facets
-      description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
-      schema:
-        type: string
-    userMembershipId:
-      name: userMembershipId
-      in: path
-      description: User membership id
-      required: true
-      schema:
-        type: string
-  responses:
-    Default500ErrorResponse:
-      description: An unexpected error occured.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EsDefaultError'
-    InvalidInputResponse:
-      description: Validation exception
-    UnauthorizedError:
-      description: API key is missing or invalid
-      headers:
-        WWW_Authenticate:
-          schema:
+    required:
+      - name
+      - agreeTerms
+      - organizerId
+    type: object
+  EsMerchant:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsMerchantUpdate'
+      - properties:
+          name:
             type: string
-  securitySchemes:
-    Authorization:
-      type: apiKey
-      in: header
-      name: Authorization
-    AuthorizationOptional:
-      type: apiKey
-      in: header
-      name: Authorization
-    ClientKey:
-      type: apiKey
-      in: header
-      name: X-Client-Key
-  schemas:
-    EsBaseId:
-      type: object
-      properties:
-        id:
-          type: string
-        createdOn:
-          type: string
-          readOnly: true
-        modifiedOn:
-          type: string
-          readOnly: true
-    EsSuccess:
-      type: object
-      properties:
-        success:
-          type: boolean
-        message:
-          type: object
-    EsDefaultError:
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-    EsPagination:
-      type: object
-      properties:
-        pageSize:
-          type: integer
-          format: int32
-        nextCursor:
-          type: string
-        total:
-          type: integer
-          format: int32
-    EsPermissionInviteCreate:
-      type: object
-      required:
-        - emails
-        - permissions
-      properties:
-        invitedByName:
-          type: string
-        emails:
-          type: array
-          items:
-            type: string
-        permissions:
-          type: array
-          items:
-            type: string
-        message:
-          type: string
-    EsPermissionInvite:
-      type: object
-      properties:
-        id:
-          type: string
-        modifiedOn:
-          type: string
-        creatorId:
-          type: string
-        entityType:
-          type: string
-        entityId:
-          type: string
-        permissions:
-          type: object
-        email:
-          type: string
-        message:
-          type: string
-        acceptedWhen:
-          type: integer
-        declinedWhen:
-          type: integer
-        acceptedById:
-          type: string
-        acceptedByName:
-          type: string
-    EsPermission:
-      type: object
-      properties:
-        id:
-          type: string
-        modifiedOn:
-          type: string
-        creatorId:
-          type: string
-        entityType:
-          type: string
-        entityId:
-          type: string
-        permissions:
-          type: object
-        email:
-          type: string
-        name:
-          type: string
-        picture:
-          type: string
-        accountId:
-          type: string
-    EsPermissionInput:
-      type: object
-      properties:
-        permissions:
-          type: object
-    EsPagedPermissionInvite:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        allPermission:
-          type: array
-          items:
-            type: string
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsPermissionInvite'
-    EsPagedPermission:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        allPermission:
-          type: array
-          items:
-            type: string
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsPermission'
-    EsPermissionCheck:
-      type: object
-      properties:
-        hasPermission:
-          type: boolean
-        permission:
-          $ref: '#/components/schemas/EsPermission'
-    EsPermissionAccept:
-      type: object
-      properties:
-        invite:
-          $ref: '#/components/schemas/EsPermissionInvite'
-        permission:
-          $ref: '#/components/schemas/EsPermission'
-    EsStatusMessage:
-      type: object
-      properties:
-        timestamp:
-          type: integer
-        message:
-          type: string
-    
-    EsFeeStructure:
-      type: object
-      required:
-        - feeType
-        - feeAmount
-      properties:
-        perItem:
-          type: boolean
-          default: true
-        active:
-          type: boolean
-          default: true
-        feeType:
-          type: string
-          enum:
-            - fixed
-            - percentage
-            - none
-        feeMaximum:
-          type: integer
-        feeMinimum:
-          type: integer
-          default: 0
-        feeAmount:
-          type: integer
-          default: 0
-    EsMerchantInput:
-      type: object
-      required:
-        - name
-        - stripeId
-        - storeCurrency
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - properties:
-            name:
-              type: string
-            stripeId:
-              type: string
-            storeCurrency:
-              type: string
-              enum:
-                - cad
-                - usd
-    EsMerchant:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - $ref: '#/components/schemas/EsMerchantInput'
-        - properties:
-            feeStructure:
-              type: object
-              additionalProperties:
-                $ref: '#/components/schemas/EsFeeStructure'
-    
-    EsStoreItemUpdate:
-      type: object
-      required:
-        - name
-        - category
-        - categoryId
-        - itemType
-        - totalInventory
-        - startSaleTimestamp
-        - endSaleTimestamp
-        - retailPrice
-      properties:
-        category:
-          type: string
-          enum:
-            - event
-            - membership
-        categoryId:
-          type: string
-        itemType:
-          type: string
-          enum:
-            - EventTicket
-            - Membership
-        name:
-          type: string
-        picture:
-          type: string
-        description:
-          type: string
-        totalInventory:
-          type: integer
-          format: int32
-        startSaleTimestamp:
-          type: integer
-        endSaleTimestamp:
-          type: integer
-        policy:
-          type: string
-        extra:
-          type: object
-        status:
-          type: string
-          enum:
-            - open
-            - closed
-            - soldOut
-        retailPrice:
-          type: integer
-          format: int32
-        discounts:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsDiscountInput'
-        refunds:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsRefundInput'
-        fees:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsFeeInput'
-        unlockSecret:
-          type: string
-        availableCurrencies:
-          type: array
-          items:
-            type: string
-            enum:
-              - cad
-              - usd
-    
-    EsDiscountInput:
-      type: object
-      required:
-        - discountType
-        - discountPrice
-        - startTimestamp
-        - endTimestamp
-      properties:
-        discountType:
-          type: string
-          enum:
-            - membership
-            - referralCode
-            - limitedTime
-        discountPrice:
-          type: integer
-          format: int32
-        startTimestamp:
-          type: integer
-          format: int32
-        endTimestamp:
-          type: integer
-          format: int32
-        referralCode:
-          type: string
-        membershipId:
-          type: integer
-        membershipName:
-          type: string
-    EsDiscount:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsDiscountInput'
-        
-    EsRefundInput:
-      type: object
-      required:
-        - refundType
-        - feeAmount
-      properties:
-        short:
-          type: string
-        refundType:
-          type: string
-          enum:
-            - cancellation
-            - return
-        startTimestamp:
-          type: integer
-          minimum: 0
-          default: 0
-        endTimestamp:
-          type: integer
-          minimum: 0
-          default: 0
-        validAfterPurchaseUntil:
-          type: integer
-          minimum: 0
-          default: 0
-        feeAmount:
-          type: integer
-          minimum: 0
-          default: 0
-        isDifferenceCharged:
-          type: boolean
-          default: false
-    EsRefund:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsRefundInput'
-        
-    EsFeeInput:
-      type: object
-      properties:
-        short:
-          type: string
-        feeAmount:
-          type: integer
-          minimum: 0
-    EsFee:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsFeeInput'
-    
-    EsStoreItem:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - $ref: '#/components/schemas/EsStoreItemUpdate'
-        - properties:
-            merchantId:
-              type: string
-            merchantName:
-              type: string
-            totalSold:
-              type: integer
-              format: int32
-            discounts:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsDiscount'
-            refunds:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsRefund'
-            fees:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsFee'
-            
-    EsPagedStoreItem:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsStoreItem'
-    
-    EsCartItemChangeResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        error:
-          type: object
-        order:
-          $ref: '#/components/schemas/EsOrder'
-        orderItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsOrderItem'
-    
-    
-    EsMerchantInvoice:
-      type: object
-      
-    EsCartUpdate:
-      type: object
-      properties:
-        currencyCode:
-          type: string
-          enum:
-            - cad
-            - usd
-    
-    EsOrderUser:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-            
-    EsOrder:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - properties:
-            ownerId:
-              type: string
-            currencyCode:
-              type: string
-            checkedOutWhen:
-              type: integer
-            isCheckedOut:
-              type: boolean
-              default: false
-            subtotal:
-              type: integer
-              minimum: 0
-              default: 0
-            quantityTotal:
-              type: integer
-              minimum: 0
-              default: 0
-            quantityAvailable:
-              type: integer
-              minimum: 0
-              default: 0
-            validatedWhen:
-              type: integer
-              minimum: 0
-              default: 0
-            customerId:
-              type: string
-            stripeFee:
-              type: integer
-              minimum: 0
-              default: 0
-            platformFee:
-              type: integer
-              minimum: 0
-              default: 0
-            merchantInvoices:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsMerchantInvoice'
-            refundTotal:
-              type: integer
-              default: 0
-            isRefunded:
-              type: boolean
-            user:
-              $ref: '#/components/schemas/EsOrderUser'
-            orderItemIds:
-              type: array
-              items:
-                type: string
-            orderItems:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsOrderItem'
-            statusMessages:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsStatusMessage'
-            claimCode:
-              type: string
-    
-    EsCartItemInput:
-      type: object
-      properties:
-        quantity:
-          type: integer
-    
-    EsAppliedPromotion:
-      type: object
-      properties:
-        discountType:
-          type: string
-        discountPrice:
-          type: integer
-        timestamp:
-          type: integer
-        referralCode:
-          type: string
-        membershipId:
-          type: integer
-        membershipName:
-          type: string
-        memberId:
-          type: string
-    
-    EsPromotionInput:
-      type: object
-      properties:
-        referralCode:
-          type: string
-        membershipId:
-          type: integer
-        memberId:
-          type: string
-    
-    EsPaymentInput:
-      type: object
-      required:
-        - email
-        - name
-      properties:
-        source:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        paymentMethodId:
-          type: string
-    
-    EsOrderItemStatus:
-      type: object
-      properties:
-        id:
-          type: string
-        active:
-          type: boolean
-          default: true
-        isRefunded:
-          type: boolean
-          default: false
-        refundId:
-          type: string
-    
-    EsOrderItemRefund:
-      type: object
-      properties:
-        id:
-          type: string
-        amount:
-          type: integer
-        charge:
-          type: string
-        created:
-          type: integer
-        currency:
-          type: string
-        reason:
-          type: string
-        status:
-          type: string
-        usedRefundPolicy:
-          $ref: '#/components/schemas/EsRefund'
-    
-    EsOrderItemCharge:
-      type: object
-      properties:
-        id:
-          type: string
-        amount:
-          type: integer
-          minimum: 0
-        created:
-          type: integer
-        paid:
-          type: boolean
-        stripeFee:
-          type: integer
-          minimum: 0
-    
-    EsOrderItem:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - properties:
-            orderId:
-              type: string
-            order:
-              $ref: '#/components/schemas/EsOrder'
-            checkedOutWhen:
-              type: integer
-            storeItemId:
-              type: string
-            storeItem:
-              $ref: '#/components/schemas/EsStoreItem'
-            chargeId:
-              type: string
-            stripeFee:
-              type: integer
-            customerId:
-              type: string
-            feeId:
-              type: string
-            currencyCode:
-              type: string
-            name:
-              type: string
-            itemType:
-              type: string
-            category:
-              type: string
-            categoryId:
-              type: string
-            description:
-              type: string
-            picture:
-              type: string
-            retailPrice:
-              type: integer
-            salePrice:
-              type: integer
-            appliedPromotion:
-              $ref: '#/components/schemas/EsAppliedPromotion'
-    
-            user:
-              $ref: '#/components/schemas/EsOrderUser'
-            statusMessages:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsStatusMessage'
-            merchantId:
-              type: string
-            merchantName:
-              type: string
-            quantityTotal:
-              type: integer
-              default: 0
-              minimum: 0
-            quantityAvailable:
-              type: integer
-              default: 0
-              minimum: 0
-            platformFee:
-              type: integer
-              default: 0
-              minimum: 0
-            processingRefundFee:
-              type: integer
-            subtotal:
-              type: integer
-              default: 0
-              minimum: 0
-            policy:
-              type: string
-            itemStatus:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsOrderItemStatus'
-            issuedRefunds:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsOrderItemRefund'
-            issuedCharges:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsOrderItemCharge'
-            refunds:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsRefund'
-            refundTotal:
-              type: integer
-              description: Total amount of money refunded for this order item
-            
-    EsPagedOrderItem:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsOrderItem'
-    
-    EsPagedOrder:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsOrder'
-    
-    EsCustomerInput:
-      type: object
-      required:
-        - defaultCurrency
-      properties:
-        defaultCurrency:
-          type: string
-          enum:
-            - cad
-            - usd
-        lastCurrency:
-          type: string
-          enum:
-            - cad
-            - usd
-        defaultPaymentId:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-    
-    EsCustomer:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - $ref: '#/components/schemas/EsCustomerInput'
-        - properties:
-            savedCards:
-              type: array
-              items:
-                $ref: '#/components/schemas/EsCard'
-    EsCheckout:
-      type: object
-      properties:
-        success:
-          type: boolean
-        order:
-          $ref: '#/components/schemas/EsOrder'
-        error:
-          $ref: '#/components/schemas/EsDefaultError'
-        claimCode:
-          type: string
-    
-    EsRefundRequest:
-      type: object
-      required:
-        - quantity
-        - reason
-        - feeAmount
-      properties:
-        quantity:
-          type: integer
-        reason:
-          type: string
-          enum:
-            - requested_by_customer
-            - duplicate
-            - fraudulent
-        agreedDeduction:
-          type: integer
-        message:
-          type: string
-    EsMerchantOrderUpdate:
-      type: object
-      properties:
-        cancelStatusIds:
-          type: array
-          items:
-            type: string
-        reason:
-          type: string
-        amount:
-          type: integer
-          minimum: 0
-        isCharge:
-          type: boolean
-          default: false
-          
-    EsCard:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        brand:
-          type: string
-        country:
-          type: string
-        last4:
-          type: string
-        expiryMonth:
-          type: integer
-        expiryYear:
-          type: integer
-    EsUserMembershipUpdate:
-      type: object
-      required:
-        - membershipId
-        - membershipName
-        - memberId
-      properties:
-        membershipId:
-          type: integer
-        membershipName:
-          type: string
-        memberId:
-          type: string
-    EsUserMembership:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - $ref: '#/components/schemas/EsUserMembershipUpdate'
-        - properties:
-            id:
-              type: string
-            membershipId:
-              type: integer
-            membershipName:
-              type: string
-            memberId:
-              type: string
-    EsPagedUserMembership:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        facets:
-          type: object
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsUserMembership'
-    EsMembershipUpdate:
-      type: object
-      required:
-        - name
-        - agreeTerms
-        - organizerId
-      properties:
-        name:
-          type: string
-        organizerId:
-          type: string
-        description:
-          type: string
-        agreeTerms:
-          type: string
-          enum:
-            - v1
-    EsMembership:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/EsBaseId'
-        - $ref: '#/components/schemas/EsMembershipUpdate'
-        - properties:
-            totalMembers:
-              type: integer
-            totalActiveMembers:
-              type: integer
-    EsPagedMembership:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
-        facets:
-          type: object
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsMembership'
-    EsMember:
-      type: object
-      properties:
-        id:
-          type: string
-        memberId:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        title:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        active:
-          type: boolean
-          default: true
-        memberSince:
-          type: number
-    EsMembersUpdate:
-      type: object
-      required:
-        - members
-      properties:
-        members:
-          type: array
-          items:
+          feeStructure:
+            additionalProperties:
+              $ref: '#/definitions/EsFeeStructure'
             type: object
-            required:
-              - action
-              - memberId
-            allOf:
-              - $ref: '#/components/schemas/EsMember'
-              - properties:
-                  action:
-                    type: string
-                    enum:
-                      - delete
-                      - update
-                    default: update
-    EsPagedMember:
-      type: object
-      properties:
-        pageData:
-          $ref: '#/components/schemas/EsPagination'
+    type: object
+  EsMerchantUpdate:
+    properties:
+      storeCurrency:
+        enum:
+          - cad
+          - usd
+        type: string
+      stripeId:
+        type: string
+    required:
+      - name
+      - stripeId
+      - storeCurrency
+    type: object
+  EsMerchantInvoice:
+    type: object
+  EsMerchantOrderUpdate:
+    properties:
+      amount:
+        minimum: 0
+        type: integer
+      cancelStatusIds:
         items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EsMember'
-        deleted:
-          type: array
-          items:
+          type: string
+        type: array
+      isCharge:
+        default: false
+        type: boolean
+      reason:
+        type: string
+    type: object
+  EsOrder:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          checkedOutWhen:
+            type: integer
+          claimCode:
             type: string
+          currencyCode:
+            type: string
+          customerId:
+            type: string
+          isCheckedOut:
+            default: false
+            type: boolean
+          isRefunded:
+            type: boolean
+          merchantInvoices:
+            items:
+              $ref: '#/definitions/EsMerchantInvoice'
+            type: array
+          orderItemIds:
+            items:
+              type: string
+            type: array
+          orderItems:
+            items:
+              $ref: '#/definitions/EsOrderItem'
+            type: array
+          ownerId:
+            type: string
+          platformFee:
+            default: 0
+            minimum: 0
+            type: integer
+          quantityAvailable:
+            default: 0
+            minimum: 0
+            type: integer
+          quantityTotal:
+            default: 0
+            minimum: 0
+            type: integer
+          refundTotal:
+            default: 0
+            type: integer
+          statusMessages:
+            items:
+              $ref: '#/definitions/EsStatusMessage'
+            type: array
+          stripeFee:
+            default: 0
+            minimum: 0
+            type: integer
+          subtotal:
+            default: 0
+            minimum: 0
+            type: integer
+          user:
+            $ref: '#/definitions/EsOrderUser'
+          validatedWhen:
+            default: 0
+            minimum: 0
+            type: integer
+    type: object
+  EsOrderItem:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          appliedPromotion:
+            $ref: '#/definitions/EsAppliedPromotion'
+          category:
+            type: string
+          categoryId:
+            type: string
+          chargeId:
+            type: string
+          checkedOutWhen:
+            type: integer
+          currencyCode:
+            type: string
+          customerId:
+            type: string
+          description:
+            type: string
+          feeId:
+            type: string
+          issuedCharges:
+            items:
+              $ref: '#/definitions/EsOrderItemCharge'
+            type: array
+          issuedRefunds:
+            items:
+              $ref: '#/definitions/EsOrderItemRefund'
+            type: array
+          itemStatus:
+            items:
+              $ref: '#/definitions/EsOrderItemStatus'
+            type: array
+          itemType:
+            type: string
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          name:
+            type: string
+          order:
+            $ref: '#/definitions/EsOrder'
+          orderId:
+            type: string
+          picture:
+            type: string
+          platformFee:
+            default: 0
+            minimum: 0
+            type: integer
+          policy:
+            type: string
+          processingRefundFee:
+            type: integer
+          quantityAvailable:
+            default: 0
+            minimum: 0
+            type: integer
+          quantityTotal:
+            default: 0
+            minimum: 0
+            type: integer
+          refundTotal:
+            description: Total amount of money refunded for this order item
+            type: integer
+          refunds:
+            items:
+              $ref: '#/definitions/EsRefund'
+            type: array
+          retailPrice:
+            type: integer
+          salePrice:
+            type: integer
+          statusMessages:
+            items:
+              $ref: '#/definitions/EsStatusMessage'
+            type: array
+          storeItem:
+            $ref: '#/definitions/EsStoreItem'
+          storeItemId:
+            type: string
+          stripeFee:
+            type: integer
+          subtotal:
+            default: 0
+            minimum: 0
+            type: integer
+          user:
+            $ref: '#/definitions/EsOrderUser'
+    type: object
+  EsOrderItemCharge:
+    properties:
+      amount:
+        minimum: 0
+        type: integer
+      created:
+        type: integer
+      id:
+        type: string
+      paid:
+        type: boolean
+      stripeFee:
+        minimum: 0
+        type: integer
+    type: object
+  EsOrderItemRefund:
+    properties:
+      amount:
+        type: integer
+      charge:
+        type: string
+      created:
+        type: integer
+      currency:
+        type: string
+      id:
+        type: string
+      reason:
+        type: string
+      status:
+        type: string
+      usedRefundPolicy:
+        $ref: '#/definitions/EsRefund'
+    type: object
+  EsOrderItemStatus:
+    properties:
+      active:
+        default: true
+        type: boolean
+      id:
+        type: string
+      isRefunded:
+        default: false
+        type: boolean
+      refundId:
+        type: string
+    type: object
+  EsOrderUser:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  EsPagedMember:
+    properties:
+      deleted:
+        items:
+          type: string
+        type: array
+      items:
+        items:
+          $ref: '#/definitions/EsMember'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedMembership:
+    properties:
+      facets:
+        type: object
+      items:
+        items:
+          $ref: '#/definitions/EsMembership'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedOrder:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/EsOrder'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedOrderItem:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/EsOrderItem'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedPermission:
+    properties:
+      allPermission:
+        items:
+          type: string
+        type: array
+      items:
+        items:
+          $ref: '#/definitions/EsPermission'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedPermissionInvite:
+    properties:
+      allPermission:
+        items:
+          type: string
+        type: array
+      items:
+        items:
+          $ref: '#/definitions/EsPermissionInvite'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedStoreItem:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/EsStoreItem'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedUserMembership:
+    properties:
+      facets:
+        type: object
+      items:
+        items:
+          $ref: '#/definitions/EsUserMembership'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagination:
+    properties:
+      nextCursor:
+        type: string
+      pageSize:
+        format: int32
+        type: integer
+      total:
+        format: int32
+        type: integer
+    type: object
+  EsPaymentInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      paymentMethodId:
+        type: string
+      source:
+        type: string
+    required:
+      - email
+      - name
+    type: object
+  EsPermission:
+    properties:
+      accountId:
+        type: string
+      creatorId:
+        type: string
+      email:
+        type: string
+      entityId:
+        type: string
+      entityType:
+        type: string
+      id:
+        type: string
+      modifiedOn:
+        type: string
+      name:
+        type: string
+      permissions:
+        type: object
+      picture:
+        type: string
+    type: object
+  EsPermissionAccept:
+    properties:
+      invite:
+        $ref: '#/definitions/EsPermissionInvite'
+      permission:
+        $ref: '#/definitions/EsPermission'
+    type: object
+  EsPermissionCheck:
+    properties:
+      hasPermission:
+        type: boolean
+      permission:
+        $ref: '#/definitions/EsPermission'
+    type: object
+  EsPermissionInput:
+    properties:
+      permissions:
+        type: object
+    type: object
+  EsPermissionInvite:
+    properties:
+      acceptedById:
+        type: string
+      acceptedByName:
+        type: string
+      acceptedWhen:
+        type: integer
+      creatorId:
+        type: string
+      declinedWhen:
+        type: integer
+      email:
+        type: string
+      entityId:
+        type: string
+      entityType:
+        type: string
+      id:
+        type: string
+      message:
+        type: string
+      modifiedOn:
+        type: string
+      permissions:
+        type: object
+    type: object
+  EsPermissionInviteCreate:
+    properties:
+      emails:
+        items:
+          type: string
+        type: array
+      invitedByName:
+        type: string
+      message:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+    required:
+      - emails
+      - permissions
+    type: object
+  EsPromotionInput:
+    properties:
+      memberId:
+        type: string
+      membershipId:
+        type: integer
+      referralCode:
+        type: string
+    type: object
+  EsRefund:
+    allOf:
+      - $ref: '#/definitions/EsRefundInput'
+    type: object
+  EsRefundInput:
+    properties:
+      endTimestamp:
+        default: 0
+        minimum: 0
+        type: integer
+      feeAmount:
+        default: 0
+        minimum: 0
+        type: integer
+      isDifferenceCharged:
+        default: false
+        type: boolean
+      refundType:
+        enum:
+          - cancellation
+          - return
+        type: string
+      short:
+        type: string
+      startTimestamp:
+        default: 0
+        minimum: 0
+        type: integer
+      validAfterPurchaseUntil:
+        default: 0
+        minimum: 0
+        type: integer
+    required:
+      - refundType
+      - feeAmount
+    type: object
+  EsRefundRequest:
+    properties:
+      agreedDeduction:
+        type: integer
+      message:
+        type: string
+      quantity:
+        type: integer
+      reason:
+        enum:
+          - requested_by_customer
+          - duplicate
+          - fraudulent
+        type: string
+    required:
+      - quantity
+      - reason
+      - feeAmount
+    type: object
+  EsStatusMessage:
+    properties:
+      message:
+        type: string
+      timestamp:
+        type: integer
+    type: object
+  EsStoreItem:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsStoreItemUpdate'
+      - properties:
+          discounts:
+            items:
+              $ref: '#/definitions/EsDiscount'
+            type: array
+          fees:
+            items:
+              $ref: '#/definitions/EsFee'
+            type: array
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          refunds:
+            items:
+              $ref: '#/definitions/EsRefund'
+            type: array
+          totalSold:
+            format: int32
+            type: integer
+    type: object
+  EsStoreItemUpdate:
+    properties:
+      availableCurrencies:
+        items:
+          enum:
+            - cad
+            - usd
+          type: string
+        type: array
+      category:
+        enum:
+          - event
+          - membership
+        type: string
+      categoryId:
+        type: string
+      description:
+        type: string
+      discounts:
+        items:
+          $ref: '#/definitions/EsDiscountInput'
+        type: array
+      endSaleTimestamp:
+        type: integer
+      extra:
+        type: object
+      fees:
+        items:
+          $ref: '#/definitions/EsFeeInput'
+        type: array
+      itemType:
+        enum:
+          - EventTicket
+          - Membership
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      policy:
+        type: string
+      refunds:
+        items:
+          $ref: '#/definitions/EsRefundInput'
+        type: array
+      retailPrice:
+        format: int32
+        type: integer
+      startSaleTimestamp:
+        type: integer
+      status:
+        enum:
+          - open
+          - closed
+          - soldOut
+        type: string
+      totalInventory:
+        format: int32
+        type: integer
+      unlockSecret:
+        type: string
+    required:
+      - name
+      - category
+      - categoryId
+      - itemType
+      - totalInventory
+      - startSaleTimestamp
+      - endSaleTimestamp
+      - retailPrice
+    type: object
+  EsSuccess:
+    properties:
+      message:
+        type: object
+      success:
+        type: boolean
+    type: object
+  EsUserMembership:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - $ref: '#/definitions/EsUserMembershipUpdate'
+      - properties:
+          id:
+            type: string
+          memberId:
+            type: string
+          membershipId:
+            type: integer
+          membershipName:
+            type: string
+    type: object
+  EsUserMembershipUpdate:
+    properties:
+      memberId:
+        type: string
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
+    required:
+      - membershipId
+      - membershipName
+      - memberId
+    type: object
+securityDefinitions:
+  Authorization:
+    in: header
+    name: Authorization
+    type: apiKey
+  AuthorizationOptional:
+    in: header
+    name: Authorization
+    type: apiKey
+  ClientKey:
+    in: header
+    name: X-Client-Key
+    type: apiKey
+security:
+  - Authorization: []
+    ClientKey: []
+tags:
+  - description: Permissions manager
+    name: esPermissions
+  - description: Merchant management
+    name: esMerchants
+  - description: Store management
+    name: esStore
+  - description: User Cart for store items
+    name: esCart
+  - description: Order items for user
+    name: esOrder
+  - description: Merchant Order items
+    name: esMerchantOrder
+  - description: Customers of eDropin
+    name: esCustomers
+  - description: Memberships managed in eDropin
+    name: esMemberships
+  - description: User memberships managed in eDropin
+    name: esUserMemberships
+
+parameters:
+  accountId:
+    description: Account Id
+    in: path
+    name: accountId
+    required: true
+    type: string
+  cardId:
+    description: Card Id
+    in: path
+    name: cardId
+    required: true
+    type: string
+  cursor:
+    description: Start Cursor for query
+    in: query
+    name: cursor
+    type: string
+  enhanced:
+    description: Gives you a more detailed entity but requires admin permissions usually
+    in: query
+    name: enhanced
+    required: false
+    type: boolean
+  entityId:
+    description: Entity Id
+    in: path
+    name: entityId
+    required: true
+    type: string
+  entityType:
+    description: Entity Type
+    enum:
+      - membership
+      - merchant
+    in: path
+    name: entityType
+    required: true
+    type: string
+  expand:
+    collectionFormat: multi
+    description: Expands the properties in the array
+    in: query
+    items:
+      type: string
+    name: expand
+    required: false
+    type: array
+  itemId:
+    description: Store Item Id
+    in: path
+    name: itemId
+    required: true
+    type: string
+  itemType:
+    description: Store Item Type
+    in: path
+    name: itemType
+    required: true
+    type: string
+  limit:
+    default: 20
+    description: Number of items returned
+    exclusiveMaximum: false
+    exclusiveMinimum: true
+    format: int32
+    in: query
+    maximum: 100
+    minimum: 0
+    multipleOf: 10
+    name: limit
+    type: integer
+  membershipId:
+    description: Membership Id
+    in: path
+    name: membershipId
+    required: true
+    type: string
+  merchantId:
+    description: Merchant Id
+    in: path
+    name: merchantId
+    required: true
+    type: string
+  orderId:
+    description: Order Id
+    in: path
+    name: orderId
+    required: true
+    type: string
+  orderItemId:
+    description: Order Item Id
+    in: path
+    name: orderItemId
+    required: true
+    type: string
+  searchFacets:
+    description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
+    in: query
+    name: facets
+    type: string
+  searchQuery:
+    in: query
+    name: q
+    type: string
+  userMembershipId:
+    description: User membership id
+    in: path
+    name: userMembershipId
+    required: true
+    type: string
+responses:
+  Default500ErrorResponse:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/EsDefaultError'
+  InvalidInputResponse:
+    description: Validation exception
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+
