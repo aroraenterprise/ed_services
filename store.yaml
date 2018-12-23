@@ -362,28 +362,10 @@ paths:
       produces:
         - application/json
       parameters:
-        - in: query
-          name: q
-          type: string
-        - description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
-          in: query
-          name: facets
-          type: string
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Memberships
@@ -525,21 +507,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Members belonging to this membership
@@ -814,21 +783,8 @@ paths:
           name: storeItemId
           required: false
           type: string
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: OK
@@ -858,21 +814,8 @@ paths:
           name: orderBy
           required: false
           type: string
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: OK
@@ -924,21 +867,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: OK
@@ -1035,21 +965,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Permissions for account
@@ -1224,26 +1141,14 @@ paths:
       operationId: getMultipleStoreItems
       summary: Get multip store items from the directory
   '/store/{merchantId}/items':
+    parameters:
+      - $ref: '#/parameters/merchantId'
     get:
       produces:
         - application/json
       parameters:
-        - $ref: '#/parameters/merchantId'
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: OK
@@ -1261,6 +1166,42 @@ paths:
         - esStore
       operationId: listStoreItems
       summary: Get all store items for merchant
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Store Item that needs to be upserted
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsStoreItemUpdate'
+      responses:
+        '200':
+          description: Store Item updated
+          schema:
+            $ref: '#/definitions/EsStoreItem'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Store Item not found
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esStore
+      operationId: createStoreItem
+      summary: Create a store item
   '/store/{merchantId}/items/{itemId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -1358,35 +1299,17 @@ paths:
             $ref: '#/definitions/EsDefaultError'
       tags:
         - esStore
-      operationId: upsertStoreItem
-      summary: Upsert a store item
+      operationId: updateStoreItem
+      summary: Update a store item
   /user-memberships:
     get:
       produces:
         - application/json
       parameters:
-        - in: query
-          name: q
-          type: string
-        - description: 'e.g JSON.stringify([profiledIds:edropin],[profileIds:agdontario])'
-          in: query
-          name: facets
-          type: string
-        - description: Start Cursor for query
-          in: query
-          name: cursor
-          type: string
-        - default: 20
-          description: Number of items returned
-          exclusiveMaximum: false
-          exclusiveMinimum: true
-          format: int32
-          in: query
-          maximum: 100
-          minimum: 0
-          multipleOf: 10
-          name: limit
-          type: integer
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: Customer Memberships
