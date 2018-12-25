@@ -1134,9 +1134,7 @@ paths:
         - esStore
       operationId: getMultipleStoreItems
       summary: Get multiple store items from the directory
-  '/store/{merchantId}/items':
-    parameters:
-      - $ref: '#/parameters/merchantId'
+  '/store':
     get:
       produces:
         - application/json
@@ -2270,6 +2268,8 @@ definitions:
         type: integer
       unlockSecret:
         type: string
+      merchantId:
+        type: string
     required:
       - name
       - category
@@ -2279,6 +2279,7 @@ definitions:
       - startSaleTimestamp
       - endSaleTimestamp
       - retailPrice
+      - merchantId
     type: object
   EsSuccess:
     properties:
