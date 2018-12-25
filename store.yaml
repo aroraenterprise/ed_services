@@ -34,7 +34,14 @@ paths:
     get:
       produces:
         - application/json
-      parameters: []
+      parameters:
+        - in: query
+          name: currencyCode
+          type: string
+          required: true
+          enum:
+          - cad
+          - usd
       responses:
         '200':
           description: OK
@@ -54,12 +61,13 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Update Cart
-          in: body
-          name: body
+        - in: query
+          name: currencyCode
+          type: string
           required: true
-          schema:
-            $ref: '#/definitions/EsCartUpdate'
+          enum:
+          - cad
+          - usd
       responses:
         '200':
           description: OK
@@ -1453,14 +1461,6 @@ definitions:
     properties:
       quantity:
         type: integer
-    type: object
-  EsCartUpdate:
-    properties:
-      currencyCode:
-        enum:
-          - cad
-          - usd
-        type: string
     type: object
   EsCheckout:
     properties:
