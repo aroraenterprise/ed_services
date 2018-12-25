@@ -133,11 +133,10 @@ paths:
         - esCart
       operationId: checkout
       summary: Endpoint to charge the customer for the items in their cart.
-  '/cart/items/{merchantId}/{itemId}':
+  '/cart/remove-item/{itemId}':
     parameters:
-      - $ref: '#/parameters/merchantId'
       - $ref: '#/parameters/itemId'
-    delete:
+    post:
       produces:
         - application/json
       parameters: []
@@ -161,7 +160,11 @@ paths:
         - esCart
       operationId: removeItem
       summary: Delete a cart item
-    put:
+  
+  '/cart/add-item/{itemId}':
+    parameters:
+      - $ref: '#/parameters/itemId'
+    post:
       consumes:
         - application/json
       produces:
