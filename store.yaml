@@ -1166,12 +1166,12 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Store Item that needs to be upserted
+        - description: Store Item that needs to be created
           in: body
           name: body
           required: true
           schema:
-            $ref: '#/definitions/EsStoreItemUpdate'
+            $ref: '#/definitions/EsStoreItemCreate'
       responses:
         '200':
           description: Store Item updated
@@ -2268,8 +2268,6 @@ definitions:
         type: integer
       unlockSecret:
         type: string
-      merchantId:
-        type: string
     required:
       - name
       - category
@@ -2279,8 +2277,16 @@ definitions:
       - startSaleTimestamp
       - endSaleTimestamp
       - retailPrice
-      - merchantId
     type: object
+  EsStoreItemCreate:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsStoreItemUpdate'
+      - properties:
+          merchantId:
+            type: string
+    required:
+      - merchantId
   EsSuccess:
     properties:
       message:
