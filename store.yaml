@@ -8,7 +8,7 @@ info:
     name: UNLICENSED
   title: eDropin Store
   version: 1.0.11
-host: localhost:9003
+host: localhost:9004
 basePath: /
 schemes:
   - http
@@ -689,13 +689,13 @@ paths:
       tags:
         - esMerchants
       operationId: updateMerchant
-      summary: Enable billing
+      summary: Update Merchant
   '/merchants/{merchantId}/enable-billing':
     parameters:
       - $ref: '#/parameters/merchantId'
     post:
       consumes:
-        - application/json
+        - text/plain
       produces:
         - application/json
       parameters:
@@ -1202,9 +1202,8 @@ paths:
         - esStore
       operationId: createStoreItem
       summary: Create a store item
-  '/store/{merchantId}/items/{itemId}':
+  '/store/{itemId}':
     parameters:
-      - $ref: '#/parameters/merchantId'
       - $ref: '#/parameters/itemId'
     delete:
       produces:
@@ -1212,11 +1211,9 @@ paths:
       parameters: []
       responses:
         '204':
-          description: Event deleted
+          description: Store Item deleted
           schema:
             $ref: '#/definitions/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
         '401':
           description: API key is missing or invalid
           headers:
@@ -1236,13 +1233,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: >-
-            Gives you a more detailed entity but requires admin permissions
-            usually
-          in: query
-          name: enhanced
-          required: false
-          type: boolean
+        - $ref: '#/parameters/expand'
       responses:
         '200':
           description: OK
@@ -1271,7 +1262,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Store Item that needs to be upserted
+        - description: Store Item that needs to be updated
           in: body
           name: body
           required: true
@@ -2331,14 +2322,17 @@ securityDefinitions:
   Authorization:
     in: header
     name: Authorization
+    description: Required Authorization Key
     type: apiKey
   AuthorizationOptional:
     in: header
     name: Authorization
+    description: Optional Authorization Key
     type: apiKey
   ClientKey:
     in: header
     name: X-Client-Key
+    description: Client Key
     type: apiKey
 security:
   - Authorization: []
