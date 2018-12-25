@@ -1111,13 +1111,7 @@ paths:
             type: string
           name: storeIds
           type: array
-        - description: >-
-            Gives you a more detailed entity but requires admin permissions
-            usually
-          in: query
-          name: enhanced
-          required: false
-          type: boolean
+        - $ref: '#/parameters/expand'
       responses:
         '200':
           description: OK
@@ -1139,7 +1133,7 @@ paths:
       tags:
         - esStore
       operationId: getMultipleStoreItems
-      summary: Get multip store items from the directory
+      summary: Get multiple store items from the directory
   '/store/{merchantId}/items':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -1147,6 +1141,8 @@ paths:
       produces:
         - application/json
       parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
