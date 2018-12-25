@@ -31,31 +31,7 @@ paths:
         - esCart
       operationId: emptyCart
       summary: Empty the user cart
-    get:
-      produces:
-        - application/json
-      parameters:
-        - in: query
-          name: currencyCode
-          type: string
-          required: true
-          enum:
-          - cad
-          - usd
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsOrder'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esCart
-      operationId: getCart
-      summary: Get the users active cart for currency code
-    put:
+    post:
       consumes:
         - application/json
       produces:
@@ -72,7 +48,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsOrder'
+            $ref: '#/definitions/EsCart'
         '500':
           description: An unexpected error occured.
           schema:
@@ -1698,6 +1674,43 @@ definitions:
       reason:
         type: string
     type: object
+  EsCart:
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          creatorId:
+            type: string
+          checkoutCurrency:
+            type: string
+          customerId:
+            type: string
+          orderItemIds:
+            items:
+              type: string
+            type: array
+          orderItems:
+            items:
+              $ref: '#/definitions/EsOrderItem'
+            type: array
+          itemQuantity:
+            default: 0
+            minimum: 0
+            type: integer
+          subtotal:
+            default: 0
+            minimum: 0
+            type: integer
+          history:
+            items:
+              $ref: '#/definitions/EsStatusMessage'
+            type: array
+          user:
+            $ref: '#/definitions/EsOrderUser'
+          validatedWhen:
+            default: 0
+            minimum: 0
+            type: integer
+    type: object
   EsOrder:
     allOf:
       - $ref: '#/definitions/EsBaseId'
@@ -1706,19 +1719,10 @@ definitions:
             type: integer
           claimCode:
             type: string
-          currencyCode:
+          checkoutCurrency:
             type: string
           customerId:
             type: string
-          isCheckedOut:
-            default: false
-            type: boolean
-          isRefunded:
-            type: boolean
-          merchantInvoices:
-            items:
-              $ref: '#/definitions/EsMerchantInvoice'
-            type: array
           orderItemIds:
             items:
               type: string
@@ -1729,26 +1733,11 @@ definitions:
             type: array
           ownerId:
             type: string
-          platformFee:
+          itemQuantityAvailable:
             default: 0
             minimum: 0
             type: integer
-          quantityAvailable:
-            default: 0
-            minimum: 0
-            type: integer
-          quantityTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          refundTotal:
-            default: 0
-            type: integer
-          statusMessages:
-            items:
-              $ref: '#/definitions/EsStatusMessage'
-            type: array
-          stripeFee:
+          itemQuantity:
             default: 0
             minimum: 0
             type: integer
@@ -1756,144 +1745,165 @@ definitions:
             default: 0
             minimum: 0
             type: integer
-          user:
-            $ref: '#/definitions/EsOrderUser'
-          validatedWhen:
+          refundTotal:
+            default: 0
+            type: integer
+          platformFeeTotal:
             default: 0
             minimum: 0
             type: integer
+          history:
+            items:
+              $ref: '#/definitions/EsStatusMessage'
+            type: array
+          user:
+            $ref: '#/definitions/EsOrderUser'
     type: object
   EsOrderItem:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
-          appliedPromotion:
-            $ref: '#/definitions/EsAppliedPromotion'
-          category:
-            type: string
-          categoryId:
-            type: string
-          chargeId:
-            type: string
-          checkedOutWhen:
-            type: integer
-          currencyCode:
-            type: string
-          customerId:
-            type: string
-          description:
-            type: string
-          feeId:
-            type: string
-          issuedCharges:
-            items:
-              $ref: '#/definitions/EsOrderItemCharge'
-            type: array
-          issuedRefunds:
-            items:
-              $ref: '#/definitions/EsOrderItemRefund'
-            type: array
-          itemStatus:
-            items:
-              $ref: '#/definitions/EsOrderItemStatus'
-            type: array
-          itemType:
-            type: string
           merchantId:
             type: string
           merchantName:
             type: string
+          itemType:
+            type: string
+          category:
+            type: string
+          categoryId:
+            type: string
           name:
+            type: string
+          picture:
+            type: string
+          description:
+            type: string
+          policy:
+            type: string
+          storeItem:
+            $ref: '#/definitions/EsStoreItem'
+          storeItemId:
             type: string
           order:
             $ref: '#/definitions/EsOrder'
           orderId:
             type: string
-          picture:
+          checkedOutWhen:
+            type: integer
+          storeCurrency:
             type: string
-          platformFee:
-            default: 0
-            minimum: 0
-            type: integer
-          policy:
+          presentmentCurrency:
             type: string
-          processingRefundFee:
-            type: integer
-          quantityAvailable:
-            default: 0
-            minimum: 0
-            type: integer
-          quantityTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          refundTotal:
-            description: Total amount of money refunded for this order item
-            type: integer
-          refunds:
+          
+          appliedPromotions:
+            type: array
             items:
-              $ref: '#/definitions/EsRefund'
+              $ref: '#/definitions/EsAppliedPromotion'
+          itemQuantity:
+            type: integer
+            minimum: 0
+            default: 0
+          itemQuantityAvailable:
+            type: integer
+            minimum: 0
+            default: 0
+          
+          customerId:
+            type: string
+          items:
+            items:
+              $ref: '#/definitions/EsOrderItemStatus'
             type: array
           retailPrice:
             type: integer
+            minimum: 0
+            default: 0
           salePrice:
             type: integer
-          statusMessages:
-            items:
-              $ref: '#/definitions/EsStatusMessage'
-            type: array
-          storeItem:
-            $ref: '#/definitions/EsStoreItem'
-          storeItemId:
-            type: string
-          stripeFee:
-            type: integer
+            minimum: 0
+            default: 0
           subtotal:
             default: 0
             minimum: 0
             type: integer
+          chargeTotal:
+            default: 0
+            minimum: 0
+            type: integer
+          refundTotal:
+            default: 0
+            minimum: 0
+            type: integer
+          feeTotal:
+            default: 0
+            minimum: 0
+            type: integer
+          platformFeeTotal:
+            default: 0
+            minimum: 0
+            type: integer
+          
+          transactions:
+            items:
+              $ref: '#/definitions/EsTransaction'
+            type: array
+          history:
+            items:
+              $ref: '#/definitions/EsStatusMessage'
+            type: array
           user:
             $ref: '#/definitions/EsOrderUser'
     type: object
-  EsOrderItemCharge:
+  EsTransaction:
     properties:
-      amount:
+      timestamp:
         minimum: 0
         type: integer
-      created:
+        default: 0
+      amount:
+        minimum: 0
+        default: 0
         type: integer
-      id:
-        type: string
-      paid:
+      isCharge:
         type: boolean
-      stripeFee:
+        default: false
+      isRefund:
+        type: boolean
+        default: false
+      isFee:
+        type: boolean
+        default: false
+      chargeId:
+        type: string
+      refundId:
+        type: string
+      platformFee:
         minimum: 0
         type: integer
-    type: object
-  EsOrderItemRefund:
-    properties:
-      amount:
-        type: integer
-      charge:
-        type: string
-      created:
-        type: integer
-      currency:
-        type: string
+        default: 0
+      itemsCancelledIds:
+        type: array
+        items:
+          type: string
       id:
+        type: string
+      platformFeeId:
+        type: string
+      paymentProcessorFee:
+        minimum: 0
+        type: integer
+        default: 0
+      short:
         type: string
       reason:
         type: string
-      status:
-        type: string
-      usedRefundPolicy:
-        $ref: '#/definitions/EsRefund'
+      currency:
+        $ref: '#/definitions/EsTransactionCurrency'
     type: object
+ 
   EsOrderItemStatus:
     properties:
-      active:
-        default: true
-        type: boolean
       id:
         type: string
       isRefunded:
@@ -1901,6 +1911,10 @@ definitions:
         type: boolean
       refundId:
         type: string
+      refundedWhen:
+        type: integer
+        default: 0
+        minimum: 0
     type: object
   EsOrderUser:
     properties:
@@ -1911,6 +1925,26 @@ definitions:
       phone:
         type: string
     type: object
+  EsTransactionCurrency:
+    type: object
+    properties:
+      baseCurrency:
+        type: string
+      transactionCurrency:
+        type: string
+      sameCurrency:
+        type: boolean
+        default: true
+      exchangeRate:
+        type: integer
+        format: float
+        default: 1.0
+      exchangeRateId:
+        type: integer
+        minimum: 0
+      exchangeRateTimestamp:
+        type: integer
+        minimum: 0
   EsPagedMember:
     properties:
       deleted:
@@ -2177,10 +2211,11 @@ definitions:
     type: object
   EsStatusMessage:
     properties:
-      message:
+      action:
         type: string
       timestamp:
         type: integer
+        minimum: 0
     type: object
   EsStoreItem:
     allOf:
