@@ -1655,6 +1655,8 @@ definitions:
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
             type: object
+          stripeId:
+            type: string
     type: object
   EsMerchantUpdate:
     properties:
@@ -1663,14 +1665,19 @@ definitions:
           - cad
           - usd
         type: string
-      stripeId:
-        type: string
+      availableCurrencies:
+        enum:
+          - cad
+          - usd
+        type: array
+        items:
+          type: string
+      currencyRounding:
+        additionalProperties:
+          type: string
     required:
       - name
-      - stripeId
       - storeCurrency
-    type: object
-  EsMerchantInvoice:
     type: object
   EsMerchantOrderUpdate:
     properties:
