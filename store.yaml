@@ -1499,9 +1499,14 @@ definitions:
     type: object
   EsDiscountInput:
     properties:
-      discountPrice:
+      discountByAmount:
         format: int32
         type: integer
+        minimum: 0
+      discountByPercentage:
+        type: number
+        minimum: 0
+        maximum: 1
       discountType:
         enum:
           - membership
@@ -1520,9 +1525,14 @@ definitions:
       startTimestamp:
         format: int32
         type: integer
+      isStackable:
+        type: boolean
+        default: false
+      minimumSalePrice:
+        type: integer
+        minimum: 0
     required:
       - discountType
-      - discountPrice
       - startTimestamp
       - endTimestamp
     type: object
@@ -2254,6 +2264,15 @@ definitions:
             - usd
           type: string
         type: array
+      itemType:
+        enum:
+          - EventTicket
+          - Membership
+        type: string
+      filters:
+        type: array
+        items:
+          type: string
       category:
         enum:
           - event
@@ -2261,51 +2280,56 @@ definitions:
         type: string
       categoryId:
         type: string
-      description:
-        type: string
-      discounts:
-        items:
-          $ref: '#/definitions/EsDiscountInput'
-        type: array
-      endSaleTimestamp:
-        type: integer
-      extra:
-        type: object
-      fees:
-        items:
-          $ref: '#/definitions/EsFeeInput'
-        type: array
-      itemType:
-        enum:
-          - EventTicket
-          - Membership
-        type: string
       name:
         type: string
       picture:
         type: string
+      description:
+        type: string
       policy:
         type: string
-      refunds:
-        items:
-          $ref: '#/definitions/EsRefundInput'
-        type: array
-      retailPrice:
+      totalInventory:
         format: int32
         type: integer
       startSaleTimestamp:
         type: integer
+        minimum: 0
+      endSaleTimestamp:
+        type: integer
+        minimum: 0
       status:
         enum:
           - open
           - closed
           - soldOut
         type: string
-      totalInventory:
-        format: int32
-        type: integer
+      extra:
+        type: object
       unlockSecret:
         type: string
+      retailPrice:
+        format: int32
+        type: integer
+      oneOffPayment:
+        type: boolean
+        default: false
+      recurring:
+        type: boolean
+        default: false
+      recurringOptions:
+        $ref: '#/definitions/EsRecurringOptions'
+      discounts:
+        items:
+          $ref: '#/definitions/EsDiscountInput'
+        type: array
+      refunds:
+        items:
+          $ref: '#/definitions/EsRefundInput'
+        type: array
+      fees:
+        items:
+          $ref: '#/definitions/EsFeeInput'
+        type: array
     required:
       - name
       - category
@@ -2316,6 +2340,27 @@ definitions:
       - endSaleTimestamp
       - retailPrice
     type: object
+  EsRecurringOptions:
+    type: object
+    required:
+      - oneOffPayment
+    properties:
+      isInstallment:
+        type: boolean
+        default: false
+      interval:
+        type: string
+        enum:
+          - week
+          - month
+          - year
+      billingCycleAnchorTimestamp:
+        type: integer
+        minimum: 0
+      payByTimestamp:
+        type: integer
+        minimum: 0
+        
   EsStoreItemCreate:
     type: object
     allOf:
