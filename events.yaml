@@ -17,8 +17,6 @@ tags:
     description: Events
   - name: eeEventTags
     description: Tagging profiles and invites in an event
-  - name: eeEventTickets
-    description: Tickets linked to events
   - name: eeEventAttendees
     description: Event Attendees
   - name: eeEventDropins
@@ -507,9 +505,14 @@ paths:
       - $ref: '#/parameters/ticketId'
     post:
       tags:
-        - eeEventTickets
+        - eeEvents
       summary: Add Ticket to event
       operationId: upsertTicket
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeTicketUpdate'
       responses:
         '200':
           description: Event Ticket added
@@ -523,7 +526,7 @@ paths:
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeEventTickets
+        - eeEvents
       summary: Remove ticket from event
       operationId: removeTicket
       responses:
@@ -2093,6 +2096,12 @@ definitions:
         items:
           $ref: '#/definitions/EeEvent'
   
+  EeTicketUpdate:
+    type: object
+    properties:
+      moduleId:
+        type: string
+      
   EeEventTagUpsert:
     type: object
     properties:
