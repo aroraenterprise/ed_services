@@ -501,148 +501,40 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/events/{eventId}/tickets':
+  '/events/{eventId}/tickets/{ticketId}':
     parameters:
       - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventTickets
-      summary: Get Tickets to event
-      operationId: listEventTickets
-      parameters:
-        - $ref: '#/parameters/eventId'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Event Tickets
-          schema:
-            $ref: '#/definitions/EePagedTicket'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+      - $ref: '#/parameters/ticketId'
     post:
       tags:
         - eeEventTickets
       summary: Add Ticket to event
-      operationId: addEventTicket
-      parameters:
-        - in: body
-          name: ticketProps
-          description: Ticket to add
-          required: true
-          schema:
-            $ref: '#/definitions/EeTicketUpdate'
-        - in: query
-          name: setAsEventPrice
-          description: Make ticket price the event price
-          required: false
-          type: string
+      operationId: upsertTicket
       responses:
         '200':
           description: Event Ticket added
           schema:
-            $ref: '#/definitions/EeTicket'
+            $ref: '#/definitions/EeEvent'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/tickets/{ticketId}':
-    parameters:
-      - $ref: '#/parameters/ticketId'
-    get:
-      tags:
-        - eeEventTickets
-      summary: Get a ticket from the directory
-      operationId: getEventTicket
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeTicket'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Ticket not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEventTickets
-      summary: Upsert Ticket to event (One Ticket per currency)
-      operationId: updateEventTicket
-      parameters:
-        - in: body
-          name: ticketProps
-          description: Ticket to update
-          required: true
-          schema:
-            $ref: '#/definitions/EeTicketUpdate'
-        - in: query
-          name: setAsEventPrice
-          description: Make ticket price the event price
-          required: false
-          type: string
-      responses:
-        '200':
-          description: Event Ticket updated
-          schema:
-            $ref: '#/definitions/EeTicket'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event or Profile not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
         - eeEventTickets
-      summary: Delete an existing Event
-      operationId: deleteEventTicket
+      summary: Remove ticket from event
+      operationId: removeTicket
       responses:
         '204':
-          description: Ticket deleted
+          description: Ticket removed
         '400':
           description: Invalid ID supplied
         '401':
           $ref: '#/responses/UnauthorizedError'
         '404':
           description: Ticket not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/tickets/{ticketId}/set-primary/{currencyCode}':
-    parameters:
-      - $ref: '#/parameters/ticketId'
-      - $ref: '#/parameters/currencyCode'
-    put:
-      tags:
-        - eeEventTickets
-      summary: Update an existing Event
-      operationId: updateEventPrimaryTicket
-      responses:
-        '200':
-          description: Event updated
-          schema:
-            $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
@@ -2174,15 +2066,10 @@ definitions:
           totalTicketSold:
             type: integer
             format: int32
-          primaryTicket:
-            type: object
-            description: 'currencyCode: ticketId'
-            additionalProperties:
-              type: string
           tickets:
             type: array
             items:
-              $ref: '#/definitions/EeTicketSummary'
+              $ref: '#/definitions/EeTicket'
   EeEventProfile:
     type: object
     properties:
@@ -2205,10 +2092,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
-      storeItems:
-        type: array
-        items:
-          $ref: '#/definitions/EeStoreItem'
   
   EeEventTagUpsert:
     type: object
@@ -2262,231 +2145,20 @@ definitions:
         items:
           $ref: '#/definitions/EeProfile'
   
-  EeTicketUpdate:
-    type: object
-    required:
-      - name
-    allOf:
-      - $ref: '#/definitions/EeStoreItemUpdate'
-      - properties:
-          name:
-            type: string
-          description:
-            type: string
-  
-  EeStoreItemUpdate:
-    type: object
-    required:
-      - name
-      - totalInventory
-      - priceStrategy
-      - startSaleTimestamp
-      - endSaleTimestamp
-    properties:
-      itemType:
-        type: string
-      name:
-        type: string
-      picture:
-        type: string
-      description:
-        type: string
-      priceStrategy:
-        type: "array"
-        items:
-          $ref: "#/definitions/EePriceStrategy"
-      totalInventory:
-        type: integer
-        format: int32
-      startSaleTimestamp:
-        type: integer
-      endSaleTimestamp:
-        type: integer
-      policy:
-        type: string
-      extra:
-        type: object
-      status:
-        type: string
-        enum:
-          - open
-          - closed
-          - soldOut
-  EeStoreItem:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeStoreItemUpdate'
-      - properties:
-          merchantId:
-            type: string
-          merchantName:
-            type: string
-          totalSold:
-            type: integer
-            format: int32
-          priceSummary:
-            type: array
-            items:
-              $ref: '#/definitions/EePriceSummary'
-              
-  EePriceStrategy:
-    type: object
-    required:
-      - retailPrice
-      - currencyCode
-    properties:
-      retailPrice:
-        type: integer
-        format: int32
-      currencyCode:
-        type: string
-      discounts:
-        type: array
-        items:
-          $ref: '#/definitions/EeDiscount'
-      refundPolicies:
-        type: array
-        items:
-          $ref: '#/definitions/EeRefundPolicy'
-
-  
-  EeDiscount:
-    type: object
-    required:
-      - discountType
-      - discountPrice
-      - startTimestamp
-      - endTimestamp
-    properties:
-      discountType:
-        type: string
-        enum:
-          - membership
-          - referralCode
-      referralCode:
-        type: string
-      discountPrice:
-        type: integer
-        format: int32
-      startTimestamp:
-        type: integer
-        format: int32
-      endTimestamp:
-        type: integer
-        format: int32
-      membershipId:
-        type: integer
-      membershipName:
-        type: string
-        
-  EeRefundPolicy:
-    type: object
-    required:
-      - startTimestamp
-      - endTimestamp
-      - feeAmount
-    properties:
-      policyId:
-        type: string
-      policyName:
-        type: string
-      disclaimer:
-        type: string
-      appFeeRefundAmount: 
-        type: number
-      platformFee:
-        type: number
-      startTimestamp:
-        type: integer
-      endTimestamp:
-        type: integer
-      feeAmount:
-        type: integer
-      refundAmount:
-        type: integer
-      isDifferenceCharged:
-        type: boolean
-        default: false
-          
-  EePriceSummary:
-    type: object
-    properties:
-      currencyCode:
-        type: string
-      retailPrice:
-        type: integer
-        format: int32
-      adDiscounts:
-        type: array
-        items:
-          $ref: '#/definitions/EeDiscount'
-      refundPolicies:
-        type: array
-        items:
-          $ref: '#/definitions/EeRefundPolicy'
-          
-  
-  EeTicketSummary:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EePriceSummary'
-      - properties:
-          id:
-            type: string
-            description: 'storeItemId'
-          name:
-            type: string
-          uid:
-            type: string
-            description: 'storeItemId-currencyCode'
-          
-  
   EeTicket:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeTicketUpdate'
-      - $ref: '#/definitions/EeStoreItem'
-      - properties:
-          eventId:
-            type: string
-          eventName:
-            type: string
-          eventPicture:
-            type: string
-          organizerId:
-            type: string
-          organizerName:
-            type: string
-          totalSold:
-            type: integer
-            format: int32
-          dropins:
-            type: array
-            items:
-              $ref: '#/definitions/EeTicketDropin'
-  EeTicketDropin:
     type: object
     properties:
       id:
         type: string
       name:
         type: string
-      dropinType:
-        type: string
-      color:
-        type: string
-  
-  EePagedTicket:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EePagination'
-      items:
+      availableCurrencies:
         type: array
         items:
-          $ref: '#/definitions/EeTicket'
+          type: string
+      order:
+        type: integer
+        minimum: 0
 
   EeEventAttendeeUpdate:
     type: object
