@@ -267,12 +267,6 @@ paths:
         - eeEvents
       summary: Get a Event from the directory
       operationId: getEvent
-      parameters:
-        - in: query
-          name: currencyCode
-          description: Currency Code to fetch event primary tickets from the store for sale
-          required: false
-          type: string
       responses:
         '200':
           description: OK
@@ -357,11 +351,6 @@ paths:
         - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/searchCoords'
         - $ref: '#/parameters/filterTimestamp'
-        - in: query
-          name: currencyCode
-          description: Currency Code to fetch event primary tickets from the store for sale
-          required: false
-          type: string
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -1680,12 +1669,6 @@ parameters:
     description: Certificate Code
     type: string
     required: true
-  currencyCode:
-    name: currencyCode
-    in: path
-    description: Currencey code
-    type: string
-    required: true
   dropinId:
     name: dropinId
     in: path
@@ -2053,7 +2036,7 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeEventProfile'
-          availableCurrencyCode:
+          availableCurrencies:
             type: array
             items:
               type: string
