@@ -1202,14 +1202,7 @@ paths:
     delete:
       produces:
         - application/json
-      parameters:
-        - in: query
-          type: string
-          required: false
-          name: currencyCode
-          enum:
-            - usd
-            - cad
+      parameters: []
       responses:
         '204':
           description: Store Item deleted
@@ -1234,6 +1227,13 @@ paths:
       produces:
         - application/json
       parameters:
+        - in: query
+          type: string
+          required: false
+          name: currencyCode
+          enum:
+            - usd
+            - cad
         - $ref: '#/parameters/expand'
       responses:
         '200':
