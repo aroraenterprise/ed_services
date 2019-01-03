@@ -1098,6 +1098,13 @@ paths:
             type: string
           name: storeIds
           type: array
+        - in: query
+          type: string
+          required: false
+          name: currencyCode
+          enum:
+            - usd
+            - cad
         - $ref: '#/parameters/expand'
       responses:
         '200':
@@ -1128,6 +1135,12 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
+        - in: query
+          type: string
+          name: currencyCode
+          enum:
+            - usd
+            - cad
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -1189,7 +1202,14 @@ paths:
     delete:
       produces:
         - application/json
-      parameters: []
+      parameters:
+        - in: query
+          type: string
+          required: false
+          name: currencyCode
+          enum:
+            - usd
+            - cad
       responses:
         '204':
           description: Store Item deleted
