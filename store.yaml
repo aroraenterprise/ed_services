@@ -32,8 +32,6 @@ paths:
       operationId: emptyCart
       summary: Empty the user cart
     post:
-      consumes:
-        - application/json
       produces:
         - application/json
       parameters:
@@ -1460,7 +1458,26 @@ definitions:
     properties:
       quantity:
         type: integer
+      secret:
+        type: string
+      recurring:
+        $ref: '#/definitions/EsCartItemRecurringInput'
     type: object
+  EsCartItemRecurringInput:
+    type: object
+    properties:
+      interval:
+        type: string
+        enum:
+          - week
+          - month
+          - year
+      billingCycleAnchorTimestamp:
+        type: integer
+        minimum: 0
+      payByTimestamp:
+        type: integer
+        minimum: 0
   EsCheckout:
     properties:
       claimCode:
@@ -1826,8 +1843,6 @@ definitions:
             $ref: '#/definitions/EsStoreItem'
           storeItemId:
             type: string
-          order:
-            $ref: '#/definitions/EsOrder'
           orderId:
             type: string
           checkedOutWhen:
@@ -2371,8 +2386,11 @@ definitions:
   EsRecurringOptions:
     type: object
     required:
-      - oneOffPayment
+      - isInstallment
     properties:
+      deposit:
+        type: integer
+        minimum: 0
       isInstallment:
         type: boolean
         default: false
