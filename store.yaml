@@ -1451,6 +1451,10 @@ definitions:
           - week
           - month
           - year
+      intervalCount:
+        type: integer
+        minimum: 1
+        default: 1
       billingCycleAnchorTimestamp:
         type: integer
         minimum: 0
@@ -1721,10 +1725,14 @@ definitions:
             type: string
           customerId:
             type: string
-          orderItemIds:
-            items:
-              type: string
-            type: array
+          items:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsCartItem'
+          invalidItems:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsInvalidCartItem'
           orderItems:
             items:
               $ref: '#/definitions/EsOrderItem'
@@ -1757,6 +1765,26 @@ definitions:
             type: object
     type: object
   
+  EsCartItem:
+    type: object
+    properties:
+      id:
+        type: string
+      quantity:
+        type: integer
+        minimum: 0
+      secret:
+        type: string
+      recurring:
+        $ref: '#/definitions/EsCartItemRecurringInput'
+  EsInvalidCartItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsCartItem'
+      - properties:
+          errorMsg:
+            type: string
+            
   EsCartPromotion:
     type: object
     properties:
