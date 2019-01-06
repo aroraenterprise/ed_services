@@ -2387,7 +2387,7 @@ definitions:
         type: boolean
         default: false
       recurringOptions:
-        $ref: '#/definitions/EsRecurringOptions'
+        $ref: '#/definitions/EsRecurringInput'
       discounts:
         items:
           $ref: '#/definitions/EsDiscountInput'
@@ -2410,7 +2410,7 @@ definitions:
       - endSaleTimestamp
       - retailPrice
     type: object
-  EsRecurringOptions:
+  EsRecurringInput:
     type: object
     required:
       - isInstallment
@@ -2421,15 +2421,14 @@ definitions:
       isInstallment:
         type: boolean
         default: false
-      interval:
-        type: string
-        enum:
-          - week
-          - month
-          - year
-      billingCycleAnchorTimestamp:
-        type: integer
-        minimum: 0
+      intervalOptions:
+        type: array
+        items:
+          type: string
+          enum:
+            - week
+            - month
+            - year
       payByTimestamp:
         type: integer
         minimum: 0
