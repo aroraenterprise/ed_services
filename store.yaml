@@ -1525,9 +1525,9 @@ definitions:
         maximum: 1
       discountType:
         enum:
-          - membership
-          - referralCode
-          - limitedTime
+          - Membership
+          - Referral Code
+          - Limited Time
         type: string
       endTimestamp:
         format: int32
