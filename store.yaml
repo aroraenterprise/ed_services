@@ -72,7 +72,7 @@ paths:
         '200':
           description: Updated Cart
           schema:
-            $ref: '#/definitions/EsCartItemChangeResponse'
+            $ref: '#/definitions/EsCartChangeResponse'
         '400':
           description: Invalid ID supplied
         '401':
@@ -142,7 +142,7 @@ paths:
         '204':
           description: Cart Item deleted
           schema:
-            $ref: '#/definitions/EsCartItemChangeResponse'
+            $ref: '#/definitions/EsCartChangeResponse'
         '401':
           description: API key is missing or invalid
           headers:
@@ -178,7 +178,7 @@ paths:
         '200':
           description: Cart Item upserted
           schema:
-            $ref: '#/definitions/EsCartItemChangeResponse'
+            $ref: '#/definitions/EsCartChangeResponse'
         '400':
           description: Invalid ID supplied
         '401':
@@ -1441,18 +1441,14 @@ definitions:
       name:
         type: string
     type: object
-  EsCartItemChangeResponse:
+  EsCartChangeResponse:
     properties:
-      error:
-        type: object
-      order:
-        $ref: '#/definitions/EsOrder'
-      orderItems:
-        items:
-          $ref: '#/definitions/EsOrderItem'
-        type: array
+      cart:
+        $ref: '#/definitions/EsCart'
       success:
         type: boolean
+      errorMsg:
+        type: string
     type: object
   EsCartItemInput:
     properties:
