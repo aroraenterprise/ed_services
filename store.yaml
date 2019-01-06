@@ -1394,23 +1394,6 @@ paths:
       summary: Update an existing user membership
 
 definitions:
-  EsAppliedPromotion:
-    properties:
-      discountPrice:
-        type: integer
-      discountType:
-        type: string
-      memberId:
-        type: string
-      membershipId:
-        type: integer
-      membershipName:
-        type: string
-      referralCode:
-        type: string
-      timestamp:
-        type: integer
-    type: object
   EsBaseId:
     properties:
       createdOn:
@@ -1754,6 +1737,10 @@ definitions:
             default: 0
             minimum: 0
             type: integer
+          appliedPromotions:
+            type: array
+            items:
+              $ref: '#/definitions/EsCartPromotion'
           history:
             items:
               $ref: '#/definitions/EsStatusMessage'
@@ -1765,6 +1752,20 @@ definitions:
             minimum: 0
             type: integer
     type: object
+  
+  EsCartPromotion:
+    type: object
+    properties:
+      memberId:
+        type: string
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
+      referralCode:
+        type: string
+    
+    
   EsOrder:
     allOf:
       - $ref: '#/definitions/EsBaseId'
@@ -1847,11 +1848,10 @@ definitions:
             type: string
           presentmentCurrency:
             type: string
-          
           appliedPromotions:
             type: array
             items:
-              $ref: '#/definitions/EsAppliedPromotion'
+              $ref: '#/definitions/EsOrderItemPromotion'
           itemQuantity:
             type: integer
             minimum: 0
@@ -1860,7 +1860,6 @@ definitions:
             type: integer
             minimum: 0
             default: 0
-          
           customerId:
             type: string
           items:
@@ -1895,7 +1894,6 @@ definitions:
             default: 0
             minimum: 0
             type: integer
-          
           transactions:
             items:
               $ref: '#/definitions/EsTransaction'
@@ -1907,6 +1905,30 @@ definitions:
           user:
             $ref: '#/definitions/EsOrderUser'
     type: object
+  
+  EsOrderItemPromotion:
+    type: object
+    properties:
+      discountType: 
+        type: string
+      memberId:
+        type: string
+      membershipId:
+        type: integer
+      membershipName:
+        type: string
+      referralCode:
+        type: string
+      appliedWhen:
+        type: integer
+      discountByAmount:
+        type: integer
+        minimum: 0
+      discountByPercentage:
+        type: number
+        minimum: 0
+        maximum: 0
+
   EsTransaction:
     properties:
       timestamp:
