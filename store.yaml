@@ -1440,9 +1440,9 @@ definitions:
       secret:
         type: string
       recurring:
-        $ref: '#/definitions/EsCartItemRecurringInput'
+        $ref: '#/definitions/EsInstallmentPlanInput'
     type: object
-  EsCartItemRecurringInput:
+  EsInstallmentPlanInput:
     type: object
     properties:
       interval:
@@ -1461,6 +1461,19 @@ definitions:
       payByTimestamp:
         type: integer
         minimum: 0
+  EsInstallmentPlan:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsInstallmentPlanInput'
+      - properties:
+          isInstallment:
+            type: boolean
+          amount:
+            type: integer
+            minimum: 0
+          totalNumberOfPayments:
+            type: integer
+            minimum: 0
   EsCheckout:
     properties:
       claimCode:
@@ -1776,7 +1789,7 @@ definitions:
       secret:
         type: string
       recurring:
-        $ref: '#/definitions/EsCartItemRecurringInput'
+        $ref: '#/definitions/EsInstallmentPlan'
   EsInvalidCartItem:
     type: object
     allOf:
@@ -1869,12 +1882,16 @@ definitions:
             type: string
           picture:
             type: string
+          link:
+            type: string
+          recurring:
+            type: boolean
+          isInstallment:
+            type: boolean
           description:
             type: string
           policy:
             type: string
-          storeItem:
-            $ref: '#/definitions/EsStoreItem'
           storeItemId:
             type: string
           orderId:
@@ -1903,6 +1920,10 @@ definitions:
             items:
               $ref: '#/definitions/EsOrderItemStatus'
             type: array
+          payInInstallments:
+            type: boolean
+          installmentPlan:
+            $ref: '#/definitions/EsInstallmentPlan'
           retailPrice:
             type: integer
             minimum: 0
@@ -2379,6 +2400,8 @@ definitions:
       categoryId:
         type: string
       name:
+        type: string
+      link:
         type: string
       picture:
         type: string
