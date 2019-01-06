@@ -1751,6 +1751,10 @@ definitions:
             default: 0
             minimum: 0
             type: integer
+          validMemberships:
+            additionalProperties:
+              $ref: '#/definitions/EsCartMembership'
+            type: object
     type: object
   
   EsCartPromotion:
@@ -1764,7 +1768,12 @@ definitions:
         type: string
       referralCode:
         type: string
-    
+  
+  EsCartMembership:
+    type: object
+    properties:
+      membershipName:
+        type: string
     
   EsOrder:
     allOf:
