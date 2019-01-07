@@ -1742,10 +1742,6 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsCartItem'
-          invalidItems:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsInvalidCartItem'
           orderItems:
             items:
               $ref: '#/definitions/EsOrderItem'
@@ -1790,14 +1786,12 @@ definitions:
         type: string
       recurring:
         $ref: '#/definitions/EsInstallmentPlan'
-  EsInvalidCartItem:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsCartItem'
-      - properties:
-          errorMsg:
-            type: string
-            
+      valid:
+        type: boolean
+        default: true
+      errorMsg:
+        type: string
+  
   EsCartPromotion:
     type: object
     properties:
