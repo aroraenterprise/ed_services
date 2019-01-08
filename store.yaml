@@ -1405,6 +1405,15 @@ definitions:
         readOnly: true
         type: string
     type: object
+  EsError:
+    type: object
+    properties:
+      field:
+        type: string
+      hint:
+        type: string
+      message:
+        type: string
   EsCard:
     properties:
       brand:
@@ -1439,7 +1448,7 @@ definitions:
         type: integer
       secret:
         type: string
-      recurring:
+      installmentPlan:
         $ref: '#/definitions/EsInstallmentPlanInput'
     type: object
   EsInstallmentPlanInput:
@@ -1474,6 +1483,11 @@ definitions:
           totalNumberOfPayments:
             type: integer
             minimum: 0
+          errors:
+            type: array
+            items:
+              $ref: '#/definitions/EsError'
+                
   EsCheckout:
     properties:
       claimCode:
@@ -1784,13 +1798,16 @@ definitions:
         minimum: 0
       secret:
         type: string
-      recurring:
+      installmentPlan:
         $ref: '#/definitions/EsInstallmentPlan'
       valid:
         type: boolean
         default: true
-      errorMsg:
-        type: string
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/EsError'
+            
   
   EsCartPromotion:
     type: object
@@ -1878,10 +1895,6 @@ definitions:
             type: string
           link:
             type: string
-          recurring:
-            type: boolean
-          isInstallment:
-            type: boolean
           description:
             type: string
           policy:
