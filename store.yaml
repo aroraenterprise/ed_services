@@ -753,21 +753,8 @@ paths:
         - application/json
       parameters:
         - $ref: '#/parameters/merchantId'
-        - description: Type of store item category e.g. Event
-          in: query
-          name: category
-          required: false
-          type: string
-        - description: 'Category id e.g [Event Id]'
-          in: query
-          name: categoryId
-          required: false
-          type: string
-        - description: Store item id e.g. EventTicket-ab2333
-          in: query
-          name: storeItemId
-          required: false
-          type: string
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -792,13 +779,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - enum:
-            - modified
-            - created
-          in: query
-          name: orderBy
-          required: false
-          type: string
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -1498,8 +1480,10 @@ definitions:
     properties:
       claimCode:
         type: string
-      error:
-        $ref: '#/definitions/EsDefaultError'
+      cart:
+        $ref: '#/definitions/EsCart'
+      errorMsg:
+        type: string
       order:
         $ref: '#/definitions/EsOrder'
       success:
@@ -1774,6 +1758,10 @@ definitions:
             default: 0
             minimum: 0
             type: integer
+          dueUpfront:
+            type: integer
+            default: 0
+            minimum: 0
           appliedPromotions:
             type: array
             items:
@@ -2431,6 +2419,12 @@ definitions:
       endSaleTimestamp:
         type: integer
         minimum: 0
+      isFree:
+        type: boolean
+        default: false
+      requireCC:
+        type: boolean
+        default: true
       status:
         enum:
           - open
