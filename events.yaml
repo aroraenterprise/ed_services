@@ -2056,6 +2056,18 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeTicket'
+          priceStartingAt:
+            $ref: '#/definitions/EePriceStartingAt'
+  
+  EePriceStartingAt:
+    type: object
+    properties:
+      retailPrice:
+        type: integer
+        minimum: 0
+      storeCurrency:
+        type: string
+  
   EeEventProfile:
     type: object
     properties:
@@ -2148,9 +2160,14 @@ definitions:
         type: array
         items:
           type: string
-      order:
+      active:
+        type: boolean
+        default: true
+      retailPrice:
         type: integer
         minimum: 0
+      storeCurrency:
+        type: string
 
   EeEventAttendeeUpdate:
     type: object
