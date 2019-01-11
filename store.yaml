@@ -2376,7 +2376,16 @@ definitions:
             type: integer
           storeCurrency:
             type: string
+          exchangeRates:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsExchangeRate'
     type: object
+  
+  EsExchangeRate:
+    type: number
+    format: float
+  
   EsStoreItemUpdate:
     properties:
       availableCurrencies:
