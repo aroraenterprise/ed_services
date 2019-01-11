@@ -13,7 +13,7 @@ basePath: /
 schemes:
   - http
 paths:
-  /currencyExchange:
+  /currency-exchange:
      get:
       produces:
         - application/json
@@ -2414,6 +2414,9 @@ definitions:
               $ref: '#/definitions/EsExchangeRate'
           base:
             type: string
+          spread:
+            type: number
+            format: float
   EsStoreItemUpdate:
     properties:
       availableCurrencies:
