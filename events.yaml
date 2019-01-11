@@ -2067,6 +2067,14 @@ definitions:
         minimum: 0
       storeCurrency:
         type: string
+      exchangeRates:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EeExchangeRate'
+  
+  EeExchangeRate:
+    type: number
+    format: float
   
   EeEventProfile:
     type: object
