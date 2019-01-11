@@ -2374,6 +2374,8 @@ definitions:
           totalSold:
             format: int32
             type: integer
+          storeCurrency:
+            type: string
     type: object
   EsStoreItemUpdate:
     properties:
