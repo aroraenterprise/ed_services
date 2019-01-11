@@ -13,6 +13,24 @@ basePath: /
 schemes:
   - http
 paths:
+  /currencyExchange:
+     get:
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsExchange'
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esCurrencyExchange
+      operationId: getLatestExchange
+      summary: Get the latest exchange rates data
+    
   /cart:
     delete:
       produces:
@@ -2385,7 +2403,17 @@ definitions:
   EsExchangeRate:
     type: number
     format: float
-  
+  EsExchange: 
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          rates:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsExchangeRate'
+          base:
+            type: string
   EsStoreItemUpdate:
     properties:
       availableCurrencies:
@@ -2586,6 +2614,8 @@ tags:
     name: esMemberships
   - description: User memberships managed in eDropin
     name: esUserMemberships
+  - description: Currency Exchange
+    name: esCurrencyExchange
 
 parameters:
   accountId:
