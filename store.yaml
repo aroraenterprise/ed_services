@@ -578,7 +578,7 @@ paths:
         - esMemberships
       operationId: deleteMembersTask
       summary: 'Delete all members in the membership [cloud tasks]'
-  '/merchant-orders/{orderItemId}':
+  '/order-items/{orderItemId}':
     parameters:
       - $ref: '#/parameters/orderItemId'
     get:
@@ -604,7 +604,7 @@ paths:
           schema:
             $ref: '#/definitions/EsDefaultError'
       tags:
-        - esMerchantOrder
+        - esOrderItems
       operationId: getOrderItemForMerchant
       summary: Get the order item
     post:
@@ -636,9 +636,39 @@ paths:
           schema:
             $ref: '#/definitions/EsDefaultError'
       tags:
-        - esMerchantOrder
+        - esOrderItems
       operationId: updateOrderItem
       summary: 'Updater order (e.g. refund, charges, cancel items, re-activate item)'
+  '/order-items':
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: merchantId
+          required: true
+          type: string
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrderItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrderItems
+      operationId: listOrderItemsByMerchant
+      summary: List merchant order items
   '/merchants/{merchantId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -762,33 +792,6 @@ paths:
         - esMerchants
       operationId: updateFeeStructure
       summary: 'Setup fee structure for merchant [Admin Only]'
-  '/merchants/{merchantId}/order-items':
-    get:
-      produces:
-        - application/json
-      parameters:
-        - $ref: '#/parameters/merchantId'
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsPagedOrderItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esOrder
-      operationId: listOrderItemsByMerchant
-      summary: List merchant order items
   /orders:
     get:
       produces:
@@ -2572,7 +2575,7 @@ tags:
   - description: Order items for user
     name: esOrder
   - description: Merchant Order items
-    name: esMerchantOrder
+    name: esOrderItems
   - description: Customers of eDropin
     name: esCustomers
   - description: Memberships managed in eDropin
