@@ -605,7 +605,7 @@ paths:
             $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
-      operationId: getOrderItemForMerchant
+      operationId: getOrderItem
       summary: Get the order item
     post:
       consumes:
