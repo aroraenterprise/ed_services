@@ -1758,7 +1758,10 @@ definitions:
             type: array
           user:
             $ref: '#/definitions/EsOrderUser'
-          validatedWhen:
+          valid:
+            default: false
+            type: boolean
+          validUntil:
             default: 0
             minimum: 0
             type: integer
@@ -2409,7 +2412,7 @@ definitions:
         type: string
       name:
         type: string
-      short:
+      shortName:
         type: string
       link:
         type: string
