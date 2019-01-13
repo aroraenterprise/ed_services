@@ -1453,9 +1453,6 @@ definitions:
       payByTimestamp:
         type: integer
         minimum: 0
-      availableUntil:
-        type: integer
-        minimum: 0
   EsInstallmentPlan:
     type: object
     allOf:
@@ -2505,7 +2502,9 @@ definitions:
       payByTimestamp:
         type: integer
         minimum: 0
-        
+      availableUntil:
+        type: integer
+        minimum: 0
   EsStoreItemCreate:
     type: object
     allOf:
