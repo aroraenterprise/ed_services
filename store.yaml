@@ -1453,6 +1453,9 @@ definitions:
       payByTimestamp:
         type: integer
         minimum: 0
+      availableUntil:
+        type: integer
+        minimum: 0
   EsInstallmentPlan:
     type: object
     allOf:
@@ -2408,6 +2411,8 @@ definitions:
       categoryId:
         type: string
       name:
+        type: string
+      short:
         type: string
       link:
         type: string
