@@ -1410,6 +1410,10 @@ definitions:
         type: string
       last4:
         type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
       name:
         type: string
     type: object
@@ -1506,6 +1510,10 @@ definitions:
       email:
         type: string
       lastCurrency:
+        type: string
+      firstName:
+        type: string
+      lastName:
         type: string
       name:
         type: string
@@ -1605,14 +1613,14 @@ definitions:
     type: object
   EsMember:
     properties:
+      id:
+        type: string
       active:
         default: true
         type: boolean
       email:
         type: string
       firstName:
-        type: string
-      id:
         type: string
       lastName:
         type: string
@@ -1624,6 +1632,10 @@ definitions:
         type: string
       title:
         type: string
+      group:
+        type: array
+        items:
+          type: string
     type: object
   EsMembersUpdate:
     properties:
@@ -1665,6 +1677,10 @@ definitions:
       description:
         type: string
       name:
+        type: string
+      firstName:
+        type: string
+      lastName:
         type: string
       organizerId:
         type: string
@@ -1814,10 +1830,20 @@ definitions:
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
+          isCheckedOut:
+            type: boolean
           checkedOutWhen:
             type: integer
-          claimCode:
-            type: string
+          isProcessing:
+            type: boolean
+          processingStartedWhen:
+            type: integer
+            minimum: 0
+          isFailed:
+            type: boolean
+          failedWhen:
+            type: integer
+            minimum: 0
           checkoutCurrency:
             type: string
           customerId:
@@ -1952,6 +1978,8 @@ definitions:
             type: array
           user:
             $ref: '#/definitions/EsOrderUser'
+          claimCode:
+            type: string
     type: object
   
   EsOrderItemPromotion:
@@ -2043,6 +2071,10 @@ definitions:
       email:
         type: string
       name:
+        type: string
+      firstName:
+        type: string
+      lastName:
         type: string
       phone:
         type: string
@@ -2171,6 +2203,10 @@ definitions:
       email:
         type: string
       name:
+        type: string
+      firstName:
+        type: string
+      lastName:
         type: string
       paymentMethodId:
         type: string
