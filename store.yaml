@@ -1731,6 +1731,8 @@ definitions:
       isCharge:
         default: false
         type: boolean
+      transactionId:
+        type: string
       reason:
         type: string
     type: object
@@ -1900,6 +1902,8 @@ definitions:
             type: string
           name:
             type: string
+          shortName:
+            type: string
           picture:
             type: string
           link:
@@ -1976,6 +1980,12 @@ definitions:
             items:
               $ref: '#/definitions/EsTransaction'
             type: array
+          exchangeRates:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsExchangeRate'
+          exchange:
+            $ref: '#/definitions/EsTransactionExchange'
           history:
             items:
               $ref: '#/definitions/EsStatusMessage'
