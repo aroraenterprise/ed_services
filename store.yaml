@@ -1968,6 +1968,10 @@ definitions:
             default: 0
             minimum: 0
             type: integer
+          paymentProcessorFeeTotal:
+            default: 0
+            minimum: 0
+            type: integer
           transactions:
             items:
               $ref: '#/definitions/EsTransaction'
@@ -2007,50 +2011,53 @@ definitions:
 
   EsTransaction:
     properties:
-      timestamp:
+      id:
+        type: string
+      created:
         minimum: 0
         type: integer
         default: 0
-      amount:
-        minimum: 0
-        default: 0
-        type: integer
       isCharge:
         type: boolean
         default: false
       isRefund:
         type: boolean
         default: false
-      isFee:
-        type: boolean
-        default: false
       chargeId:
         type: string
-      refundId:
-        type: string
-      platformFee:
+      allocatedAmount:
+        minimum: 0
+        default: 0
+        type: integer
+      allocatedPlatformFee:
         minimum: 0
         type: integer
         default: 0
+      allocatedPaymentProcessorFee:
+        minimum: 0
+        type: integer
+        default: 0
+      platformFeeId:
+        type: string
+      idempotencyKey:
+        type: string
+      exchange:
+        $ref: '#/definitions/EsTransactionExchange'
       itemsCancelledIds:
         type: array
         items:
           type: string
-      id:
-        type: string
-      platformFeeId:
-        type: string
-      paymentProcessorFee:
-        minimum: 0
-        type: integer
-        default: 0
-      short:
-        type: string
       reason:
         type: string
-      currency:
-        $ref: '#/definitions/EsTransactionCurrency'
     type: object
+  
+  EsTransactionExchange:
+    type: object
+    properties:
+      id:
+        type: string
+      rate:
+        type: string
  
   EsOrderItemStatus:
     properties:
@@ -2079,26 +2086,7 @@ definitions:
       phone:
         type: string
     type: object
-  EsTransactionCurrency:
-    type: object
-    properties:
-      baseCurrency:
-        type: string
-      transactionCurrency:
-        type: string
-      sameCurrency:
-        type: boolean
-        default: true
-      exchangeRate:
-        type: integer
-        format: float
-        default: 1.0
-      exchangeRateId:
-        type: integer
-        minimum: 0
-      exchangeRateTimestamp:
-        type: integer
-        minimum: 0
+    
   EsPagedMember:
     properties:
       deleted:
