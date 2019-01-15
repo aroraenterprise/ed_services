@@ -2020,6 +2020,7 @@ definitions:
         maximum: 0
 
   EsTransaction:
+    type: object
     properties:
       id:
         type: string
@@ -2027,23 +2028,21 @@ definitions:
         minimum: 0
         type: integer
         default: 0
-      isCharge:
-        type: boolean
-        default: false
-      isRefund:
-        type: boolean
-        default: false
       chargeId:
         type: string
-      allocatedAmount:
+      refunds:
+        type: array
+        items:
+          $ref: '#/definitions/EsTransactionRefund'
+      amount:
         minimum: 0
         default: 0
         type: integer
-      allocatedPlatformFee:
+      platformFee:
         minimum: 0
         type: integer
         default: 0
-      allocatedPaymentProcessorFee:
+      paymentProcessorFee:
         minimum: 0
         type: integer
         default: 0
@@ -2053,13 +2052,28 @@ definitions:
         type: string
       exchange:
         $ref: '#/definitions/EsTransactionExchange'
+  
+  EsTransactionRefund:
+    type: object
+    properties:
+      id:
+        type: string
+      created:
+        type: integer
+        minimum: 0
+        default: 0
+      amount:
+        type: integer
+        minimum: 0
+        default: 0
       itemsCancelledIds:
         type: array
         items:
           type: string
       reason:
         type: string
-    type: object
+      idempotencyKey:
+        type: string
   
   EsTransactionExchange:
     type: object
