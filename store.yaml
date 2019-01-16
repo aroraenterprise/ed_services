@@ -792,6 +792,23 @@ paths:
         - esMerchants
       operationId: updateFeeStructure
       summary: 'Setup fee structure for merchant [Admin Only]'
+  /merchants/{merchantId}/feed:
+    get:
+      tags:
+        - esMerchants
+      summary: Merchant Feed
+      operationId: listMerchantFeed
+      parameters:
+        - $ref: '#/parameters/merchantId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged Feed Items
+          schema:
+            $ref: '#/definitions/EsPagedFeedItem'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /orders:
     get:
       produces:
@@ -2046,6 +2063,10 @@ definitions:
         minimum: 0
         type: integer
         default: 0
+      refundedAmount:
+        minimum: 0
+        type: integer
+        default: 0
       platformFeeId:
         type: string
       idempotencyKey:
@@ -2599,6 +2620,32 @@ definitions:
       - membershipName
       - memberId
     type: object
+  
+  EsFeedItem:
+    type: object
+    properties:
+      id:
+        type: string
+      actor:
+        $ref: '#/definitions/EsOrderUser'
+      foreignObject:
+        type: object
+      object:
+        type: object
+      time:
+        type: string
+      verb:
+        type: string
+  
+  EsPagedFeedItem:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EsFeedItem'
+      pageData:
+        $ref: '#/definitions/EsPagination'
 securityDefinitions:
   Authorization:
     in: header
