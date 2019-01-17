@@ -1787,10 +1787,6 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsCartPromotion'
-          history:
-            items:
-              $ref: '#/definitions/EsStatusMessage'
-            type: array
           user:
             $ref: '#/definitions/EsOrderUser'
           valid:
@@ -1896,10 +1892,6 @@ definitions:
             default: 0
             minimum: 0
             type: integer
-          history:
-            items:
-              $ref: '#/definitions/EsStatusMessage'
-            type: array
           user:
             $ref: '#/definitions/EsOrderUser'
     type: object
@@ -1993,20 +1985,26 @@ definitions:
             default: 0
             minimum: 0
             type: integer
+          numberOfPaymentsMade:
+            minimum: 0
+            type: integer
+          totalNumberOfPayments:
+            minimum: 0
+            type: integer
           transactions:
-            items:
+            type: object
+            additionalProperties:
               $ref: '#/definitions/EsTransaction'
-            type: array
+          subscriptions:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsSubscription'
           exchangeRates:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsExchangeRate'
           exchange:
             $ref: '#/definitions/EsTransactionExchange'
-          history:
-            items:
-              $ref: '#/definitions/EsStatusMessage'
-            type: array
           user:
             $ref: '#/definitions/EsOrderUser'
           claimCode:
@@ -2059,14 +2057,29 @@ definitions:
         minimum: 0
         type: integer
         default: 0
+      net:
+        minimum: 0
+        type: integer
+        default: 0
       paymentProcessorFee:
         minimum: 0
         type: integer
         default: 0
-      refundedAmount:
+      paymentProcessorExchangeRate:
+        minimum: 0
+        type: number
+        format: float
+        default: 0
+      refundTotal:
         minimum: 0
         type: integer
         default: 0
+      refundedInPresentmentCurrency:
+        minimum: 0
+        type: integer
+        default: 0
+      refundStatus:
+        type: string
       platformFeeId:
         type: string
       idempotencyKey:
@@ -2103,7 +2116,40 @@ definitions:
         type: string
       rate:
         type: string
- 
+  
+  EsSubscription:
+    type: object
+    properties:
+      id:
+        type: string
+      amount:
+        type: integer
+        minimum: 0
+        default: 0
+      billingCycleAnchorTimestamp:
+        type: integer
+        minimum: 0
+        default: 0
+      interval:
+        type: string
+      intervalCount:
+        type: integer
+        minimum: 0
+        default: 0
+      created:
+        type: integer
+        minimum: 0
+        default: 0
+      planId:
+        type: string
+      totalNumberOfPayments:
+        type: integer
+        minimum: 0
+        default: 0
+      canceled:
+        type: boolean
+        default: false
+  
   EsOrderItemStatus:
     properties:
       id:
@@ -2400,14 +2446,6 @@ definitions:
       - reason
       - feeAmount
     type: object
-  EsStatusMessage:
-    properties:
-      action:
-        type: string
-      timestamp:
-        type: integer
-        minimum: 0
-    type: object
   EsStoreItem:
     allOf:
       - $ref: '#/definitions/EsBaseId'
@@ -2628,8 +2666,8 @@ definitions:
         type: string
       actor:
         $ref: '#/definitions/EsOrderUser'
-      foreignObject:
-        type: object
+      foreignId:
+        type: string
       object:
         type: object
       time:
