@@ -1995,10 +1995,8 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsTransaction'
-          subscriptions:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsSubscription'
+          subscription:
+            $ref: '#/definitions/EsSubscription'
           exchangeRates:
             type: object
             additionalProperties:
