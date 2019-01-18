@@ -1158,14 +1158,6 @@ definitions:
   
   EaProfileUpdate:
     type: object
-    required:
-      - isOrganization
-      - name
-      - profileType
-      - email
-      - firstName
-      - lastName
-      - agreeTerms
     properties:
       isOrganization:
         type: boolean
@@ -1231,6 +1223,13 @@ definitions:
     type: object
     required:
       - username
+      - isOrganization
+      - name
+      - profileType
+      - email
+      - firstName
+      - lastName
+      - agreeTerms
     allOf:
       - $ref: '#/definitions/EaProfileUpdate'
       - properties:
