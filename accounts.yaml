@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: Accounts service for eDropin
-  version: 1.0.10
+  version: 1.1.0
   title: eDropin Accounts
   license:
     name: UNLICENSED
@@ -21,8 +21,6 @@ tags:
     description: Profile invitations
   - name: eaProfileTags
     description: Tag requests, accept and decline
-  - name: eaUtilities
-    description: eDropin Utilities
 schemes:
   - https
 produces:
@@ -312,7 +310,7 @@ paths:
     get:
       tags:
         - eaProfiles
-      summary: Get Profiles
+      summary: List all profiles
       operationId: getAllProfiles
       parameters:
         - $ref: '#/parameters/searchQuery'
@@ -340,7 +338,7 @@ paths:
           description: Profile object that needs to be created
           required: true
           schema:
-            $ref: '#/definitions/EaProfileUpdate'
+            $ref: '#/definitions/EaProfileCreate'
       responses:
         '200':
           description: Profile created
@@ -597,98 +595,7 @@ paths:
             $ref: '#/definitions/EaPagedFeedItem'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
-  '/profiles/{profileId}/permissions/{accountId}':
-    parameters:
-      - $ref: '#/parameters/profileId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eaProfiles
-      summary: Get permission for account
-      operationId: getAccountPermissionForProfile
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EaPermission'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eaProfiles
-      summary: Set permission for profile
-      operationId: setProfilePermission
-      parameters:
-        - in: body
-          name: permissionProps
-          description: Permissions
-          required: true
-          schema:
-            $ref: '#/definitions/EaPermissionInput'
-      responses:
-        '200':
-          description: Permission set
-          schema:
-            $ref: '#/definitions/EaPermission'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/permissions/{accountId}/check':
-    parameters:
-      - $ref: '#/parameters/profileId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eaProfiles
-      summary: Check account has permission
-      operationId: checkAccountHasPermission
-      parameters:
-        - in: query
-          type: string
-          required: true
-          name: permission
-      responses:
-        '200':
-          description: Account has Permission
-          schema:
-            $ref: '#/definitions/EaPermissionCheck'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/profiles/{profileId}/all-permissions':
-    parameters:
-      - $ref: '#/parameters/profileId'
-    get:
-      tags:
-        - eaProfiles
-      summary: List all profile permissions
-      operationId: getProfilePermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: List of Users with permissions linked to this profile
-          schema:
-            $ref: '#/definitions/EaPagedPermission'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-          
+
   '/profile-invites':
     get:
       tags:
@@ -883,55 +790,6 @@ paths:
             $ref: '#/definitions/EaSuccess'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-   
-  /utility/phoneverification/start:
-    post:
-      tags:
-        - eaUtilities
-      summary: Verify a phone number
-      operationId: startPhoneVerification
-      parameters:
-        - in: body
-          name: phoneProps
-          description: Phone number for verification
-          required: true
-          schema:
-            $ref: '#/definitions/EaPhoneVerificationInput'
-      responses:
-        '200':
-          description: Phone verification code sent
-          schema:
-            $ref: '#/definitions/EaSuccess'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  /utility/phoneverification/check:
-    post:
-      tags:
-        - eaUtilities
-      summary: Check phone verification
-      operationId: checkPhoneVerification
-      parameters:
-        - in: body
-          name: phoneProps
-          description: Phone code to complete verification
-          required: true
-          schema:
-            $ref: '#/definitions/EaPhoneVerificationCheck'
-      responses:
-        '200':
-          description: Phone verified
-          schema:
-            $ref: '#/definitions/EaPhoneVerification'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
 parameters:
   entityType:
     name: entityType
@@ -939,6 +797,8 @@ parameters:
     description: Entity Type
     type: string
     required: true
+    enum:
+      - profile
   entityId:
     name: entityId
     in: path
@@ -1293,12 +1153,23 @@ definitions:
     properties:
       claims:
         type: object
-  EaProfileBase:
+  
+  
+  
+  EaProfileUpdate:
     type: object
     required:
+      - isOrganization
       - name
+      - profileType
       - email
+      - firstName
+      - lastName
+      - agreeTerms
     properties:
+      isOrganization:
+        type: boolean
+        default: false
       name:
         type: string
       firstName:
@@ -1311,14 +1182,12 @@ definitions:
         type: string
       picture:
         type: string
-      videoLink:
-        type: string
       pictures:
-        type: string
+        type: array
+        items:
+          $ref: '#/definitions/EaPicture'
       bio:
         type: string
-      address:
-        $ref: '#/definitions/EaAddress'
       website:
         type: string
       facebook:
@@ -1332,53 +1201,42 @@ definitions:
         items:
           type: string
         maxLength: 30
-  EaProfileUpdate:
+      agreeTerms:
+        type: string
+        enum:
+          - v1
+  EaPicture:
     type: object
-    required:
-      - username
-      - phoneVerificationToken
-      - firstName
-      - lastName
-      - address
-      - agreeTerms
-    allOf:
-      - $ref: '#/definitions/EaProfileBase'
-      - properties:
-          username:
-            type: string
-          phoneVerificationToken:
-            type: string
-          agreeTerms:
-            type: string
-            enum:
-              - v1
-
+    properties:
+      src:
+        type: string
+      caption:
+        type: string
+  
   EaProfile:
     type: object
     allOf:
-      - $ref: '#/definitions/EaBaseId'
-      - $ref: '#/definitions/EaProfileBase'
+      - $ref: '#/definitions/EaProfileUpdate'
       - properties:
-          categories:
-            type: array
-            items:
-              type: string
-            maxLength: 30
-          phone:
-            type: string
-          location:
+          username:
             type: string
           isEmailVerified:
             type: boolean
           status:
             type: string
-          statusMessages:
-            type: array
-            items:
-              type: object
           isInvited:
             type: boolean
             
+  EaProfileCreate:
+    type: object
+    required:
+      - username
+    allOf:
+      - $ref: '#/definitions/EaProfileUpdate'
+      - properties:
+          username:
+            type: string
+  
   EaProfileStatus:
     type: object
     required:
@@ -1414,42 +1272,7 @@ definitions:
         type: object
       invitePageData:
         $ref: '#/definitions/EaPagination'
-  
-  EaPhoneVerificationInput:
-    type: object
-    required:
-      - phone
-      - countryCode
-      - method
-    properties:
-      phone:
-        type: string
-      countryCode:
-        type: string
-      method:
-        type: string
-        enum:
-          - sms
-          - call
-        default: sms
-  EaPhoneVerification:
-    type: object
-    properties:
-      verificationToken:
-        type: string
-  EaPhoneVerificationCheck:
-    type: object
-    required:
-      - phone
-      - countryCode
-      - code
-    properties:
-      phone:
-        type: string
-      countryCode:
-        type: string
-      code:
-        type: string
+        
   EaFacetSearch:
     type: object
     properties:
