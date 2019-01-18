@@ -797,8 +797,6 @@ parameters:
     description: Entity Type
     type: string
     required: true
-    enum:
-      - profile
   entityId:
     name: entityId
     in: path

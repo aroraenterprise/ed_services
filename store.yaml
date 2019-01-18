@@ -2755,9 +2755,6 @@ parameters:
     type: string
   entityType:
     description: Entity Type
-    enum:
-      - membership
-      - merchant
     in: path
     name: entityType
     required: true
