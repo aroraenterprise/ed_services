@@ -1807,7 +1807,7 @@ definitions:
         type: string
       zip:
         type: string
-      _geoloc:
+      geoloc:
         $ref: '#/definitions/EeGeoloc'
   EeGeoloc:
     type: object
@@ -1992,7 +1992,7 @@ definitions:
       pictures:
         type: array
         items:
-          type: string
+          $ref: '#/definitions/EePicture'
       website:
         type: string
       isOnline:
@@ -2020,10 +2020,50 @@ definitions:
         $ref: '#/definitions/EeAddress'
       policy:
         type: string
+      modules:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventModule'
       agreeTerms:
         type: string
         enum:
           - v1
+  
+  EeEventModule:
+    type: object
+    required:
+      - name
+      - startTimestamp
+      - endTimestamp
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      startTimestamp:
+        type: integer
+        minimum: 0
+      endTimestamp:
+        type: integer
+        minimum: 0
+      address:
+        $ref: '#/definitions/EeAddress'
+      ticketIds:
+        type: array
+        items:
+          type: string
+      isRequired:
+        type: boolean
+        default: false
+  EePicture:
+    type: object
+    required:
+      - src
+    properties:
+      src:
+        type: string
+      caption:
+        type: string 
   EeEvent:
     type: object
     allOf:
