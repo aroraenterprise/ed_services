@@ -29,6 +29,7 @@ tags:
     description: Automated actions based on triggers such as dropin => assign certificate
   - name: eeQrCode
     description: Generate qr codes
+  - name: eeSurveys
 schemes:
   - https
 produces:
@@ -1609,6 +1610,135 @@ paths:
           description: OK
           schema:
             type: file
+  
+  /organizers/{organizerId}/surveys:
+    get:
+      tags:
+        - eeSurveys
+      summary: List all user's surveys
+      operationId: listSurveys
+      parameters:
+        - in: path
+          name: organizerId
+          type: string
+          required: true
+        - in: query
+          name: category
+          type: string
+        - in: query
+          name: categoryId
+          type: string
+        - in: query
+          name: item
+          type: string
+        - in: query
+          name: itemType
+          type: string
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of Surveys
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys/{surveyId}:
+    parameters:
+      - $ref: '#/parameters/surveyId'
+    get:
+      tags:
+        - eeSurveys
+      summary: List all user's surveys
+      operationId: retrieveSurvey
+      responses:
+        '200':
+          description: Retrieves the survey with the given surveyId
+          schema:
+            $ref: '#/definitions/EeSurvey'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys/{surveyId}/responses:
+    parameters:
+      - $ref: '#/parameters/surveyId'
+    get:
+      tags:
+        - eeSurveys
+      summary: Retrieve response for survey
+      operationId: retrieveResponse
+      responses:
+        '200':
+          description: Retrieves the survey response with the given surveyId for the current user
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeSurveys
+      summary: Retrieve response for survey
+      operationId: createResponse
+      responses:
+        '200':
+          description: Create a survey response with the given surveyId for the current user
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /organizers/{organizerId}/survey-responses:
+    get:
+      parameters:
+        - in: path
+          name: organizerId
+          type: string
+          required: true
+        - in: query
+          name: surveyId
+          type: string
+        - in: query
+          name: category
+          type: string
+        - in: query
+          name: categoryId
+          type: string
+        - in: query
+          name: item
+          type: string
+        - in: query
+          name: itemType
+          type: string
+      tags:
+        - eeSurveys
+      summary: Retrieve response for survey
+      operationId: listResponses
+      responses:
+        '200':
+          description: Retrieves the survey response with the given surveyId for the current user
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
 parameters:
   entityType:
     name: entityType
@@ -1687,10 +1817,10 @@ parameters:
     description: Profile Id
     type: string
     required: true
-  courseId:
-    name: courseId
+  surveyId:
+    name: surveyId
     in: path
-    description: Course Id
+    description: Survey Id
     type: string
     required: true
   inviteId:
@@ -2040,6 +2170,8 @@ definitions:
       - endTimestamp
       - timezone
     properties:
+      id:
+        type: string
       name:
         type: string
       description:
@@ -2059,6 +2191,9 @@ definitions:
         items:
           type: string
       isRequired:
+        type: boolean
+        default: false
+      isDeleted:
         type: boolean
         default: false
   EePicture:
@@ -2152,7 +2287,11 @@ definitions:
     properties:
       moduleId:
         type: string
-      
+      suveyQuestions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EeSurveyQuestion'
+
   EeEventTagUpsert:
     type: object
     properties:
@@ -2681,3 +2820,64 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventAutomation'
+      
+  EeSurveyQuestion:
+    type: object
+    properties:
+      questionType:
+        type: string
+      prompt:
+        type: string
+      hint:
+        type: string
+  
+  EeSurvey:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeSurveyUpdate'
+      - properties:
+          category:
+            type: string
+          categoryId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+  
+  EePagedSurvey:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurvey'
+  
+  EeSurveyCreateResponse:
+    type: object
+    required:
+      - responses
+    properties:
+      responses:
+        type: object
+        additionalProperties:
+          type: string
+        
+  EeSurveyResponse:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeSurveyCreateResponse'
+      - properties:
+          category:
+            type: string
+          categoryId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+        
