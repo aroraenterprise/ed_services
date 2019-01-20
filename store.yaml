@@ -217,7 +217,11 @@ paths:
     post:
       produces:
         - application/json
-      parameters: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EsValidationInput'
       responses:
         '200':
           description: Cart Item validated
@@ -1896,6 +1900,7 @@ definitions:
             $ref: '#/definitions/EsOrderUser'
     type: object
   EsOrderItem:
+    type: object
     allOf:
       - $ref: '#/definitions/EsBaseId'
       - properties:
@@ -2005,9 +2010,12 @@ definitions:
             $ref: '#/definitions/EsTransactionExchange'
           user:
             $ref: '#/definitions/EsOrderUser'
+          surveys:
+            type: array
+            items:
+              $ref: '#/definitions/EsCheckoutSurvey'
           claimCode:
             type: string
-    type: object
   
   EsOrderItemPromotion:
     type: object
@@ -2548,8 +2556,12 @@ definitions:
           - closed
           - soldOut
         type: string
-      extra:
+      metadata:
         type: object
+      surveys:
+        type: array
+        items:
+          $ref: '#/definitions/EsCheckoutSurveyInput'
       unlockSecret:
         type: string
       retailPrice:
@@ -2588,6 +2600,31 @@ definitions:
       - retailPrice
       - timezone
     type: object
+  
+  EsCheckoutSurveyInput:
+    type: object
+    properties:
+      service:
+        type: string
+      surveyId:
+        type: string
+      preCheckout:
+        type: boolean
+        default: true
+  
+  EsCheckoutSurvey:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsCheckoutSurveyInput'
+      - properties:
+          completedWhen:
+            type: integer
+            minimum: 0
+          isCompleted:
+            type: boolean
+          responseId:
+            type: string
+  
   EsRecurringInput:
     type: object
     required:
@@ -2682,6 +2719,13 @@ definitions:
           $ref: '#/definitions/EsFeedItem'
       pageData:
         $ref: '#/definitions/EsPagination'
+  
+  EsValidationInput:
+    type: object
+    properties:
+      surveyClaimCode:
+        type: string
+
 securityDefinitions:
   Authorization:
     in: header

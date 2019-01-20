@@ -1701,21 +1701,28 @@ paths:
         '200':
           description: Retrieves the survey response with the given surveyId for the current user
           schema:
-            $ref: '#/definitions/EeSurveyResponse'
+            $ref: '#/definitions/EeSurveyResponseItem'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  /survey-responses:
     post:
       tags:
         - eeSurveys
-      summary: Create a response for survey
+      summary: Create responses for surveys
       operationId: createResponse
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeSurveyResponseInput'
       responses:
         '200':
-          description: Create a survey response with the given surveyId for the current user
+          description: Survey responses claim code
           schema:
             $ref: '#/definitions/EeSurveyResponse'
         '400':
@@ -2884,28 +2891,34 @@ definitions:
         items:
           $ref: '#/definitions/EeSurvey'
   
-  EeSurveyCreateResponse:
-    type: object
-    required:
-      - responses
-    properties:
-      responses:
-        type: object
-        additionalProperties:
-          type: string
-        
+  EeSurveyResponseInput:
+    type: array
+    items:
+      $ref: '#/definitions/EeSurveyResponseItem'
+  
   EeSurveyResponse:
+    type: array
+    items:
+      type: object
+      allOf:
+        - $ref: '#/definitions/EeSurveyResponseItem'
+        - properties:
+            claimCode:
+              type: string
+        
+  EeSurveyResponseItem:
     type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeSurveyCreateResponse'
-      - properties:
-          category:
-            type: string
-          categoryId:
-            type: string
-          itemType:
-            type: string
-          itemId:
-            type: string
+    properties:
+      surveyId:
+        type: string
+      items:
+        additionalProperties:
+          type: array
+          items:
+            $ref: '#/definitions/EeSurveyResponseAnswer'
+
+  EeSurveyResponseAnswer:
+    type: object
+    additionalProperties:
+      type: string
         
