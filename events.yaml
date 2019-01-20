@@ -2912,6 +2912,7 @@ definitions:
       surveyId:
         type: string
       items:
+        type: object
         additionalProperties:
           type: array
           items:
