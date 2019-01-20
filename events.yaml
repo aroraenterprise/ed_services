@@ -2363,6 +2363,8 @@ definitions:
         minimum: 0
       storeCurrency:
         type: string
+      surveyId:
+        type: string
 
   EeEventAttendeeUpdate:
     type: object
@@ -2835,7 +2837,6 @@ definitions:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeSurveyUpdate'
       - properties:
           category:
             type: string
@@ -2845,6 +2846,9 @@ definitions:
             type: string
           itemId:
             type: string
+          surveyQuestions:
+            additionalProperties:
+              $ref: '#/definitions/EeSurveyQuestion'
   
   EePagedSurvey:
     type: object
