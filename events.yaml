@@ -1653,13 +1653,36 @@ paths:
     get:
       tags:
         - eeSurveys
-      summary: List all user's surveys
+      summary: Retrieve a survey with the given surveyID
       operationId: retrieveSurvey
       responses:
         '200':
-          description: Retrieves the survey with the given surveyId
+          description: Retrieves the survey with the given surveyID
           schema:
             $ref: '#/definitions/EeSurvey'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys/get-multi:
+    get:
+      parameters:
+        - in: query
+          name: surveyIds
+          type: array
+          items:
+            type: string
+      tags:
+        - eeSurveys
+      summary: List all surveys by surveyIDs
+      operationId: retrieveAllSurveys
+      responses:
+        '200':
+          description: Retrieve as paged survey
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -1688,7 +1711,7 @@ paths:
     post:
       tags:
         - eeSurveys
-      summary: Retrieve response for survey
+      summary: Create a response for survey
       operationId: createResponse
       responses:
         '200':
@@ -1725,7 +1748,7 @@ paths:
           type: string
       tags:
         - eeSurveys
-      summary: Retrieve response for survey
+      summary: Retrieves all survey responses for the given organizerID
       operationId: listResponses
       responses:
         '200':
