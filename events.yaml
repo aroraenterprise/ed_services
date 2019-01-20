@@ -2870,6 +2870,7 @@ definitions:
           itemId:
             type: string
           surveyQuestions:
+            type: object
             additionalProperties:
               $ref: '#/definitions/EeSurveyQuestion'
   
