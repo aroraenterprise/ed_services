@@ -1969,8 +1969,6 @@ definitions:
     required:
       - organizerId
       - name
-      - startTimestamp
-      - endTimestamp
       - agreeTerms
     properties:
       organizerId:
@@ -1996,6 +1994,8 @@ definitions:
       website:
         type: string
       isOnline:
+        type: boolean
+      onlineOnly:
         type: boolean
       isHandsOn:
         type: boolean
@@ -2038,6 +2038,7 @@ definitions:
       - name
       - startTimestamp
       - endTimestamp
+      - timezone
     properties:
       name:
         type: string
@@ -2049,6 +2050,8 @@ definitions:
       endTimestamp:
         type: integer
         minimum: 0
+      timezone:
+        type: string
       address:
         $ref: '#/definitions/EeAddress'
       ticketIds:
