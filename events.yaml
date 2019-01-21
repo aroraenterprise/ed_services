@@ -2901,16 +2901,17 @@ definitions:
           $ref: '#/definitions/EeSurvey'
   
   EeSurveyResponseInput:
-    type: array
-    items:
-      $ref: '#/definitions/EeSurveyResponseItemInput'
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponseItemInput'
   
   EeSurveyResponse:
     type: object
     properties:
-      claimCode:
-        type: string
-      responses:
+      items:
         type: array
         items:
           $ref: '#/definitions/EeSurveyResponseItem'
@@ -2922,7 +2923,11 @@ definitions:
         type: string
       statusId:
         type: string
-      name:
+      orderItemId:
+        type: string
+      firstName:
+        type: string
+      lastName:
         type: string
       email:
         type: string
@@ -2943,6 +2948,8 @@ definitions:
           itemType:
             type: string
           itemId:
+            type: string
+          claimCode:
             type: string
   
   EeQuestionAnswer:

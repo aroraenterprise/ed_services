@@ -2723,8 +2723,10 @@ definitions:
   EsValidationInput:
     type: object
     properties:
-      surveyClaimCode:
-        type: string
+      surveyResponses:
+        type: array
+        items:
+          type: string
 
 securityDefinitions:
   Authorization:
