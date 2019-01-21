@@ -2862,6 +2862,13 @@ definitions:
         type: string
       hint:
         type: string
+      choices:
+        type: array
+        items:
+          type: string
+      isRequired:
+        type: boolean
+        default: false
   
   EeSurvey:
     type: object
@@ -2876,7 +2883,7 @@ definitions:
             type: string
           itemId:
             type: string
-          surveyQuestions:
+          questions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EeSurveyQuestion'
