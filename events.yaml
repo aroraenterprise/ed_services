@@ -1705,7 +1705,7 @@ paths:
         '200':
           description: Retrieves the survey responses with the given responseIds
           schema:
-            $ref: '#/definitions/EeSurveyResponseItem'
+            $ref: '#/definitions/EeSurveyResponse'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':

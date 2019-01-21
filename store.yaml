@@ -1804,7 +1804,25 @@ definitions:
             additionalProperties:
               $ref: '#/definitions/EsCartMembership'
             type: object
+          surveyResponses:
+            type: array
+            items:
+              $ref: '#/definitions/EsCartSurveyResponse'
     type: object
+  
+  EsCartSurveyResponse:
+    type: object
+    properties:
+      service: 
+        type: string
+      surveyId: 
+        type: string
+      orderItemId: 
+        type: string
+      responseId: 
+        type: string
+      itemId: 
+        type: string
   
   EsCartItem:
     type: object
