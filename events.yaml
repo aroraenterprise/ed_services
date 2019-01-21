@@ -1689,17 +1689,21 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /surveys/{surveyId}/responses:
-    parameters:
-      - $ref: '#/parameters/surveyId'
+  /surveys-responses/get-multi:
     get:
       tags:
         - eeSurveys
+      parameters:
+        - in: query
+          name: responseIds
+          type: array
+          items:
+            type: string
       summary: Retrieve response for survey
       operationId: retrieveResponse
       responses:
         '200':
-          description: Retrieves the survey response with the given surveyId for the current user
+          description: Retrieves the survey responses with the given responseIds
           schema:
             $ref: '#/definitions/EeSurveyResponseItem'
         '400':
@@ -2875,9 +2879,7 @@ definitions:
     allOf:
       - $ref: '#/definitions/EeBaseId'
       - properties:
-          category:
-            type: string
-          categoryId:
+          eventId:
             type: string
           itemType:
             type: string
@@ -2901,32 +2903,56 @@ definitions:
   EeSurveyResponseInput:
     type: array
     items:
-      $ref: '#/definitions/EeSurveyResponseItem'
+      $ref: '#/definitions/EeSurveyResponseItemInput'
   
   EeSurveyResponse:
-    type: array
-    items:
-      type: object
-      allOf:
-        - $ref: '#/definitions/EeSurveyResponseItem'
-        - properties:
-            claimCode:
-              type: string
-        
-  EeSurveyResponseItem:
+    type: object
+    properties:
+      claimCode:
+        type: string
+      responses:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponseItem'
+
+  EeSurveyResponseItemInput:
     type: object
     properties:
       surveyId:
         type: string
-      items:
-        type: object
-        additionalProperties:
-          type: array
-          items:
-            $ref: '#/definitions/EeSurveyResponseAnswer'
-
-  EeSurveyResponseAnswer:
+      statusId:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      answers:
+        type: array
+        items:
+          $ref: '#/definitions/EeQuestionAnswer'
+  
+  EeSurveyResponseItem:
     type: object
-    additionalProperties:
-      type: string
-        
+    allOf:
+      - $ref: '#/definitions/EeSurveyResponseItemInput'
+      - properties:
+          id:
+            type: string
+          eventId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+  
+  EeQuestionAnswer:
+    type: object
+    properties:
+      questionId:
+        type: string
+      text:
+        type: string
+      selection:
+        type: array
+        items:
+          type: string
