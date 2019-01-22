@@ -2932,8 +2932,8 @@ definitions:
       email:
         type: string
       answers:
-        type: array
-        items:
+        type: object
+        additionalProperties:
           $ref: '#/definitions/EeQuestionAnswer'
   
   EeSurveyResponseItem:
@@ -2955,8 +2955,6 @@ definitions:
   EeQuestionAnswer:
     type: object
     properties:
-      questionId:
-        type: string
       text:
         type: string
       selection:
