@@ -748,7 +748,7 @@ paths:
         '404':
           description: Dropin or Ticket not found
         '500':
-          $ref: '#/responses/Default500ErrorResponse'
+          $ref: '#/responses/Default500ErrorResponse' 
   
   '/events/{eventId}/attendees':
     parameters:
@@ -768,6 +768,27 @@ paths:
           description: Attendees for the event
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/attendees/{attendeeId}':
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Check attendee exists
+      operationId: verifyEventAttendee
+      parameters:
+        - $ref: '#/parameters/eventId'
+        - $ref: '#/parameters/attendeeId'
+      responses:
+        '200':
+          description: Minimal Attendee Info
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
@@ -2403,13 +2424,15 @@ definitions:
   EeEventAttendeeUpdate:
     type: object
     required:
-      - name
-      - email
+      - firstName
+      - lastName
     properties:
       sendClaim:
         type: boolean
         default: false
-      name:
+      firstName:
+        type: string
+      lastName:
         type: string
       email:
         type: string
@@ -2417,8 +2440,7 @@ definitions:
         type: string
       phone:
         type: string
-      memberId:
-        type: string
+        
   EeEventAttendeeClaimUpdate:
     type: object
     properties:
@@ -2441,44 +2463,79 @@ definitions:
               type: string
             phone:
               type: string
-            memberId:
-              type: string
   EeEventAttendee:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeEventAttendeeUpdate'
       - properties:
-          orderItemId:
+          ownerId:
             type: string
-          orderItemStatusId:
+          isAnonymous:
+            type: boolean
+          organizerId:
             type: string
-          eventName:
+          organizerName:
             type: string
           eventId:
+            type: string
+          eventPicture:
+            type: string
+          eventName:
             type: string
           ticketId:
             type: string
           ticketName:
             type: string
-          eventPicture:
+          orderItemId:
             type: string
-          active:
+          itemId:
+            type: string
+          orderId:
+            type: string
+          isDeleted:
             type: boolean
-          isRefunded:
-            type: boolean
-          isClaimed:
-            type: boolean
-          appliedPromotion:
-            $ref: '#/definitions/EeAppliedPromotion'
+          user:
+            $ref: '#/definitions/EeUser'
+          memberships:
+            type: array
+            items:
+              $ref: '#/definitions/EeMembership'
           dropins:
             type: array
             items:
               $ref: '#/definitions/EeAttendeeDropin'
+          dropinCount:
+            type: integer
+            minimum: 0
+          hasDropins:
+            type: boolean
+            default: false
           certificates:
             type: array
             items:
               $ref: '#/definitions/EeAttendeeCertificate'
+          certificateCount:
+            type: integer
+            minimum: 0
+          hasCertificates:
+            type: boolean
+            default: false
+  EeUser:
+    type: object
+    properties:
+      title:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      email:
+        type: string
+  
   EePagedEventAttendee:
     type: object
     properties:
@@ -2495,17 +2552,9 @@ definitions:
         items:
           $ref: '#/definitions/EeEvent'
   
-  EeAppliedPromotion:
+  EeMembership:
     type: object
     properties:
-      discountType:
-        type: string
-      discountPrice:
-        type: integer
-      timestamp:
-        type: integer
-      referralCode:
-        type: string
       membershipId:
         type: integer
       membershipName:
@@ -2873,6 +2922,29 @@ definitions:
       isRequired:
         type: boolean
         default: false
+      if:
+        $ref: '#/definitions/EeSurveyQuestionIf'
+      metadata:
+        type: string
+      order:
+        type: integer
+        minimum: 0
+      default:
+        type: string
+  
+  EeSurveyQuestionIf:
+    type: object
+    properties:
+      value:
+        type: string
+      disable:
+        type: array
+        items:
+          type: string
+      enable:
+        type: array
+        items:
+          type: string
   
   EeSurvey:
     type: object
@@ -2961,3 +3033,4 @@ definitions:
         type: array
         items:
           type: string
+          

@@ -2029,8 +2029,8 @@ definitions:
           user:
             $ref: '#/definitions/EsOrderUser'
           surveys:
-            type: array
-            items:
+            type: object
+            additionalProperties:
               $ref: '#/definitions/EsCheckoutSurvey'
           claimCode:
             type: string
@@ -2178,25 +2178,17 @@ definitions:
     properties:
       id:
         type: string
-      isRefunded:
-        default: false
-        type: boolean
-      refundId:
-        type: string
-      refundedWhen:
-        type: integer
-        default: 0
-        minimum: 0
+      surveyResponses:
+        type: object
+        additionalProperties:
+          type: string
     type: object
+
   EsOrderUser:
     properties:
       email:
         type: string
       name:
-        type: string
-      firstName:
-        type: string
-      lastName:
         type: string
       phone:
         type: string
@@ -2577,8 +2569,8 @@ definitions:
       metadata:
         type: object
       surveys:
-        type: array
-        items:
+        type: object
+        additionalProperties:
           $ref: '#/definitions/EsCheckoutSurveyInput'
       unlockSecret:
         type: string
@@ -2626,9 +2618,6 @@ definitions:
         type: string
       surveyId:
         type: string
-      preCheckout:
-        type: boolean
-        default: true
   
   EsCheckoutSurvey:
     type: object
@@ -2640,8 +2629,6 @@ definitions:
             minimum: 0
           isCompleted:
             type: boolean
-          responseId:
-            type: string
   
   EsRecurringInput:
     type: object
