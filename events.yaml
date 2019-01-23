@@ -2922,17 +2922,23 @@ definitions:
       isRequired:
         type: boolean
         default: false
-      if:
-        $ref: '#/definitions/EeSurveyQuestionIf'
+      when:
+        $ref: '#/definitions/EeSurveyQuestionWhen'
       metadata:
         type: string
       order:
         type: integer
         minimum: 0
-      default:
+      defaultValue:
         type: string
+      validators:
+        type: array
+        items:
+          type: string
+          enum:
+            - email
   
-  EeSurveyQuestionIf:
+  EeSurveyQuestionWhen:
     type: object
     properties:
       value:
