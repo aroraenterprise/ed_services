@@ -2520,6 +2520,20 @@ definitions:
           hasCertificates:
             type: boolean
             default: false
+          surveyResponses:
+            type: array
+            items:
+              $ref: '#/definitions/EeAttendeeSurveyResponse'
+  EeAttendeeSurveyResponse:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      surveyId:
+        type: string
+  
   EeUser:
     type: object
     properties:
