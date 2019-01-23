@@ -2913,6 +2913,8 @@ definitions:
         type: string
       prompt:
         type: string
+      label:
+        type: string
       hint:
         type: string
       choices:
@@ -2937,6 +2939,7 @@ definitions:
           type: string
           enum:
             - email
+            - required
   
   EeSurveyQuestionWhen:
     type: object
