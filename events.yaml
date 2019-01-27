@@ -2342,7 +2342,7 @@ definitions:
     properties:
       moduleId:
         type: string
-      suveyQuestions:
+      surveyQuestions:
         type: object
         additionalProperties:
           $ref: '#/definitions/EeSurveyQuestion'
