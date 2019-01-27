@@ -2929,15 +2929,10 @@ definitions:
         type: string
       label:
         type: string
-      hint:
-        type: string
       choices:
         type: array
         items:
           type: string
-      isRequired:
-        type: boolean
-        default: false
       when:
         $ref: '#/definitions/EeSurveyQuestionWhen'
       metadata:
@@ -2954,6 +2949,9 @@ definitions:
           enum:
             - email
             - required
+      active:
+        type: boolean
+        default: true
   
   EeSurveyQuestionWhen:
     type: object
