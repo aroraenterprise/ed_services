@@ -2541,9 +2541,9 @@ definitions:
         type: string
       picture:
         type: string
-      description:
+      info:
         type: string
-      policy:
+      refundPolicy:
         type: string
       totalInventory:
         format: int32
