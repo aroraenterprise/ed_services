@@ -2444,23 +2444,16 @@ definitions:
 
   EeEventAttendeeUpdate:
     type: object
-    required:
-      - firstName
-      - lastName
     properties:
       sendClaim:
         type: boolean
         default: false
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-      title:
-        type: string
-      phone:
-        type: string
+      user:
+        $ref: '#/definitions/EeUser'
+      memberships:
+        type: array
+        items:
+          $ref: '#/definitions/EeMembership'
         
   EeEventAttendeeClaimUpdate:
     type: object
@@ -2471,19 +2464,15 @@ definitions:
           type: object
           required:
             - id
-            - name
-            - email
           properties:
             id:
               type: string
-            name:
-              type: string
-            email:
-              type: string
-            title:
-              type: string
-            phone:
-              type: string
+            user:
+              $ref: '#/definitions/EeUser'
+            memberships:
+              type: array
+              items:
+                $ref: '#/definitions/EeMembership'
   EeEventAttendee:
     type: object
     allOf:
