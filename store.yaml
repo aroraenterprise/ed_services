@@ -2518,9 +2518,6 @@ definitions:
           type: string
         type: array
       itemType:
-        enum:
-          - EventTicket
-          - Membership
         type: string
       filters:
         type: array
