@@ -774,7 +774,36 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Add an Attendee to an event
+      operationId: addAttendee
+      parameters:
+        - $ref: '#/parameters/eventId'
+        - in: query
+          name: ticketId
+          type: string
+          required: true
+        - in: body
+          name: attendeeProps
+          description: Attendee object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAttendeeUpdate'
+      responses:
+        '200':
+          description: Attendee added
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/events/{eventId}/attendees/{attendeeId}':
     get:
       tags:
@@ -815,35 +844,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-          
-  '/tickets/{ticketId}/attendees':
-    parameters:
-      - $ref: '#/parameters/ticketId'
-    post:
-      tags:
-        - eeEventAttendees
-      summary: Add an Attendee to an event
-      operationId: addAttendee
-      parameters:
-        - in: body
-          name: attendeeProps
-          description: Attendee object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAttendeeUpdate'
-      responses:
-        '200':
-          description: Attendee added
-          schema:
-            $ref: '#/definitions/EeEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
