@@ -2758,6 +2758,10 @@ definitions:
         type:
           string
         maxLength: 500
+      ticketIds:
+        type: array
+        items:
+          type: string
       
   EeEventDropin:
     type: object
@@ -2789,6 +2793,11 @@ definitions:
         type: string
       name:
         type: string
+      shortName:
+        type: string
+      active:
+        type: boolean
+      
   EeAttendeeDropin:
     type: object
     properties:
