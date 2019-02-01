@@ -2351,7 +2351,9 @@ definitions:
   EsPermissionInput:
     properties:
       permissions:
-        type: object
+        type: array
+        items:
+          type: string
     type: object
   EsPermissionInvite:
     properties:

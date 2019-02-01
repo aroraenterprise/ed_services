@@ -1045,7 +1045,9 @@ definitions:
     type: object
     properties:
       permissions:
-        type: object
+        type: array
+        items:
+          type: string
   EaPagedPermissionInvite:
     type: object
     properties:

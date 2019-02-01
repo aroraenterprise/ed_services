@@ -2100,7 +2100,9 @@ definitions:
     type: object
     properties:
       permissions:
-        type: object
+        type: array
+        items:
+          type: string
   EePagedPermissionInvite:
     type: object
     properties:
