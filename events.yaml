@@ -684,71 +684,6 @@ paths:
             $ref: '#/definitions/EeSuccess'
         '404':
           description: Dropin not found
-  '/tickets/{ticketId}/dropins':
-    parameters:
-      - $ref: '#/parameters/ticketId'
-      - $ref: '#/parameters/searchQuery'
-      - $ref: '#/parameters/searchFacets'
-      - $ref: '#/parameters/cursor'
-      - $ref: '#/parameters/limit'
-    get:
-      tags:
-        - eeEventDropins
-      summary: List all dropins assigned to this ticket
-      operationId: searchDropinsAssignedToTicket
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EePagedEventDropin'
-        '404':
-          description: Dropin not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-        
-  
-  '/tickets/{ticketId}/dropins/{dropinId}':
-    parameters:
-      - $ref: '#/parameters/ticketId'
-      - $ref: '#/parameters/dropinId'
-    put:
-      tags:
-        - eeEventDropins
-      summary: Add dropin to ticket
-      operationId: addDropinToEventTicket
-      responses:
-        '200':
-          description: Event Ticket updated
-          schema:
-            type: object
-            properties:
-              dropin:
-                $ref: '#/definitions/EeEventDropin'
-              ticket:
-                $ref: '#/definitions/EeTicket'
-        '404':
-          description: Dropin or Ticket not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeEventDropins
-      summary: Remove dropin from ticket
-      operationId: removeDropinFromTicket
-      responses:
-        '204':
-          description: Dropin removed
-          schema:
-            type: object
-            properties:
-              dropin:
-                $ref: '#/definitions/EeEventDropin'
-              ticket:
-                $ref: '#/definitions/EeTicket'
-        '404':
-          description: Dropin or Ticket not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse' 
   
   '/events/{eventId}/attendees':
     parameters:
@@ -972,30 +907,44 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/clear-dropins':
-    post:
+  '/dropins/bulk':
+    parameters:
+      - in: query
+        name: dropinIds
+        type: array
+        items:
+          type: string
+      - in: query
+        name: attendeeIds
+        type: array
+        items:
+          type: string
+    put:
       tags:
-        - eeEventAttendees
-      summary: Clear dropins from attendees
-      operationId: clearAttendeeDropins
-      parameters:
-        - in: body
-          name: attendeeIds
-          description: Attendee Ids
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+        - eeEventDropins
+      summary: Assign dropins to attendees
+      operationId: bulkAssignDropins
       responses:
         '200':
-          description: Attendees updated
+          description: Dropin assigned
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
         '404':
-          description: Attendee not found
+          description: Dropin not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Remove dropins from attendees
+      operationId: bulkRemoveDropins
+      responses:
+        '204':
+          description: Dropin removed
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Dropin not found
   '/attendees/message':
     post:
       tags:
