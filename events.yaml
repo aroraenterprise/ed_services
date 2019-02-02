@@ -1636,6 +1636,29 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  /surveys-aggregate/get-multi:
+    parameters:
+      - in: query
+        name: surveyIds
+        type: array
+        items:
+          type: string
+    get:
+      tags:
+        - eeSurveys
+      summary: Retrieve survey aggregate with the given surveyID
+      operationId: retrieveSurveyAggregate
+      responses:
+        '200':
+          description: Retrieves the survey with the given surveyID
+          schema:
+            $ref: '#/definitions/EePagedSurveyAggregate'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /surveys/get-multi:
     get:
       parameters:
@@ -2955,6 +2978,46 @@ definitions:
             additionalProperties:
               $ref: '#/definitions/EeSurveyQuestion'
   
+  EeAggregate:
+    type: object
+    properties:
+      responses:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+      values:
+        type: array
+        items:
+          $ref: '#/definitions/EeAggregateValue'
+  
+  EeAggregateValue:
+    type: object
+    properties:
+      id:
+        type: string
+      total:
+        type: integer
+    
+  EeSurveyAggregate:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          eventId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+          name:
+            type: string
+          aggregates:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EeAggregate'
+  
   EePagedSurvey:
     type: object
     properties:
@@ -2964,6 +3027,16 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeSurvey'
+          
+  EePagedSurveyAggregate:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyAggregate'
   
   EeSurveyResponseInput:
     type: object
