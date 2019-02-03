@@ -30,6 +30,9 @@ tags:
   - name: eeQrCode
     description: Generate qr codes
   - name: eeSurveys
+    description: Manage surveys
+  - name: eeMessages
+    description: Manage, send and track event messages
 schemes:
   - https
 produces:
@@ -1787,6 +1790,107 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  /events/{eventId}/messages:
+    parameters:
+      - $ref: '#/parameters/eventId'
+    post:
+      tags:
+        - eeMessages
+      summary: Create message for event attendees
+      operationId: createMessage
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeMessageInput'
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    get:
+      tags:
+        - eeMessages
+      summary: List messages for event attendees
+      operationId: listMessages
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged messages
+          schema:
+            $ref: '#/definitions/EePagedMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  /messages/{messageId}:
+    parameters:
+      - $ref: '#/parameters/messageId'
+    delete:
+      tags:
+        - eeMessages
+      summary: Delete message for event attendees
+      operationId: removeMessage
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    get:
+      tags:
+        - eeMessages
+      summary: List messages for event attendees
+      operationId: retrieveMessage
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeMessages
+      summary: Update message for event attendees
+      operationId: updateMessage
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeMessageInput'
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
 parameters:
   entityType:
     name: entityType
@@ -1895,6 +1999,12 @@ parameters:
     items:
       type: integer
     maxLength: 2
+  messageId:
+    name: messageId
+    in: path
+    description: Message Id
+    type: string
+    required: true
   searchCoords:
     in: query
     name: searchCoords
@@ -3103,4 +3213,56 @@ definitions:
         type: array
         items:
           type: string
-          
+  EeMessageInput:
+    type: object
+    required:
+      - subject
+      - body
+    properties:
+      subject:
+        type: string
+      body:
+        type: string
+      sendAt:
+        type: integer
+        minimum: 0
+  EeMessage:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeMessageInput'
+      - properties:
+          eventId:
+            type: string
+          organizerId:
+            type: string
+          emailSentAt: 
+            type: integer
+            minimum: 0
+          isDeleted:
+            type: boolean
+          body:
+            type: string
+          subject:
+            type: string
+          attendees:
+            type: array
+            items:
+              $ref: '#/definitions/EeMessageAttendee'
+  EeMessageAttendee:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+  EePagedMessage:
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeMessage'
