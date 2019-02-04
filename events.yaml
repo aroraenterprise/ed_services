@@ -3226,6 +3226,11 @@ definitions:
       sendAt:
         type: integer
         minimum: 0
+      sendEmailNow:
+        type: boolean
+      emailAllAttendees:
+        type: boolean
+        
   EeMessage:
     type: object
     allOf:
@@ -3234,21 +3239,27 @@ definitions:
       - properties:
           eventId:
             type: string
+          eventName:
+            type: string
           organizerId:
+            type: string
+          organizerName:
             type: string
           emailSentAt: 
             type: integer
             minimum: 0
           isDeleted:
             type: boolean
-          body:
-            type: string
-          subject:
-            type: string
           attendees:
             type: array
             items:
               $ref: '#/definitions/EeMessageAttendee'
+          taskName:
+            type: string
+          isScheduled:
+            type: boolean
+          
+          
   EeMessageAttendee:
     type: object
     properties:
