@@ -898,35 +898,6 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEventAttendees
-      summary: Update attendees using claim code
-      operationId: updateAttendeesByCode
-      parameters:
-        - in: body
-          name: body
-          description: Attendee objects that needs to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAttendeeClaimUpdate'
-      responses:
-        '200':
-          description: Attendee updated
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Attendee not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-
-  
   # '/attendees/ticketsale':
   #   post:
   #     tags:
@@ -1894,6 +1865,8 @@ definitions:
       version:
         type: string
         readOnly: true
+      isDeleted:
+        type: boolean
   EePagination:
     type: object
     properties:
@@ -2423,8 +2396,6 @@ definitions:
             type: string
           orderId:
             type: string
-          isDeleted:
-            type: boolean
           user:
             $ref: '#/definitions/EeUser'
           link:
@@ -3101,8 +3072,6 @@ definitions:
           emailSentAt: 
             type: integer
             minimum: 0
-          isDeleted:
-            type: boolean
           attendees:
             type: array
             items:
