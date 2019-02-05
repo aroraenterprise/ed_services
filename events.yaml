@@ -541,7 +541,7 @@ paths:
       tags:
         - eeEventDropins
       summary: List all event dropins
-      operationId: listAllEventDropins
+      operationId: listDropins
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -561,18 +561,18 @@ paths:
     post:
       tags:
         - eeEventDropins
-      summary: Add a dropin to an event
-      operationId: addEventDropin
+      summary: Create a dropin to an event
+      operationId: createDropin
       parameters:
         - in: body
-          name: dropinProps
+          name: body
           description: Dropin object to be created
           required: true
           schema:
             $ref: '#/definitions/EeEventDropinUpdate'
       responses:
         '200':
-          description: Attendee added
+          description: Dropin added
           schema:
             $ref: '#/definitions/EeEventDropin'
         '400':
@@ -585,8 +585,8 @@ paths:
     get:
       tags:
         - eeEventDropins
-      summary: Get a dropin
-      operationId: getEventDropin
+      summary: Retrieve a dropin
+      operationId: retrieveDropin
       responses:
         '200':
           description: OK
@@ -600,11 +600,11 @@ paths:
       tags:
         - eeEventDropins
       summary: Update dropin to event
-      operationId: updateEventDropin
+      operationId: updateDropin
       parameters:
         - in: body
-          name: dropinProps
-          description: Ticket to update
+          name: body
+          description: Dropin to update
           required: true
           schema:
             $ref: '#/definitions/EeEventDropinUpdate'
@@ -621,70 +621,52 @@ paths:
       tags:
         - eeEventDropins
       summary: Delete an existing dropin
-      operationId: deleteEventDropin
+      operationId: deleteDropin
       responses:
         '204':
           description: Dropin deleted
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EeEventDropin'
         '404':
           description: Dropin not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/dropins/{dropinId}/attendees':
+  '/dropins/attendees':
     parameters:
-      - $ref: '#/parameters/dropinId'
       - in: query
-        name: isAssigned
-        type: boolean
-        description: If set will only give back attendees that have been assigned to this dropin otherwise gives back all possible attendees that can be assigned this dropin
-    get:
-      tags:
-        - eeEventDropins
-      summary: List all attendees assigned to this dropin
-      operationId: searchAttendeesAssignedToDropin
-      parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Paged list of attendees assigned to a dropin
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/dropins/{dropinId}/attendees/{attendeeId}':
-    parameters:
-      - $ref: '#/parameters/dropinId'
-      - $ref: '#/parameters/attendeeId'
+        name: dropinIds
+        type: array
+        items:
+          type: string
+      - in: query
+        name: attendeeIds
+        type: array
+        items:
+          type: string
     put:
       tags:
         - eeEventDropins
-      summary: Assign a dropin to attendee
-      operationId: assignDropinToAttendee
+      summary: Assign dropins to attendees
+      operationId: createAttendeeDropin
       responses:
         '200':
           description: Dropin assigned
           schema:
-            $ref: '#/definitions/EeEventAttendee'
+            $ref: '#/definitions/EePagedEventAttendee'
         '404':
           description: Dropin not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
         - eeEventDropins
-      summary: Remove an assigned dropin from attendee
-      operationId: removeDropinFromAttendee
+      summary: Remove dropins from attendees
+      operationId: deleteAttendeeDropin
       responses:
         '204':
           description: Dropin removed
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EePagedEventAttendee'
         '404':
           description: Dropin not found
   
@@ -943,45 +925,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
-  '/dropins/bulk':
-    parameters:
-      - in: query
-        name: dropinIds
-        type: array
-        items:
-          type: string
-      - in: query
-        name: attendeeIds
-        type: array
-        items:
-          type: string
-    put:
-      tags:
-        - eeEventDropins
-      summary: Assign dropins to attendees
-      operationId: bulkAssignDropins
-      responses:
-        '200':
-          description: Dropin assigned
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Dropin not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeEventDropins
-      summary: Remove dropins from attendees
-      operationId: bulkRemoveDropins
-      responses:
-        '204':
-          description: Dropin removed
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Dropin not found
 
   
   # '/attendees/ticketsale':
