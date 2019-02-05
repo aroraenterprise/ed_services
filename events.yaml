@@ -695,7 +695,7 @@ paths:
       tags:
         - eeEventAttendees
       summary: List all event attendees
-      operationId: listAllAttendees
+      operationId: listAttendees
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -716,7 +716,7 @@ paths:
       tags:
         - eeEventAttendees
       summary: Add an Attendee to an event
-      operationId: addAttendee
+      operationId: createAttendee
       parameters:
         - $ref: '#/parameters/eventId'
         - in: query
@@ -742,26 +742,6 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/attendees/{attendeeId}':
-    get:
-      tags:
-        - eeEventAttendees
-      summary: Check attendee exists
-      operationId: verifyEventAttendee
-      parameters:
-        - $ref: '#/parameters/eventId'
-        - $ref: '#/parameters/attendeeId'
-      responses:
-        '200':
-          description: Minimal Attendee Info
-          schema:
-            $ref: '#/definitions/EeEventAttendee'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
   '/events/{eventId}/attendees/export':
     parameters:
@@ -769,7 +749,7 @@ paths:
     get:
       tags:
         - eeEventAttendees
-      summary: List all event attendees
+      summary: Export event attendee data
       operationId: exportAttendees
       parameters:
         - $ref: '#/parameters/searchFacets'
@@ -814,8 +794,8 @@ paths:
     get:
       tags:
         - eeEventAttendees
-      summary: Get an attendee
-      operationId: getAttendee
+      summary: Retrieve an attendee
+      operationId: retrieveAttendee
       responses:
         '200':
           description: OK
@@ -853,11 +833,13 @@ paths:
     delete:
       tags:
         - eeEventAttendees
-      summary: Delete an existing Event Attendee
-      operationId: deleteEventAttendee
+      summary: Delete an Event Attendee
+      operationId: deleteAttendee
       responses:
         '204':
           description: Event Attendee deleted
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
         '400':
           description: Invalid ID supplied
         '401':
@@ -866,41 +848,20 @@ paths:
           description: Event Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/{attendeeId}/claims':
-    parameters:
-      - $ref: '#/parameters/attendeeId'
-    get:
-      tags:
-        - eeEventAttendees
-      summary: Get an attendee claim
-      operationId: getAttendeeClaimLink
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: object
-            properties:
-              link:
-                type: string
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/{attendeeId}/link':
     post:
       tags:
         - eeEventAttendees
-      summary: Send Claim email
-      operationId: sendAttendeeClaimEmail
+      summary: Send attendee link
+      operationId: sendAttendeeLink
       parameters:
+        - $ref: '#/parameters/attendeeId'
         - in: body
-          name: claimProps
-          description: Claim properties to send link
+          name: body
+          description: Send to a different email than the one associated with the account
           required: true
           schema:
-            type: object
-            properties:
-              email:
-                type: string
+            $ref: '#/definitions/EeSendLinkInput'
       responses:
         '200':
           description: Claim sent
@@ -910,6 +871,79 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  '/attendees/transfer':
+    post:
+      tags:
+        - eeEventAttendees
+      summary: Transfer attendees from one ticket to another ticket (can also be two tickets from two separate events)
+      operationId: transferAttendees
+      parameters:
+        - in: body
+          name: body
+          description: Attendee transfer properties
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAttendeeTransfer'
+      responses:
+        '200':
+          description: Attendees transfered
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/attendees/code':
+    parameters:
+      - in: query
+        name: code
+        type: string
+        required: true
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Get all attendee tickets associated with the code in query
+      operationId: retrieveAttendeesByCode
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventAttendees
+      summary: Update attendees using claim code
+      operationId: updateAttendeesByCode
+      parameters:
+        - in: body
+          name: body
+          description: Attendee objects that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAttendeeClaimUpdate'
+      responses:
+        '200':
+          description: Attendee updated
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: Attendee not found
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
   '/dropins/bulk':
     parameters:
       - in: query
@@ -948,154 +982,63 @@ paths:
             $ref: '#/definitions/EePagedEventAttendee'
         '404':
           description: Dropin not found
-  '/attendees/message':
-    post:
-      tags:
-        - eeEventAttendees
-      summary: Send a message to attendees
-      operationId: sendAttendeeNotification
-      parameters:
-        - in: body
-          name: attendeeNotificationProp
-          description: Attendee Notification properties
-          required: true
-          schema:
-            $ref: '#/definitions/EeAttendeeNotification'
-      responses:
-        '200':
-          description: Notification sent
-          schema:
-            $ref: '#/definitions/EeSuccess'
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+
   
-  '/attendees/transfer':
-    post:
-      tags:
-        - eeEventAttendees
-      summary: Send Claim email
-      operationId: transferAttendees
-      parameters:
-        - in: body
-          name: transferProps
-          description: Attendee transfer properties
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAttendeeTransfer'
-      responses:
-        '200':
-          description: Attendees transfered
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/ticketsale':
-    post:
-      tags:
-        - eeEventAttendees
-      security: []
-      parameters:
-        - in: query
-          name: apiKey
-          type: string
-          required: true
-        - in: body
-          name: subData
-          description: Base64 encoded message
-          required: true
-          schema:
-            $ref: '#/definitions/EePubSubMessage'
-      summary: Pub sub to generate claims for event tickets sold
-      operationId: createAttendeesForTicketSale
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: string
-        '400':
-          description: Invalid ID supplied
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/ticketrefund':
-    post:
-      tags:
-        - eeEventAttendees
-      security: []
-      parameters:
-        - in: query
-          name: apiKey
-          type: string
-          required: true
-        - in: body
-          name: subData
-          description: Base64 encoded message
-          required: true
-          schema:
-            $ref: '#/definitions/EePubSubMessage'
-      summary: Pub sub to cancel tickets for refunded order items
-      operationId: deactivateAttendeesForTicketRefund
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: string
-        '400':
-          description: Invalid ID supplied
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/claim':
-    parameters:
-      - in: query
-        name: code
-        type: string
-        required: true
-    get:
-      tags:
-        - eeEventAttendees
-      summary: Get all attendee claims associated with the code in query
-      operationId: getAttendeesByClaim
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEventAttendees
-      summary: Update attendees using claim code
-      operationId: updateAttendeesByClaim
-      parameters:
-        - in: body
-          name: attendeeProps
-          description: Attendee objects that needs to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAttendeeClaimUpdate'
-      responses:
-        '200':
-          description: Attendee updated
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Attendee not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+  # '/attendees/ticketsale':
+  #   post:
+  #     tags:
+  #       - eeEventAttendees
+  #     security: []
+  #     parameters:
+  #       - in: query
+  #         name: apiKey
+  #         type: string
+  #         required: true
+  #       - in: body
+  #         name: subData
+  #         description: Base64 encoded message
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/EePubSubMessage'
+  #     summary: Pub sub to generate claims for event tickets sold
+  #     operationId: createAttendeesForTicketSale
+  #     responses:
+  #       '200':
+  #         description: OK
+  #         schema:
+  #           type: string
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '500':
+  #         $ref: '#/responses/Default500ErrorResponse'
+  # '/attendees/ticketrefund':
+  #   post:
+  #     tags:
+  #       - eeEventAttendees
+  #     security: []
+  #     parameters:
+  #       - in: query
+  #         name: apiKey
+  #         type: string
+  #         required: true
+  #       - in: body
+  #         name: subData
+  #         description: Base64 encoded message
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/EePubSubMessage'
+  #     summary: Pub sub to cancel tickets for refunded order items
+  #     operationId: deactivateAttendeesForTicketRefund
+  #     responses:
+  #       '200':
+  #         description: OK
+  #         schema:
+  #           type: string
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '500':
+  #         $ref: '#/responses/Default500ErrorResponse'
+  
           
   '/events/{eventId}/certificates':
     parameters:
@@ -1104,7 +1047,7 @@ paths:
       tags:
         - eeEventCertificates
       summary: List all event certificates
-      operationId: listAllEventCertificates
+      operationId: listCertificates
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -1120,11 +1063,11 @@ paths:
     post:
       tags:
         - eeEventCertificates
-      summary: Add a certificate to an event
-      operationId: addEventCertificate
+      summary: Create a certificate for an event
+      operationId: createCertificate
       parameters:
         - in: body
-          name: certificateProps
+          name: body
           description: Certificate object to be created
           required: true
           schema:
@@ -1144,8 +1087,8 @@ paths:
     get:
       tags:
         - eeEventCertificates
-      summary: Get a certificate
-      operationId: getEventCertificate
+      summary: Retrieve a certificate
+      operationId: retrieveCertificate
       responses:
         '200':
           description: OK
@@ -1159,10 +1102,10 @@ paths:
       tags:
         - eeEventCertificates
       summary: Update certificate to event
-      operationId: updateEventCertificate
+      operationId: updateCertificate
       parameters:
         - in: body
-          name: certificateProps
+          name: body
           description: Certificate to update
           required: true
           schema:
@@ -1180,67 +1123,18 @@ paths:
       tags:
         - eeEventCertificates
       summary: Delete an existing certificate
-      operationId: deleteEventCertificate
+      operationId: deleteCertificate
       responses:
         '204':
           description: Certificate deleted
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EeEventCertificate'
         '404':
           description: Certificate not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/certificates/{certificateId}/attendees':
-    parameters:
-      - $ref: '#/parameters/certificateId'
-    get:
-      tags:
-        - eeEventCertificates
-      summary: List all attendees assigned to this certificate
-      operationId: searchAttendeesAssignedToCertificate
-      parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Paged list of attendees assigned to a certificate
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/certificates/{certificateId}/attendees/{attendeeId}':
-    parameters:
-      - $ref: '#/parameters/certificateId'
-      - $ref: '#/parameters/attendeeId'
-    put:
-      tags:
-        - eeEventCertificates
-      summary: Assign a certificate to attendee
-      operationId: assignCertificateToAttendee
-      responses:
-        '200':
-          description: Certificate assigned
-          schema:
-            $ref: '#/definitions/EeEventAttendee'
-        '404':
-          description: Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeEventCertificates
-      summary: Remove an assigned certificate from attendee
-      operationId: removeCertificateFromAttendee
-      responses:
-        '204':
-          description: Certificate removed
-          schema:
-            $ref: '#/definitions/EeEventAttendee'
-        '404':
-          description: Certificate not found
-  '/certificates/bulk':
+          
+  '/certificates/attendees':
     parameters:
       - in: query
         name: certificateIds
@@ -1255,8 +1149,8 @@ paths:
     put:
       tags:
         - eeEventCertificates
-      summary: Assign certificates to attendees
-      operationId: bulkAssignCertificates
+      summary: Create certificates for attendees
+      operationId: createAttendeeCertificate
       responses:
         '200':
           description: Certificate assigned
@@ -1269,8 +1163,8 @@ paths:
     delete:
       tags:
         - eeEventCertificates
-      summary: Remove certificates from attendees
-      operationId: bulkRemoveCertificates
+      summary: Delete certificates from attendees
+      operationId: deleteAttendeeCertificate
       responses:
         '204':
           description: Certificate removed
@@ -1284,7 +1178,7 @@ paths:
     post:
       tags:
         - eeEventCertificates
-      summary: Download a certificate [certificateCode is eeEventAttendee.certificates[idx].code]
+      summary: Download a certificate [certificateCode is eeEventAttendee.certificates[].code]
       operationId: downloadCertificate
       responses:
         '200':
@@ -2590,6 +2484,8 @@ definitions:
             type: boolean
           user:
             $ref: '#/definitions/EeUser'
+          link:
+            type: string
           memberships:
             type: array
             items:
@@ -2659,7 +2555,11 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
-  
+  EeSendLinkInput:
+    type: object
+    properties:
+      email:
+        type: string
   EeMembership:
     type: object
     properties:
@@ -2908,11 +2808,21 @@ definitions:
           
   EeEventAttendeeTransfer:
     type: object
+    required:
+      - attendeeIds
+      - fromEventId
+      - toEventId
+      - fromTicketId
+      - toTicketId
     properties:
       attendeeIds:
         type: array
         items:
           type: string
+      fromEventid:
+        type: string
+      toEventId:
+        type: string
       fromTicketId:
         type: string
       toTicketId:
