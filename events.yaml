@@ -631,13 +631,9 @@ paths:
           description: Dropin not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/dropins/attendees':
+  '/dropins/{dropinId}/attendees':
     parameters:
-      - in: query
-        name: dropinIds
-        type: array
-        items:
-          type: string
+      - $ref: '#/parameters/dropinId'
       - in: query
         name: attendeeIds
         type: array
@@ -1048,13 +1044,9 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
-  '/certificates/attendees':
+  '/certificates/{certificateId}/attendees':
     parameters:
-      - in: query
-        name: certificateIds
-        type: array
-        items:
-          type: string
+      - $ref: '#/parameters/certificateId'
       - in: query
         name: attendeeIds
         type: array
