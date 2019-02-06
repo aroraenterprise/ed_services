@@ -1044,9 +1044,13 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
           
-  '/certificates/{certificateId}/attendees':
+  '/certificates/attendees':
     parameters:
-      - $ref: '#/parameters/certificateId'
+      - in: query
+        name: certificateIds
+        type: array
+        items:
+          type: string
       - in: query
         name: attendeeIds
         type: array
