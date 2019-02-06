@@ -2171,6 +2171,15 @@ definitions:
         type: string
       caption:
         type: string 
+  EePictureThumb:
+    type: object
+    properties:
+      slim:
+        type: string
+      square:
+        type: string
+      wide:
+        type: string
   EeEvent:
     type: object
     allOf:
@@ -2185,6 +2194,8 @@ definitions:
               $ref: '#/definitions/EeEventProfile'
           isFree:
             type: boolean
+          pictureThumbs:
+            $ref: '#/definitions/EePictureThumb'
           availableCurrencies:
             type: array
             items:
