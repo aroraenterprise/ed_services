@@ -2071,6 +2071,8 @@ definitions:
         type: string
       name:
         type: string
+      slug:
+        type: string
       startTimestamp:
         type: integer
         format: int32
