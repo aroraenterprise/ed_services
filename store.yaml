@@ -126,7 +126,7 @@ paths:
             List of orderItems grouped by merchant as Order that the user has
             checked out
           schema:
-            $ref: '#/definitions/EsCheckout'
+            $ref: '#/definitions/EsCartChangeResponse'
         '400':
           description: Invalid ID supplied
         '401':
@@ -1406,15 +1406,6 @@ definitions:
         readOnly: true
         type: string
     type: object
-  EsError:
-    type: object
-    properties:
-      field:
-        type: string
-      hint:
-        type: string
-      message:
-        type: string
   EsCard:
     properties:
       brand:
@@ -1446,6 +1437,13 @@ definitions:
         type: boolean
       errorMsg:
         type: string
+      errorStatus:
+        type: number
+        format: integer
+      claimCode:
+        type: string
+      order:
+        $ref: '#/definitions/EsOrder'
     type: object
   EsCartItemInput:
     properties:
@@ -1494,24 +1492,6 @@ definitions:
           deposit:
             type: integer
             minimum: 0
-          errors:
-            type: array
-            items:
-              $ref: '#/definitions/EsError'
-                
-  EsCheckout:
-    properties:
-      claimCode:
-        type: string
-      cart:
-        $ref: '#/definitions/EsCart'
-      errorMsg:
-        type: string
-      order:
-        $ref: '#/definitions/EsOrder'
-      success:
-        type: boolean
-    type: object
   EsCustomer:
     allOf:
       - $ref: '#/definitions/EsBaseId'
@@ -1842,7 +1822,7 @@ definitions:
       errors:
         type: array
         items:
-          $ref: '#/definitions/EsError'
+          type: string
             
   
   EsCartPromotion:
