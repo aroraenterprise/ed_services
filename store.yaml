@@ -1497,26 +1497,32 @@ definitions:
       - $ref: '#/definitions/EsBaseId'
       - $ref: '#/definitions/EsCustomerInput'
       - properties:
-          savedCards:
+          locationBasedCurrency:
+            type: string
+          defaultPaymentMethod:
+            $ref: '#/definitions/EsCard'
+          paymentMethods:
+            type: array
             items:
               $ref: '#/definitions/EsCard'
-            type: array
+          isCurrencySetByUser:
+            type: boolean
+          lastIp:
+            type: string
+          isAnonymous:
+            type: string
     type: object
   EsCustomerInput:
     properties:
-      defaultCurrency:
-        type: string
-      defaultPaymentId:
+      currency:
         type: string
       email:
         type: string
-      lastCurrency:
-        type: string
-      firstName:
-        type: string
-      lastName:
-        type: string
       name:
+        type: string
+      phone:
+        type: string
+      defaultPaymentMethodId:
         type: string
     required:
       - defaultCurrency
