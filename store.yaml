@@ -1803,6 +1803,8 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EsCartSurveyResponse'
+          transferCode:
+            type: string
     type: object
   
   EsCartSurveyResponse:
