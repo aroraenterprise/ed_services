@@ -1582,18 +1582,6 @@ definitions:
       - startTimestamp
       - endTimestamp
     type: object
-  EsFee:
-    allOf:
-      - $ref: '#/definitions/EsFeeInput'
-    type: object
-  EsFeeInput:
-    properties:
-      feeAmount:
-        minimum: 0
-        type: integer
-      short:
-        type: string
-    type: object
   EsFeeStructure:
     properties:
       active:
@@ -2031,7 +2019,40 @@ definitions:
               $ref: '#/definitions/EsCheckoutSurvey'
           claimCode:
             type: string
+          isRefundPending:
+            type: boolean
+          refunds:
+            type: array
+            items:
+              $ref: '#/definitions/EsRefund'
   
+  EsRefundRequest:
+    properties:
+      message:
+        type: string
+      quantity:
+        type: integer
+    required:
+      - quantity
+      - reason
+    type: object
+  
+  EsRefund:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EsRefundRequest'
+      - properties:
+          requestedWhen:
+            type: integer
+          processedWhen:
+            type: integer
+          isProcessed:
+            type: boolean
+          notes:
+            type: string
+          amountRefunded:
+            type: integer
+            
   EsOrderItemPromotion:
     type: object
     properties:
@@ -2406,61 +2427,7 @@ definitions:
       referralCode:
         type: string
     type: object
-  EsRefund:
-    allOf:
-      - $ref: '#/definitions/EsRefundInput'
-    type: object
-  EsRefundInput:
-    properties:
-      endTimestamp:
-        default: 0
-        minimum: 0
-        type: integer
-      feeAmount:
-        default: 0
-        minimum: 0
-        type: integer
-      isDifferenceCharged:
-        default: false
-        type: boolean
-      refundType:
-        enum:
-          - cancellation
-          - return
-        type: string
-      short:
-        type: string
-      startTimestamp:
-        default: 0
-        minimum: 0
-        type: integer
-      validAfterPurchaseUntil:
-        default: 0
-        minimum: 0
-        type: integer
-    required:
-      - refundType
-      - feeAmount
-    type: object
-  EsRefundRequest:
-    properties:
-      agreedDeduction:
-        type: integer
-      message:
-        type: string
-      quantity:
-        type: integer
-      reason:
-        enum:
-          - requested_by_customer
-          - duplicate
-          - fraudulent
-        type: string
-    required:
-      - quantity
-      - reason
-      - feeAmount
-    type: object
+      
   EsStoreItem:
     allOf:
       - $ref: '#/definitions/EsBaseId'
@@ -2470,18 +2437,10 @@ definitions:
             items:
               $ref: '#/definitions/EsDiscount'
             type: array
-          fees:
-            items:
-              $ref: '#/definitions/EsFee'
-            type: array
           merchantId:
             type: string
           merchantName:
             type: string
-          refunds:
-            items:
-              $ref: '#/definitions/EsRefund'
-            type: array
           totalSold:
             format: int32
             type: integer
@@ -2539,8 +2498,6 @@ definitions:
         type: string
       info:
         type: string
-      refundPolicy:
-        type: string
       totalInventory:
         format: int32
         type: integer
@@ -2585,14 +2542,13 @@ definitions:
         items:
           $ref: '#/definitions/EsDiscountInput'
         type: array
-      refunds:
-        items:
-          $ref: '#/definitions/EsRefundInput'
-        type: array
-      fees:
-        items:
-          $ref: '#/definitions/EsFeeInput'
-        type: array
+      refundAvailableUntil:
+        type: number
+        format: integer
+      refundPolicy:
+        type: string
+      isRefundable:
+        type: boolean
       timezone:
         type: string
     required:
