@@ -13,6 +13,186 @@ basePath: /
 schemes:
   - http
 paths:
+  ### PERMISSIONS
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - description: Invite Token
+        in: path
+        name: inviteToken
+        required: true
+        type: string
+    post:
+      produces:
+        - application/json
+      parameters:
+        - description: Accept or decline an invite
+          enum:
+            - accept
+            - decline
+          in: query
+          name: v
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPermissionAccept'
+        '404':
+          description: Permission invite not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: acceptPermissionInvite
+      summary: Accept a permission invite
+  '/permissions/{entityType}/{entityId}/accounts':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    get:
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsPagedPermission'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: paginatePermissions
+      summary: Get permissions for entity
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+      - $ref: '#/parameters/accountId'
+    delete:
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EsSuccess'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '405':
+          description: Validation exception
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: removePermissionsForAccount
+      summary: Remove all permissions for account
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: permission
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EsPermissionCheck'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: hasPermission
+      summary: Check account has permission
+    put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInput'
+      responses:
+        '200':
+          description: Set Account Permission
+          schema:
+            $ref: '#/definitions/EsPermission'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: setPermission
+      summary: Set account permission
+  '/permissions/{entityType}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Object for permission invite
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPermissionInviteCreate'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedPermissionInvite'
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esPermissions
+      operationId: sendPermissionInvite
+      summary: Send a permission invite
+  ### PERMISSIONS END
+  
+  ### CURRENCY EXCHANGE
   /currency-exchange:
      get:
       produces:
@@ -30,7 +210,8 @@ paths:
         - esCurrencyExchange
       operationId: getLatestExchange
       summary: Get the latest exchange rates data
-    
+  ### CURRENCY EXCHANGE END
+  
   /cart:
     delete:
       produces:
@@ -584,6 +765,37 @@ paths:
         - esMemberships
       operationId: deleteMembersTask
       summary: 'Delete all members in the membership [cloud tasks]'
+  
+  '/order-items':
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: merchantId
+          required: true
+          type: string
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedOrderItem'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrderItems
+      operationId: listOrderItemsByMerchant
+      summary: List merchant order items
   '/order-items/{orderItemId}':
     parameters:
       - $ref: '#/parameters/orderItemId'
@@ -645,36 +857,43 @@ paths:
         - esOrderItems
       operationId: updateOrderItem
       summary: 'Updater order (e.g. refund, charges, cancel items, re-activate item)'
-  '/order-items':
-    get:
+  '/order-items/{orderItemId}/refunds':
+    parameters:
+      - $ref: '#/parameters/orderItemId'
+    post:
+      consumes:
+        - application/json
       produces:
         - application/json
       parameters:
-        - in: query
-          name: merchantId
+        - description: Refund body
+          in: body
+          name: body
           required: true
-          type: string
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
+          schema:
+            $ref: '#/definitions/EsRefundRequest'
       responses:
         '200':
-          description: OK
+          description: Order Item
           schema:
-            $ref: '#/definitions/EsPagedOrderItem'
+            $ref: '#/definitions/EsOrderItem'
         '400':
-          description: Invalid ID supplied
+          description: Invalid Request
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
         '404':
-          description: Store Item not found
+          description: Order Item not found
         '500':
           description: An unexpected error occured.
           schema:
             $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
-      operationId: listOrderItemsByMerchant
-      summary: List merchant order items
+      operationId: createRefund
+      summary: Create a refund for an item
   '/merchants/{merchantId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -815,6 +1034,8 @@ paths:
             $ref: '#/definitions/EsPagedFeedItem'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
+  ### ORDERS
   /orders:
     get:
       produces:
@@ -894,220 +1115,8 @@ paths:
         - esOrder
       operationId: listOrderItems
       summary: List order items
-  '/orders/{orderId}/order-items/{orderItemId}/start-refund':
-    parameters:
-      - $ref: '#/parameters/orderId'
-      - $ref: '#/parameters/orderItemId'
-    post:
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - description: Refund options
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/EsRefundRequest'
-      responses:
-        '200':
-          description: Order Item
-          schema:
-            $ref: '#/definitions/EsOrderItem'
-        '400':
-          description: Invalid Request
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Order Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esOrder
-      operationId: startRefundForItem
-      summary: Start the refund process for item
-  '/permissions/accept-invite/{inviteToken}':
-    parameters:
-      - description: Invite Token
-        in: path
-        name: inviteToken
-        required: true
-        type: string
-    post:
-      produces:
-        - application/json
-      parameters:
-        - description: Accept or decline an invite
-          enum:
-            - accept
-            - decline
-          in: query
-          name: v
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsPermissionAccept'
-        '404':
-          description: Permission invite not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esPermissions
-      operationId: acceptPermissionInvite
-      summary: Accept a permission invite
-  '/permissions/{entityType}/{entityId}/accounts':
-    parameters:
-      - $ref: '#/parameters/entityType'
-      - $ref: '#/parameters/entityId'
-    get:
-      produces:
-        - application/json
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EsPagedPermission'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esPermissions
-      operationId: paginatePermissions
-      summary: Get permissions for entity
-  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
-    parameters:
-      - $ref: '#/parameters/entityType'
-      - $ref: '#/parameters/entityId'
-      - $ref: '#/parameters/accountId'
-    delete:
-      produces:
-        - application/json
-      parameters: []
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EsSuccess'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esPermissions
-      operationId: removePermissionsForAccount
-      summary: Remove all permissions for account
-    get:
-      produces:
-        - application/json
-      parameters:
-        - in: query
-          name: permission
-          required: false
-          type: string
-      responses:
-        '200':
-          description: Account has Permission
-          schema:
-            $ref: '#/definitions/EsPermissionCheck'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esPermissions
-      operationId: hasPermission
-      summary: Check account has permission
-    put:
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/EsPermissionInput'
-      responses:
-        '200':
-          description: Set Account Permission
-          schema:
-            $ref: '#/definitions/EsPermission'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esPermissions
-      operationId: setPermission
-      summary: Set account permission
-  '/permissions/{entityType}/{entityId}/send-invite':
-    parameters:
-      - $ref: '#/parameters/entityType'
-      - $ref: '#/parameters/entityId'
-    post:
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - description: Object for permission invite
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/EsPermissionInviteCreate'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EsPagedPermissionInvite'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
-      tags:
-        - esPermissions
-      operationId: sendPermissionInvite
-      summary: Send a permission invite
+  ### END ORDERS
+  
   /store/get-multi:
     get:
       produces:
