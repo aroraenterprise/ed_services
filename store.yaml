@@ -2030,6 +2030,12 @@ definitions:
             type: string
           isRefundPending:
             type: boolean
+          refundPolicy:
+            type: string
+          isRefundable:
+            type: boolean
+          refundAvailableUntil:
+            type: integer
           refunds:
             type: array
             items:
@@ -2057,7 +2063,13 @@ definitions:
             type: integer
           isProcessed:
             type: boolean
-          notes:
+          processedById:
+            type: string
+          quantity:
+            type: integer
+          message:
+            type: integer
+          merchantNotes:
             type: string
           amountRefunded:
             type: integer
