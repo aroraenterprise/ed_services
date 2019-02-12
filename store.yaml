@@ -1702,6 +1702,10 @@ definitions:
       - properties:
           name:
             type: string
+          username:
+            type: string
+          email:
+            type: string
           feeStructure:
             additionalProperties:
               $ref: '#/definitions/EsFeeStructure'
@@ -1919,6 +1923,8 @@ definitions:
           merchantId:
             type: string
           merchantName:
+            type: string
+          merchantUsername:
             type: string
           itemType:
             type: string
@@ -2461,6 +2467,8 @@ definitions:
           merchantId:
             type: string
           merchantName:
+            type: string
+          merchantUsername:
             type: string
           totalSold:
             format: int32

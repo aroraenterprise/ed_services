@@ -1208,6 +1208,7 @@ definitions:
   EaProfile:
     type: object
     allOf:
+      - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaProfileUpdate'
       - properties:
           username:
