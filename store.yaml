@@ -1572,7 +1572,7 @@ definitions:
         format: int32
         type: integer
       membershipId:
-        type: integer
+        type: string
       membershipName:
         type: string
       referralCode:
@@ -1849,7 +1849,7 @@ definitions:
       memberId:
         type: string
       membershipId:
-        type: integer
+        type: string
       membershipName:
         type: string
       referralCode:
@@ -2088,7 +2088,7 @@ definitions:
       memberId:
         type: string
       membershipId:
-        type: integer
+        type: string
       membershipName:
         type: string
       referralCode:
@@ -2450,7 +2450,7 @@ definitions:
       memberId:
         type: string
       membershipId:
-        type: integer
+        type: string
       referralCode:
         type: string
     type: object
@@ -2662,7 +2662,7 @@ definitions:
           memberId:
             type: string
           membershipId:
-            type: integer
+            type: string
           membershipName:
             type: string
     type: object
@@ -2671,7 +2671,7 @@ definitions:
       memberId:
         type: string
       membershipId:
-        type: integer
+        type: string
       membershipName:
         type: string
     required:
