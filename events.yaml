@@ -2360,24 +2360,6 @@ definitions:
         items:
           $ref: '#/definitions/EeMembership'
         
-  EeEventAttendeeClaimUpdate:
-    type: object
-    properties:
-      attendees:
-        type: array
-        items:
-          type: object
-          required:
-            - id
-          properties:
-            id:
-              type: string
-            user:
-              $ref: '#/definitions/EeUser'
-            memberships:
-              type: array
-              items:
-                $ref: '#/definitions/EeMembership'
   EeEventAttendee:
     type: object
     allOf:
@@ -2491,7 +2473,7 @@ definitions:
     type: object
     properties:
       membershipId:
-        type: integer
+        type: string
       membershipName:
         type: string
       memberId:
@@ -2793,18 +2775,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeKiosk'
-  
-  EeAttendeeNotification:
-    type: object
-    properties:
-      eventId:
-        type: string
-      attendeeIds:
-        type: array
-        items:
-          type: string
-      message:
-        type: string
         
   EeEventAutomationUpdate:
     type: object
