@@ -1,28 +1,38 @@
 swagger: '2.0'
 info:
   description: Events service for eDropin
-  version: 1.0.7
+  version: 1.0.10
   title: eDropin Events
   license:
     name: UNLICENSED
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: events-dot-edropin-play.appspot.com
+host: events-dot-edropin-test.appspot.com
 basePath: /
 tags:
+  - name: eePermissions
+    description: Permissions
   - name: eeEvents
     description: Events
   - name: eeEventTags
     description: Tagging profiles and invites in an event
-  - name: eeEventTickets
-    description: Tickets linked to events
   - name: eeEventAttendees
     description: Event Attendees
-  - name: eeCertificates
-    description: Manage eCertificates - creation, update and deletion of templates
-  - name: eeAttendeeCertificates
-    description: Manage eCertificates for attendees-assignment and removal
+  - name: eeEventDropins
+    description: Event Dropins
+  - name: eeEventCertificates
+    description: Manage eCertificates - creation, update and deletion and assigning to attendees
+  - name: eeKiosk
+    description: Self-serve kiosks
+  - name: eeEventAutomations
+    description: Automated actions based on triggers such as dropin => assign certificate
+  - name: eeQrCode
+    description: Generate qr codes
+  - name: eeSurveys
+    description: Manage surveys
+  - name: eeMessages
+    description: Manage, send and track event messages
 schemes:
   - https
 produces:
@@ -40,6 +50,148 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
+  ### PERMISSIONS
+  '/permissions/accept-invite/{inviteToken}':
+    parameters:
+      - in: path
+        name: inviteToken
+        description: Invite Token
+        required: true
+        type: string
+    post:
+      tags:
+        - eePermissions
+      summary: 'Accept a permission invite'
+      operationId: acceptPermissionInvite
+      parameters:
+        - in: query
+          name: v
+          description: Accept or decline an invite
+          type: string
+          enum:
+            - accept
+            - decline
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EePermissionAccept'
+        '404':
+          description: Permission invite not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/permissions/{entityType}/{entityId}/send-invite':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    post:
+      tags:
+        - eePermissions
+      summary: 'Send a permission invite'
+      operationId: sendPermissionInvite
+      parameters:
+        - in: body
+          name: permissionInvite
+          description: Object for permission invite
+          required: true
+          schema:
+            $ref: '#/definitions/EePermissionInviteCreate'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EePagedPermissionInvite'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityType}/{entityId}/accounts':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+    get:
+      tags:
+        - eePermissions
+      summary: Get permissions for entity
+      operationId: paginatePermissions
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EePagedPermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/permissions/{entityType}/{entityId}/accounts/{accountId}':
+    parameters:
+      - $ref: '#/parameters/entityType'
+      - $ref: '#/parameters/entityId'
+      - $ref: '#/parameters/accountId'
+    get:
+      tags:
+        - eePermissions
+      summary: Check account has permission
+      operationId: hasPermission
+      parameters:
+        - in: query
+          type: string
+          required: false
+          name: permission
+      responses:
+        '200':
+          description: Account has Permission
+          schema:
+            $ref: '#/definitions/EePermissionCheck'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eePermissions
+      summary: Set account permission
+      operationId: setPermission
+      parameters:
+        - in: body
+          required: true
+          name: permissionProps
+          schema:
+            $ref: '#/definitions/EePermissionInput'
+      responses:
+        '200':
+          description: Set Account Permission
+          schema:
+            $ref: '#/definitions/EePermission'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eePermissions
+      summary: Remove all permissions for account
+      operationId: removePermissionsForAccount
+      responses:
+        '200':
+          description: Permissions for account
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '405':
+          $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  ### PERMISSION END  
+  
+  ### EVENTS
   /events:
     get:
       tags:
@@ -49,11 +201,8 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
-        - in: query
-          name: currencyCode
-          description: Currency Code to fetch event primary tickets from the store for sale
-          required: false
-          type: string
+        - $ref: '#/parameters/searchCoords'
+        - $ref: '#/parameters/filterTimestamp'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -125,12 +274,6 @@ paths:
         - eeEvents
       summary: Get a Event from the directory
       operationId: getEvent
-      parameters:
-        - in: query
-          name: currencyCode
-          description: Currency Code to fetch event primary tickets from the store for sale
-          required: false
-          type: string
       responses:
         '200':
           description: OK
@@ -185,6 +328,7 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
   '/events/categories':
     get:
       tags:
@@ -213,11 +357,8 @@ paths:
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
-        - in: query
-          name: currencyCode
-          description: Currency Code to fetch event primary tickets from the store for sale
-          required: false
-          type: string
+        - $ref: '#/parameters/searchCoords'
+        - $ref: '#/parameters/filterTimestamp'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -231,97 +372,9 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/permissions/{accountId}':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eeEvents
-      summary: Get permission for account
-      operationId: getAccountPermissionForEvent
-      responses:
-        '200':
-          description: Permissions for account
-          schema:
-            $ref: '#/definitions/EePermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEvents
-      summary: Set permission for event
-      operationId: setEventPermission
-      parameters:
-        - in: body
-          name: permissionProps
-          description: Permissions
-          required: true
-          schema:
-            $ref: '#/definitions/EePermissionInput'
-      responses:
-        '200':
-          description: Permission set
-          schema:
-            $ref: '#/definitions/EePermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/permissions/{accountId}/check':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/accountId'
-    get:
-      tags:
-        - eeEvents
-      summary: Check account has permission
-      operationId: checkAccountHasPermission
-      parameters:
-        - in: query
-          type: string
-          required: true
-          name: permission
-      responses:
-        '200':
-          description: Account has Permission
-          schema:
-            $ref: '#/definitions/EePermissionCheck'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/events/{eventId}/all-permissions':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEvents
-      summary: List all event permissions
-      operationId: getEventPermission
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: List of Users with permissions linked to this event
-          schema:
-            $ref: '#/definitions/EePagedPermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+  ### EVENTS END
   
+  ### EVENT TAGS
   '/events/{eventId}/tags':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -445,118 +498,42 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  '/events/{eventId}/tickets':
+  ### END OF EVENT TAGS
+  
+  ### EVENT TICKETS
+  '/events/{eventId}/tickets/{ticketId}':
     parameters:
       - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventTickets
-      summary: Get Tickets to event
-      operationId: listEventTickets
-      parameters:
-        - $ref: '#/parameters/eventId'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Event Tickets
-          schema:
-            $ref: '#/definitions/EePagedTicket'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+      - $ref: '#/parameters/ticketId'
     post:
       tags:
-        - eeEventTickets
+        - eeEvents
       summary: Add Ticket to event
-      operationId: addEventTicket
+      operationId: upsertTicket
       parameters:
         - in: body
-          name: ticketProps
-          description: Ticket to add
-          required: true
+          name: body
           schema:
             $ref: '#/definitions/EeTicketUpdate'
-        - in: query
-          name: setAsEventPrice
-          description: Make ticket price the event price
-          required: false
-          type: string
       responses:
         '200':
           description: Event Ticket added
           schema:
-            $ref: '#/definitions/EeTicket'
+            $ref: '#/definitions/EeEvent'
         '400':
           $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/tickets/{ticketId}':
-    parameters:
-      - $ref: '#/parameters/ticketId'
-    get:
-      tags:
-        - eeEventTickets
-      summary: Get a ticket from the directory
-      operationId: getEventTicket
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeTicket'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Ticket not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEventTickets
-      summary: Upsert Ticket to event (One Ticket per currency)
-      operationId: updateEventTicket
-      parameters:
-        - in: body
-          name: ticketProps
-          description: Ticket to update
-          required: true
-          schema:
-            $ref: '#/definitions/EeTicketUpdate'
-        - in: query
-          name: setAsEventPrice
-          description: Make ticket price the event price
-          required: false
-          type: string
-      responses:
-        '200':
-          description: Event Ticket updated
-          schema:
-            $ref: '#/definitions/EeTicket'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event or Profile not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeEventTickets
-      summary: Delete an existing Event
-      operationId: deleteEventTicket
+        - eeEvents
+      summary: Remove ticket from event
+      operationId: removeTicket
       responses:
         '204':
-          description: Ticket deleted
+          description: Ticket removed
         '400':
           description: Invalid ID supplied
         '401':
@@ -565,30 +542,141 @@ paths:
           description: Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/tickets/{ticketId}/set-primary/{currencyCode}':
+  ### END OF EVENT TICKETS
+  
+  ### EVENT DROPINS
+  '/events/{eventId}/dropins':
     parameters:
-      - $ref: '#/parameters/ticketId'
-      - $ref: '#/parameters/currencyCode'
-    put:
+      - $ref: '#/parameters/eventId'
+    get:
       tags:
-        - eeEventTickets
-      summary: Update an existing Event
-      operationId: updateEventPrimaryTicket
+        - eeEventDropins
+      summary: List all event dropins
+      operationId: listDropins
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: Event updated
+          description: Attendees for the event
           schema:
-            $ref: '#/definitions/EeEvent'
+            $ref: '#/definitions/EePagedEventDropin'
         '400':
-          description: Invalid ID supplied
+          $ref: '#/responses/InvalidInputResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEventDropins
+      summary: Create a dropin to an event
+      operationId: createDropin
+      parameters:
+        - in: body
+          name: body
+          description: Dropin object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventDropinUpdate'
+      responses:
+        '200':
+          description: Dropin added
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '400':
+          description: Invalid request
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/dropins/{dropinId}':
+    parameters:
+      - $ref: '#/parameters/dropinId'
+    get:
+      tags:
+        - eeEventDropins
+      summary: Retrieve a dropin
+      operationId: retrieveDropin
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventDropins
+      summary: Update dropin to event
+      operationId: updateDropin
+      parameters:
+        - in: body
+          name: body
+          description: Dropin to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventDropinUpdate'
+      responses:
+        '200':
+          description: Event Dropin updated
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Delete an existing dropin
+      operationId: deleteDropin
+      responses:
+        '204':
+          description: Dropin deleted
+          schema:
+            $ref: '#/definitions/EeEventDropin'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/dropins/{dropinId}/attendees':
+    parameters:
+      - $ref: '#/parameters/dropinId'
+      - in: query
+        name: attendeeIds
+        type: array
+        items:
+          type: string
+    put:
+      tags:
+        - eeEventDropins
+      summary: Assign dropins to attendees
+      operationId: createAttendeeDropin
+      responses:
+        '200':
+          description: Dropin assigned
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Dropin not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventDropins
+      summary: Remove dropins from attendees
+      operationId: deleteAttendeeDropin
+      responses:
+        '204':
+          description: Dropin removed
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Dropin not found
+  
   '/events/{eventId}/attendees':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -596,7 +684,7 @@ paths:
       tags:
         - eeEventAttendees
       summary: List all event attendees
-      operationId: listAllAttendees
+      operationId: listAttendees
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -613,38 +701,17 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
-  '/events/{eventId}/attendees/export':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventAttendees
-      summary: List all event attendees
-      operationId: exportAttendees
-      parameters:
-        - $ref: '#/parameters/searchFacets'
-      responses:
-        '200':
-          description: Export attendees for the event as a csv
-          schema:
-            $ref: '#/definitions/EeCsv'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-          
-  '/tickets/{ticketId}/attendees':
-    parameters:
-      - $ref: '#/parameters/ticketId'
     post:
       tags:
         - eeEventAttendees
       summary: Add an Attendee to an event
-      operationId: addAttendee
+      operationId: createAttendee
       parameters:
+        - $ref: '#/parameters/eventId'
+        - in: query
+          name: ticketId
+          type: string
+          required: true
         - in: body
           name: attendeeProps
           description: Attendee object to be created
@@ -662,6 +729,28 @@ paths:
           $ref: '#/responses/UnauthorizedError'
         '405':
           $ref: '#/responses/InvalidInputResponse'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/events/{eventId}/attendees/export':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventAttendees
+      summary: Export event attendee data
+      operationId: exportAttendees
+      parameters:
+        - $ref: '#/parameters/searchFacets'
+      responses:
+        '200':
+          description: Export attendees for the event as a csv
+          schema:
+            $ref: '#/definitions/EeCsv'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
@@ -694,8 +783,8 @@ paths:
     get:
       tags:
         - eeEventAttendees
-      summary: Get an attendee
-      operationId: getAttendee
+      summary: Retrieve an attendee
+      operationId: retrieveAttendee
       responses:
         '200':
           description: OK
@@ -726,22 +815,20 @@ paths:
             $ref: '#/definitions/EeEventAttendee'
         '400':
           description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '404':
           description: Attendee not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
         - eeEventAttendees
-      summary: Delete an existing Event Attendee
-      operationId: deleteEventAttendee
+      summary: Delete an Event Attendee
+      operationId: deleteAttendee
       responses:
         '204':
           description: Event Attendee deleted
+          schema:
+            $ref: '#/definitions/EeEventAttendee'
         '400':
           description: Invalid ID supplied
         '401':
@@ -750,61 +837,53 @@ paths:
           description: Event Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/ticketsale':
+  '/attendees/{attendeeId}/link':
     post:
       tags:
         - eeEventAttendees
-      security: []
+      summary: Send attendee link
+      operationId: sendAttendeeLink
       parameters:
-        - in: query
-          name: apiKey
-          type: string
-          required: true
+        - $ref: '#/parameters/attendeeId'
         - in: body
-          name: subData
-          description: Base64 encoded message
+          name: body
+          description: Send to a different email than the one associated with the account
           required: true
           schema:
-            $ref: '#/definitions/EePubSubMessage'
-      summary: Pub sub to generate claims for event tickets sold
-      operationId: createAttendeesForTicketSale
+            $ref: '#/definitions/EeSendLinkInput'
       responses:
         '200':
-          description: OK
+          description: Claim sent
           schema:
-            type: string
-        '400':
-          description: Invalid ID supplied
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/ticketrefund':
+  '/attendees/transfer':
     post:
       tags:
         - eeEventAttendees
-      security: []
+      summary: Transfer attendees from one ticket to another ticket (can also be two tickets from two separate events)
+      operationId: transferAttendees
       parameters:
-        - in: query
-          name: apiKey
-          type: string
-          required: true
         - in: body
-          name: subData
-          description: Base64 encoded message
+          name: body
+          description: Attendee transfer properties
           required: true
           schema:
-            $ref: '#/definitions/EePubSubMessage'
-      summary: Pub sub to cancel tickets for refunded order items
-      operationId: deactivateAttendeesForTicketRefund
+            $ref: '#/definitions/EeEventAttendeeTransfer'
       responses:
         '200':
-          description: OK
+          description: Attendees transfered
           schema:
-            type: string
-        '400':
-          description: Invalid ID supplied
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/claim':
+  
+  '/attendees/code':
     parameters:
       - in: query
         name: code
@@ -813,8 +892,8 @@ paths:
     get:
       tags:
         - eeEventAttendees
-      summary: Get all attendee claims associated with the code in query
-      operationId: getAttendeesByClaim
+      summary: Get all attendee tickets associated with the code in query
+      operationId: retrieveAttendeesByCode
       responses:
         '200':
           description: OK
@@ -826,39 +905,69 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-    put:
-      tags:
-        - eeEventAttendees
-      summary: Update attendees using claim code
-      operationId: updateAttendeesByClaim
-      parameters:
-        - in: body
-          name: attendeeProps
-          description: Attendee objects that needs to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAttendeeClaimUpdate'
-      responses:
-        '200':
-          description: Attendee updated
-          schema:
-            $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Attendee not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+  # '/attendees/ticketsale':
+  #   post:
+  #     tags:
+  #       - eeEventAttendees
+  #     security: []
+  #     parameters:
+  #       - in: query
+  #         name: apiKey
+  #         type: string
+  #         required: true
+  #       - in: body
+  #         name: subData
+  #         description: Base64 encoded message
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/EePubSubMessage'
+  #     summary: Pub sub to generate claims for event tickets sold
+  #     operationId: createAttendeesForTicketSale
+  #     responses:
+  #       '200':
+  #         description: OK
+  #         schema:
+  #           type: string
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '500':
+  #         $ref: '#/responses/Default500ErrorResponse'
+  # '/attendees/ticketrefund':
+  #   post:
+  #     tags:
+  #       - eeEventAttendees
+  #     security: []
+  #     parameters:
+  #       - in: query
+  #         name: apiKey
+  #         type: string
+  #         required: true
+  #       - in: body
+  #         name: subData
+  #         description: Base64 encoded message
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/EePubSubMessage'
+  #     summary: Pub sub to cancel tickets for refunded order items
+  #     operationId: deactivateAttendeesForTicketRefund
+  #     responses:
+  #       '200':
+  #         description: OK
+  #         schema:
+  #           type: string
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '500':
+  #         $ref: '#/responses/Default500ErrorResponse'
   
-  /certificates:
+          
+  '/events/{eventId}/certificates':
+    parameters:
+      - $ref: '#/parameters/eventId'
     get:
       tags:
-        - eeCertificates
-      summary: List Certificates
+        - eeEventCertificates
+      summary: List all event certificates
       operationId: listCertificates
       parameters:
         - $ref: '#/parameters/searchQuery'
@@ -867,30 +976,30 @@ paths:
         - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: Paged list of certificates
+          description: Certificates for the event
           schema:
-            $ref: '#/definitions/EePagedCertificate'
+            $ref: '#/definitions/EePagedEventCertificate'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     post:
       tags:
-        - eeCertificates
-      summary: Create a Certificate
+        - eeEventCertificates
+      summary: Create a certificate for an event
       operationId: createCertificate
       parameters:
         - in: body
-          name: eventProps
-          description: Event object that needs to be created
+          name: body
+          description: Certificate object to be created
           required: true
           schema:
-            $ref: '#/definitions/EeCertificateUpdate'
+            $ref: '#/definitions/EeEventCertificateUpdate'
       responses:
         '200':
-          description: Certificate created
+          description: Certificate added
           schema:
-            $ref: '#/definitions/EeCertificate'
+            $ref: '#/definitions/EeEventCertificate'
         '400':
-          $ref: '#/responses/InvalidInputResponse'
+          description: Invalid request
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/certificates/{certificateId}':
@@ -898,57 +1007,141 @@ paths:
       - $ref: '#/parameters/certificateId'
     get:
       tags:
-        - eeCertificates
-      summary: Get a certificate by id
-      operationId: getCertificate
+        - eeEventCertificates
+      summary: Retrieve a certificate
+      operationId: retrieveCertificate
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EeEvent'
+            $ref: '#/definitions/EeEventCertificate'
         '404':
           description: Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
-        - eeCertificates
-      summary: Update a certificate
+        - eeEventCertificates
+      summary: Update certificate to event
       operationId: updateCertificate
       parameters:
         - in: body
-          name: certificateProps
-          description: Certificate with updated props
+          name: body
+          description: Certificate to update
           required: true
           schema:
-            $ref: '#/definitions/EeCertificateUpdate'
+            $ref: '#/definitions/EeEventCertificateUpdate'
       responses:
         '200':
-          description: Certificate updated
+          description: Event Certificate updated
           schema:
-            $ref: '#/definitions/EeCertificate'
+            $ref: '#/definitions/EeEventCertificate'
         '404':
           description: Certificate not found
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeCertificates
-      summary: Delete a certificate by id
+        - eeEventCertificates
+      summary: Delete an existing certificate
       operationId: deleteCertificate
       responses:
         '204':
           description: Certificate deleted
+          schema:
+            $ref: '#/definitions/EeEventCertificate'
         '404':
           description: Certificate not found
-  '/attendees/{attendeeId}/certificates':
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/certificates/attendees':
     parameters:
-      - $ref: '#/parameters/attendeeId'
+      - in: query
+        name: certificateIds
+        type: array
+        items:
+          type: string
+      - in: query
+        name: attendeeIds
+        type: array
+        items:
+          type: string
+    put:
+      tags:
+        - eeEventCertificates
+      summary: Create certificates for attendees
+      operationId: createAttendeeCertificate
+      responses:
+        '200':
+          description: Certificate assigned
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventCertificates
+      summary: Delete certificates from attendees
+      operationId: deleteAttendeeCertificate
+      responses:
+        '204':
+          description: Certificate removed
+          schema:
+            $ref: '#/definitions/EePagedEventAttendee'
+        '404':
+          description: Certificate not found
+  '/certificates/download/{certificateCode}':
+    parameters:
+      - $ref: '#/parameters/certificateCode'
+    post:
+      tags:
+        - eeEventCertificates
+      summary: Download a certificate [certificateCode is eeEventAttendee.certificates[].code]
+      operationId: downloadCertificate
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeAttendeeCertificate'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee/Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/certificates/inspectTemplate':
     get:
       tags:
-        - eeAttendeeCertificates
-      summary: List attendee certificates
-      operationId: listAttendeeCertificates
+        - eeEventCertificates
+      summary: Inspect a template for all the placeholders
+      operationId: inspectTemplate
+      parameters:
+        - in: query
+          name: templateUrl
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeCertificateInspect'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Attendee/Certificate not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  /kiosks:
+    get:
+      tags:
+        - eeKiosk
+      summary: List all user's kiosks
+      operationId: listAllKiosks
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -956,54 +1149,576 @@ paths:
         - $ref: '#/parameters/limit'
       responses:
         '200':
-          description: Paged list of certificates assigned to an attendee
+          description: Paged list of kiosks
           schema:
-            $ref: '#/definitions/EePagedCertificate'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
-  '/attendees/{attendeeId}/certificates/{certificateId}':
-    parameters:
-      - $ref: '#/parameters/attendeeId'
-      - $ref: '#/parameters/certificateId'
-    get:
-      tags:
-        - eeAttendeeCertificates
-      summary: Get a certificate by id
-      operationId: getAttendeeCertificate
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeAttendeeCertificate'
-        '404':
-          description: Certificate not found
-    put:
-      tags:
-        - eeAttendeeCertificates
-      summary: Assign a certificate
-      operationId: assignAttendeeCertificate
-      responses:
-        '200':
-          description: Certificate assigned
-          schema:
-            $ref: '#/definitions/EeAttendeeCertificate'
-        '404':
-          description: Certificate not found
+            $ref: '#/definitions/EePagedKiosk'
         '400':
           $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeKiosk
+      summary: Activate kiosk [used by kiosk to get its unique id]
+      operationId: activateKiosk
+      responses:
+        '200':
+          description: Kiosk created
+          schema:
+            $ref: '#/definitions/EeKiosk'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
     delete:
       tags:
-        - eeAttendeeCertificates
-      summary: Remove an assigned certificate for attendee
-      operationId: removeAttendeeCertificate
+        - eeKiosk
+      summary: Deactivate kiosk
+      operationId: deactivateKiosk
+      responses:
+        '200':
+          description: Kiosk deactivated
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/kiosks/{kioskId}':
+    parameters:
+      - $ref: '#/parameters/kioskId'
+    get:
+      tags:
+        - eeKiosk
+      summary: Get a kiosk
+      operationId: getKiosk
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeKiosk'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeKiosk
+      summary: Link a kiosk to my account
+      operationId: linkKiosk
+      parameters:
+        - in: body
+          name: kioskProps
+          description: Kiosk object that needs to be linked
+          required: false
+          schema:
+            $ref: '#/definitions/EeKioskUpdate'
+      responses:
+        '200':
+          description: Kiosk linked
+          schema:
+            $ref: '#/definitions/EeKiosk'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeKiosk
+      summary: Remove kiosk dropin
+      operationId: removeKioskDropin
       responses:
         '204':
-          description: Certificate removed
+          description: Kiosk dropin removed
+          schema:
+            $ref: '#/definitions/EeKiosk'
         '404':
-          description: Certificate not assigned
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/kiosks/{kioskId}/unlink':
+    parameters:
+      - $ref: '#/parameters/kioskId'
+    delete:
+      tags:
+        - eeKiosk
+      summary: Unlink a kiosk
+      operationId: unlinkKiosk
+      responses:
+        '204':
+          description: Unlink a kiosk
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Kiosk not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+          
+  '/events/{eventId}/automations':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventAutomations
+      summary: List all event Automations
+      operationId: listAllEventAutomations
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Automations for the event
+          schema:
+            $ref: '#/definitions/EePagedEventAutomation'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eeEventAutomations
+      summary: Add an automation to an event
+      operationId: addEventAutomation
+      parameters:
+        - in: body
+          name: automationProps
+          description: Automation object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAutomationUpdate'
+      responses:
+        '200':
+          description: Automation added
+          schema:
+            $ref: '#/definitions/EeEventAutomation'
+        '400':
+          description: Invalid request
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  '/automations/{automationId}':
+    parameters:
+      - $ref: '#/parameters/automationId'
+    get:
+      tags:
+        - eeEventAutomations
+      summary: Get an Automation
+      operationId: getEventAutomation
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeEventAutomation'
+        '404':
+          description: Automation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeEventAutomations
+      summary: Update Automation to event
+      operationId: updateEventAutomation
+      parameters:
+        - in: body
+          name: automationProps
+          description: Automation to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeEventAutomationUpdate'
+      responses:
+        '200':
+          description: Event Automation updated
+          schema:
+            $ref: '#/definitions/EeEventAutomation'
+        '404':
+          description: Automation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eeEventAutomations
+      summary: Delete an existing Automation
+      operationId: deleteEventAutomation
+      responses:
+        '204':
+          description: Automation deleted
+          schema:
+            $ref: '#/definitions/EeSuccess'
+        '404':
+          description: Automation not found
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/automations/{triggerType}/trigger':
+    post:
+      tags:
+        - eeEventAutomations
+      security: []
+      parameters:
+        - in: path
+          name: triggerType
+          type: string
+          required: true
+        - in: query
+          name: apiKey
+          type: string
+          required: true
+        - in: body
+          name: subData
+          description: Base64 encoded message
+          required: true
+          schema:
+            $ref: '#/definitions/EePubSubMessage'
+      summary: Pub sub to trigger an event automation
+      operationId: triggerEventAutomation
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Invalid type/id supplied
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  '/qr-code/{data}':
+    parameters:
+      - in: path
+        name: data
+        required: true
+        type: string
+    get:
+      tags:
+        - eeQrCode
+      summary: Get a qr code
+      operationId: getQRCode
+      security: []
+      produces:
+        - image/png
+        - image/gif
+        - image/jpeg
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: file
+  
+  /organizers/{organizerId}/surveys:
+    get:
+      tags:
+        - eeSurveys
+      summary: List all user's surveys
+      operationId: listSurveys
+      parameters:
+        - in: path
+          name: organizerId
+          type: string
+          required: true
+        - in: query
+          name: category
+          type: string
+        - in: query
+          name: categoryId
+          type: string
+        - in: query
+          name: item
+          type: string
+        - in: query
+          name: itemType
+          type: string
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of Surveys
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys/{surveyId}:
+    parameters:
+      - $ref: '#/parameters/surveyId'
+    get:
+      tags:
+        - eeSurveys
+      summary: Retrieve a survey with the given surveyID
+      operationId: retrieveSurvey
+      responses:
+        '200':
+          description: Retrieves the survey with the given surveyID
+          schema:
+            $ref: '#/definitions/EeSurvey'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys-aggregate/get-multi:
+    parameters:
+      - in: query
+        name: surveyIds
+        type: array
+        items:
+          type: string
+    get:
+      tags:
+        - eeSurveys
+      summary: Retrieve survey aggregate with the given surveyID
+      operationId: retrieveSurveyAggregate
+      responses:
+        '200':
+          description: Retrieves the survey with the given surveyID
+          schema:
+            $ref: '#/definitions/EePagedSurveyAggregate'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys/get-multi:
+    get:
+      parameters:
+        - in: query
+          name: surveyIds
+          type: array
+          items:
+            type: string
+      tags:
+        - eeSurveys
+      summary: List all surveys by surveyIDs
+      operationId: retrieveAllSurveys
+      responses:
+        '200':
+          description: Retrieve as paged survey
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys/{surveyId}/responses:
+    get:
+      tags:
+        - eeSurveys
+      parameters:
+        - $ref: '#/parameters/surveyId'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      summary: List responses for a survey
+      operationId: listSurveyResponses
+      responses:
+        '200':
+          description: Paginated list of responses for a survey
+          schema:
+            $ref: '#/definitions/EePagedSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /surveys-responses/get-multi:
+    get:
+      tags:
+        - eeSurveys
+      parameters:
+        - in: query
+          name: responseIds
+          type: array
+          items:
+            type: string
+      summary: Retrieve response for survey
+      operationId: retrieveResponse
+      responses:
+        '200':
+          description: Retrieves the survey responses with the given responseIds
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  /survey-responses:
+    post:
+      tags:
+        - eeSurveys
+      summary: Create responses for surveys
+      operationId: createResponse
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeSurveyResponseInput'
+      responses:
+        '200':
+          description: Survey responses claim code
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /organizers/{organizerId}/survey-responses:
+    get:
+      parameters:
+        - in: path
+          name: organizerId
+          type: string
+          required: true
+        - in: query
+          name: surveyId
+          type: string
+        - in: query
+          name: category
+          type: string
+        - in: query
+          name: categoryId
+          type: string
+        - in: query
+          name: item
+          type: string
+        - in: query
+          name: itemType
+          type: string
+      tags:
+        - eeSurveys
+      summary: Retrieves all survey responses for the given organizerID
+      operationId: listResponses
+      responses:
+        '200':
+          description: Retrieves the survey response with the given surveyId for the current user
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  /events/{eventId}/messages:
+    parameters:
+      - $ref: '#/parameters/eventId'
+    post:
+      tags:
+        - eeMessages
+      summary: Create message for event attendees
+      operationId: createMessage
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeMessageInput'
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    get:
+      tags:
+        - eeMessages
+      summary: List messages for event attendees
+      operationId: listMessages
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged messages
+          schema:
+            $ref: '#/definitions/EePagedMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
+  /messages/{messageId}:
+    parameters:
+      - $ref: '#/parameters/messageId'
+    delete:
+      tags:
+        - eeMessages
+      summary: Delete message for event attendees
+      operationId: removeMessage
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    get:
+      tags:
+        - eeMessages
+      summary: List messages for event attendees
+      operationId: retrieveMessage
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    put:
+      tags:
+        - eeMessages
+      summary: Update message for event attendees
+      operationId: updateMessage
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeMessageInput'
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EeMessage'
+        '400':
+          $ref: '#/responses/InvalidInputResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
 parameters:
+  entityType:
+    name: entityType
+    in: path
+    description: Entity Type
+    type: string
+    required: true
+  entityId:
+    name: entityId
+    in: path
+    description: Entity Id
+    type: string
+    required: true
   limit:
     name: limit
     in: query
@@ -1033,16 +1748,28 @@ parameters:
     description: Attendee Id
     type: string
     required: true
+  automationId:
+    name: automationId
+    in: path
+    description: Automation Id
+    type: string
+    required: true
   certificateId:
     name: certificateId
     in: path
     description: Certificate Id
     type: string
     required: true
-  currencyCode:
-    name: currencyCode
+  certificateCode:
+    name: certificateCode
     in: path
-    description: Currencey code
+    description: Certificate Code
+    type: string
+    required: true
+  dropinId:
+    name: dropinId
+    in: path
+    description: Dropin Id
     type: string
     required: true
   eventId:
@@ -1057,10 +1784,10 @@ parameters:
     description: Profile Id
     type: string
     required: true
-  courseId:
-    name: courseId
+  surveyId:
+    name: surveyId
     in: path
-    description: Course Id
+    description: Survey Id
     type: string
     required: true
   inviteId:
@@ -1069,10 +1796,38 @@ parameters:
     description: Invite Id
     type: string
     required: true
+  kioskId:
+    name: kioskId
+    in: path
+    description: Kiosk Id
+    type: string
+    required: true
   searchQuery:
     in: query
     name: q
     type: string
+  filterTimestamp:
+    in: query
+    name: filterTimestamp
+    description: Filter by start and end time e.g. (starting after 1111 ending before 1234 = 1111,1234)
+    type: array
+    items:
+      type: integer
+    maxLength: 2
+  messageId:
+    name: messageId
+    in: path
+    description: Message Id
+    type: string
+    required: true
+  searchCoords:
+    in: query
+    name: searchCoords
+    description: Coordinates for search
+    type: array
+    required: false
+    items:
+      type: string
   searchFacets:
     in: query
     name: facets
@@ -1117,6 +1872,8 @@ definitions:
       version:
         type: string
         readOnly: true
+      isDeleted:
+        type: boolean
   EePagination:
     type: object
     properties:
@@ -1155,7 +1912,7 @@ definitions:
         type: string
       zip:
         type: string
-      _geoloc:
+      geoloc:
         $ref: '#/definitions/EeGeoloc'
   EeGeoloc:
     type: object
@@ -1166,24 +1923,98 @@ definitions:
       lng:
         type: number
         format: float
-  EePermission:
+  
+  EePermissionInviteCreate:
+    type: object
+    required:
+      - emails
+      - permissions
+    properties:
+      invitedByName:
+        type: string
+      emails:
+        type: array
+        items:
+          type: string
+      permissions:
+        type: array
+        items:
+          type: string
+      message:
+        type: string
+        
+  EePermissionInvite:
     type: object
     properties:
       id:
         type: string
+      modifiedOn:
+        type: string
       creatorId:
         type: string
-      entityKind:
+      entityType:
         type: string
       entityId:
         type: string
       permissions:
         type: object
+      email:
+        type: string
+      message:
+        type: string
+      acceptedWhen:
+        type: integer
+      declinedWhen:
+        type: integer
+      acceptedById:
+        type: string
+      acceptedByName:
+        type: string
+  
+  EePermission:
+    type: object
+    properties:
+      id:
+        type: string
+      modifiedOn:
+        type: string
+      creatorId:
+        type: string
+      entityType:
+        type: string
+      entityId:
+        type: string
+      permissions:
+        type: object
+      email:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      accountId:
+        type: string
+      
   EePermissionInput:
     type: object
     properties:
       permissions:
-        type: object
+        type: array
+        items:
+          type: string
+  EePagedPermissionInvite:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      allPermission:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EePermissionInvite'
   EePagedPermission:
     type: object
     properties:
@@ -1202,6 +2033,17 @@ definitions:
     properties:
       hasPermission:
         type: boolean
+      permission:
+        $ref: '#/definitions/EePermission'
+  
+  EePermissionAccept:
+    type: object
+    properties:
+      invite:
+        $ref: '#/definitions/EePermissionInvite'
+      permission:
+        $ref: '#/definitions/EePermission'
+        
   EeSuccess:
     type: object
     properties:
@@ -1234,13 +2076,13 @@ definitions:
     required:
       - organizerId
       - name
-      - startTimestamp
-      - endTimestamp
       - agreeTerms
     properties:
       organizerId:
         type: string
       name:
+        type: string
+      slug:
         type: string
       startTimestamp:
         type: integer
@@ -1257,26 +2099,31 @@ definitions:
       pictures:
         type: array
         items:
-          type: string
+          $ref: '#/definitions/EePicture'
       website:
         type: string
       isOnline:
         type: boolean
+      onlineOnly:
+        type: boolean
       isHandsOn:
+        type: boolean
+      isSeminar:
+        type: boolean
+      isSocial:
         type: boolean
       isDestination:
         type: boolean
-      destinationType:
-        type: string
-      isFree:
+      destinationFlags:
+        type: array
+        items:
+          type: string
+      isModular:
         type: boolean
       isLive:
         type: boolean
       isPublic:
         type: boolean
-      duration:
-        type: integer
-        format: int32
       categories:
         type: array
         items:
@@ -1285,10 +2132,67 @@ definitions:
         $ref: '#/definitions/EeAddress'
       policy:
         type: string
+      modules:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventModule'
       agreeTerms:
         type: string
         enum:
           - v1
+  
+  EeEventModule:
+    type: object
+    required:
+      - name
+      - startTimestamp
+      - endTimestamp
+      - timezone
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      startTimestamp:
+        type: integer
+        minimum: 0
+      endTimestamp:
+        type: integer
+        minimum: 0
+      timezone:
+        type: string
+      address:
+        $ref: '#/definitions/EeAddress'
+      ticketIds:
+        type: array
+        items:
+          type: string
+      isRequired:
+        type: boolean
+        default: false
+      isDeleted:
+        type: boolean
+        default: false
+  EePicture:
+    type: object
+    required:
+      - src
+    properties:
+      src:
+        type: string
+      caption:
+        type: string 
+  EePictureThumb:
+    type: object
+    properties:
+      slim:
+        type: string
+      square:
+        type: string
+      wide:
+        type: string
   EeEvent:
     type: object
     allOf:
@@ -1297,15 +2201,17 @@ definitions:
       - properties:
           organizerName:
             type: string
+          organizerUsername:
+            type: string
           profiles:
             type: array
             items:
-              type: string
-          courseIds:
-            type: array
-            items:
-              type: string
-          availableCurrencyCode:
+              $ref: '#/definitions/EeEventProfile'
+          isFree:
+            type: boolean
+          pictureThumbs:
+            $ref: '#/definitions/EePictureThumb'
+          availableCurrencies:
             type: array
             items:
               type: string
@@ -1321,16 +2227,41 @@ definitions:
           totalTicketSold:
             type: integer
             format: int32
-          primaryTicket:
-            type: object
-            description: 'currencyCode: ticketId'
-            additionalProperties:
-              type: string
           tickets:
             type: array
             items:
-              $ref: '#/definitions/EeTicketSummary'
-          
+              $ref: '#/definitions/EeTicket'
+          priceStartingAt:
+            $ref: '#/definitions/EePriceStartingAt'
+  
+  EePriceStartingAt:
+    type: object
+    properties:
+      retailPrice:
+        type: integer
+        minimum: 0
+      storeCurrency:
+        type: string
+      exchangeRates:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EeExchangeRate'
+  
+  EeExchangeRate:
+    type: number
+    format: float
+  
+  EeEventProfile:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      roles:
+        type: array
+        items:
+          type: string
   EePagedEvent:
     type: object
     properties:
@@ -1342,11 +2273,17 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
-      storeItems:
-        type: array
-        items:
-          $ref: '#/definitions/EeStoreItem'
   
+  EeTicketUpdate:
+    type: object
+    properties:
+      moduleId:
+        type: string
+      surveyQuestions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EeSurveyQuestion'
+
   EeEventTagUpsert:
     type: object
     properties:
@@ -1399,287 +2336,135 @@ definitions:
         items:
           $ref: '#/definitions/EeProfile'
   
-  EeTicketUpdate:
+  EeTicket:
     type: object
-    required:
-      - name
-    allOf:
-      - $ref: '#/definitions/EeStoreItemUpdate'
-      - properties:
-          name:
-            type: string
-          description:
-            type: string
-  
-  EeStoreItemUpdate:
-    type: object
-    required:
-      - name
-      - totalInventory
-      - priceStrategy
-      - startSaleTimestamp
-      - endSaleTimestamp
     properties:
-      itemType:
+      id:
         type: string
       name:
         type: string
-      picture:
-        type: string
-      description:
-        type: string
-      priceStrategy:
-        type: "array"
-        items:
-          $ref: "#/definitions/EePriceStrategy"
-      totalInventory:
-        type: integer
-        format: int32
-      startSaleTimestamp:
-        type: integer
-      endSaleTimestamp:
-        type: integer
-      policy:
-        type: string
-      extra:
-        type: object
-      status:
-        type: string
-        enum:
-          - open
-          - closed
-          - soldOut
-  EeStoreItem:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeStoreItemUpdate'
-      - properties:
-          merchantId:
-            type: string
-          merchantName:
-            type: string
-          totalSold:
-            type: integer
-            format: int32
-          priceSummary:
-            type: array
-            items:
-              $ref: '#/definitions/EePriceSummary'
-              
-  EePriceStrategy:
-    type: object
-    required:
-      - retailPrice
-      - currencyCode
-    properties:
-      retailPrice:
-        type: integer
-        format: int32
-      currencyCode:
-        type: string
-      discounts:
+      availableCurrencies:
         type: array
         items:
-          $ref: '#/definitions/EeDiscount'
-      refundPolicies:
-        type: array
-        items:
-          $ref: '#/definitions/EeRefundPolicy'
-
-  
-  EeDiscount:
-    type: object
-    required:
-      - discountType
-      - discountPrice
-      - startTimestamp
-      - endTimestamp
-    properties:
-      discountType:
-        type: string
-        enum:
-          - membership
-          - referralCode
-      referralCode:
-        type: string
-      discountPrice:
-        type: integer
-        format: int32
-      startTimestamp:
-        type: integer
-        format: int32
-      endTimestamp:
-        type: integer
-        format: int32
-      membershipId:
-        type: integer
-      membershipName:
-        type: string
-        
-  EeRefundPolicy:
-    type: object
-    required:
-      - startTimestamp
-      - endTimestamp
-      - feeAmount
-    properties:
-      policyId:
-        type: string
-      policyName:
-        type: string
-      disclaimer:
-        type: string
-      appFeeRefundAmount: 
-        type: number
-      platformFee:
-        type: number
-      startTimestamp:
-        type: integer
-      endTimestamp:
-        type: integer
-      feeAmount:
-        type: integer
-      refundAmount:
-        type: integer
-      isDifferenceCharged:
+          type: string
+      active:
         type: boolean
-        default: false
-          
-  EePriceSummary:
-    type: object
-    properties:
-      currencyCode:
-        type: string
+        default: true
       retailPrice:
         type: integer
-        format: int32
-      adDiscounts:
-        type: array
-        items:
-          $ref: '#/definitions/EeDiscount'
-      refundPolicies:
-        type: array
-        items:
-          $ref: '#/definitions/EeRefundPolicy'
-          
-  
-  EeTicketSummary:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EePriceSummary'
-      - properties:
-          id:
-            type: string
-            description: 'storeItemId'
-          name:
-            type: string
-          uid:
-            type: string
-            description: 'storeItemId-currencyCode'
-          
-  
-  EeTicket:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeTicketUpdate'
-      - $ref: '#/definitions/EeStoreItem'
-      - properties:
-          eventId:
-            type: string
-          eventName:
-            type: string
-          eventPicture:
-            type: string
-          organizerId:
-            type: string
-          organizerName:
-            type: string
-          totalSold:
-            type: integer
-            format: int32
-
-  EePagedTicket:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EePagination'
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EeTicket'
+        minimum: 0
+      storeCurrency:
+        type: string
+      surveyId:
+        type: string
 
   EeEventAttendeeUpdate:
     type: object
-    required:
-      - name
-      - email
     properties:
       sendClaim:
         type: boolean
         default: false
-      name:
-        type: string
-      email:
-        type: string
-      title:
-        type: string
-      phone:
-        type: string
-      memberId:
-        type: string
-  EeEventAttendeeClaimUpdate:
-    type: object
-    properties:
-      attendees:
+      user:
+        $ref: '#/definitions/EeUser'
+      memberships:
         type: array
         items:
-          type: object
-          required:
-            - id
-            - name
-            - email
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-            email:
-              type: string
-            title:
-              type: string
-            phone:
-              type: string
-            memberId:
-              type: string
+          $ref: '#/definitions/EeMembership'
+        
   EeEventAttendee:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeEventAttendeeUpdate'
       - properties:
-          orderItemId:
+          ownerId:
             type: string
-          orderItemStatusId:
+          isAnonymous:
+            type: boolean
+          organizerId:
             type: string
-          eventName:
+          organizerName:
+            type: string
+          organizerUsername:
             type: string
           eventId:
             type: string
           eventPicture:
             type: string
-          active:
+          eventName:
+            type: string
+          ticketId:
+            type: string
+          ticketName:
+            type: string
+          orderItemId:
+            type: string
+          itemId:
+            type: string
+          orderId:
+            type: string
+          user:
+            $ref: '#/definitions/EeUser'
+          link:
+            type: string
+          memberships:
+            type: array
+            items:
+              $ref: '#/definitions/EeMembership'
+          dropins:
+            type: array
+            items:
+              $ref: '#/definitions/EeAttendeeDropin'
+          dropinCount:
+            type: integer
+            minimum: 0
+          hasDropins:
             type: boolean
-          isRefunded:
+            default: false
+          certificates:
+            type: array
+            items:
+              $ref: '#/definitions/EeAttendeeCertificate'
+          certificateCount:
+            type: integer
+            minimum: 0
+          hasCertificates:
             type: boolean
-          isClaimed:
-            type: boolean
-          appliedPromotion:
-            $ref: '#/definitions/EeAppliedPromotion'
+            default: false
+          surveyResponses:
+            type: array
+            items:
+              $ref: '#/definitions/EeAttendeeSurveyResponse'
+  EeAttendeeSurveyResponse:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: string
+      surveyId:
+        type: string
+  
+  EeUser:
+    type: object
+    properties:
+      title:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      email:
+        type: string
+  
   EePagedEventAttendee:
     type: object
     properties:
+      facets:
+        type: object
       pageData:
         $ref: '#/definitions/EePagination'
       items:
@@ -1690,20 +2475,16 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
-  
-  EeAppliedPromotion:
+  EeSendLinkInput:
     type: object
     properties:
-      discountType:
+      email:
         type: string
-      discountPrice:
-        type: integer
-      timestamp:
-        type: integer
-      referralCode:
-        type: string
+  EeMembership:
+    type: object
+    properties:
       membershipId:
-        type: integer
+        type: string
       membershipName:
         type: string
       memberId:
@@ -1749,37 +2530,572 @@ definitions:
       filename:
         type: string
         
-  EeCertificateUpdate:
+  EeEventCertificateUpdate:
     type: object
     required:
       - name
     properties:
       name:
         type: string
+      templateUrl:
+        type: string
+      template:
+        type: string
+      variableMap:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventCertificatePlaceholder'
+      substitutionMap:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventCertificatePlaceholder'
+  
+  EeEventCertificatePlaceholder:
+    type: object
+    required:
+      - key
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+      autocomplete:
+        type: boolean
+        
     
-  EeCertificate:
+  EeEventCertificate:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeCertificateUpdate'
+      - $ref: '#/definitions/EeEventCertificateUpdate'
       - properties:
-          templateUrl:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          eventLocation:
+            type: string
+          eventPicture:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
+            type: string
+          organizerUsername:
             type: string
   
-  EePagedCertificate:
+  EeAttendeeCertificate:
+    type: object
+    properties:
+      certificateId:
+        type: string
+      name:
+        type: string
+      generatedLink:
+        type: string
+      timestamp:
+        type: integer
+      code:
+        type: string
+  
+  EeCertificateInspect:
+    type: object
+    properties:
+      templateUrl:
+        type: string
+      placeholders:
+        type: object
+        properties:
+          # matches:
+          #   type: array
+          #   items:
+          #     type: object
+          autofill:
+            type: object
+          tagKeys:
+            type: array
+            items:
+              type: string
+  
+  EePagedEventCertificate:
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
       items:
         type: array
         items:
-          $ref: '#/definitions/EeCertificate'
+          $ref: '#/definitions/EeEventCertificate'
   
-  EeAttendeeCertificate:
+  EeEventDropinUpdate:
+    type: object
+    required:
+      - name
+      - status
     properties:
-      attendee:
-        $ref: '#/definitions/EeEventAttendee'
-      certificate:
-        $ref: '#/definitions/EeCertificate'
+      name:
+        type: string
+      color:
+        type: string
+      dropinType:
+        type: string
+        enum:
+          - CheckIn
+          - CheckOut
+          - Other
+      startTimestamp:
+        type:
+          integer
+      endTimestamp:
+        type:
+          integer
+      isNotificationEnabled:
+        type:
+          boolean
+        default: true
+      status:
+        type:
+          string
+        enum:
+          - Auto
+          - Open
+          - Closed
+        default: Auto
+      customMessage:
+        type:
+          string
+        maxLength: 500
+      ticketIds:
+        type: array
+        items:
+          type: string
+      
+  EeEventDropin:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeEventDropinUpdate'
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          eventLocation:
+            type: string
+          eventPicture:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
+            type: string
+          organizerUsername:
+            type: string
+          tickets:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventDropinTicket'
+                
+  EeEventDropinTicket:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      shortName:
+        type: string
+      active:
+        type: boolean
+      
+  EeAttendeeDropin:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      color:
+        type: string
+      timestamp:
+        type: integer
   
+  EePagedEventDropin:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventDropin'
+          
+  EeEventAttendeeTransfer:
+    type: object
+    required:
+      - attendeeIds
+      - fromEventId
+      - toEventId
+      - fromTicketId
+      - toTicketId
+    properties:
+      attendeeIds:
+        type: array
+        items:
+          type: string
+      fromEventid:
+        type: string
+      toEventId:
+        type: string
+      fromTicketId:
+        type: string
+      toTicketId:
+        type: string
+        
+  EeKioskUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      color:
+        type: string
+      dropinId:
+        type: string
+        
+  EeKiosk:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeKioskUpdate'
+      - properties:
+          isNew:
+            type: boolean
+            default: false
+          dropin:
+            $ref: '#/definitions/EeEventDropin'
+  EePagedKiosk:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      facets:
+        type: object
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeKiosk'
+        
+  EeEventAutomationUpdate:
+    type: object
+    required:
+      - triggerType
+      - actionType
+    properties:
+      triggerType:
+        type: string
+        enum:
+          - 'dropin'
+          - 'certificate'
+      triggerCondition:
+        type: string
+      attendeeStateCondition:
+        type: string
+      actionType:
+        type: string
+        enum:
+          - 'assignCertificate'
+      actionData:
+        type: object
+      dropletId:
+        type: string
+      dropletData:
+        type: object
+      active:
+        type: boolean
+        default: true
   
+  EeEventAutomation:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeEventAutomationUpdate'
+      - properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          eventLocation:
+            type: string
+          eventPicture:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
+            type: string
+          organizerUsername:
+            type: string
+
+  EePagedEventAutomation:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventAutomation'
+      
+  EeSurveyQuestion:
+    type: object
+    properties:
+      questionType:
+        type: string
+      prompt:
+        type: string
+      label:
+        type: string
+      choices:
+        type: array
+        items:
+          type: string
+      when:
+        $ref: '#/definitions/EeSurveyQuestionWhen'
+      metadata:
+        type: string
+      order:
+        type: integer
+        minimum: 0
+      defaultValue:
+        type: string
+      validators:
+        type: array
+        items:
+          type: string
+          enum:
+            - email
+            - required
+      active:
+        type: boolean
+        default: true
+  
+  EeSurveyQuestionWhen:
+    type: object
+    properties:
+      value:
+        type: string
+      disable:
+        type: array
+        items:
+          type: string
+      enable:
+        type: array
+        items:
+          type: string
+  
+  EeSurvey:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          eventId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+          name:
+            type: string
+          questions:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EeSurveyQuestion'
+  
+  EeAggregate:
+    type: object
+    properties:
+      responses:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+      values:
+        type: array
+        items:
+          $ref: '#/definitions/EeAggregateValue'
+  
+  EeAggregateValue:
+    type: object
+    properties:
+      id:
+        type: string
+      total:
+        type: integer
+    
+  EeSurveyAggregate:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          eventId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+          name:
+            type: string
+          aggregates:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EeAggregate'
+  
+  EePagedSurvey:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurvey'
+          
+  EePagedSurveyAggregate:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyAggregate'
+  
+  EeSurveyResponseInput:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponseItemInput'
+  
+  EeSurveyResponse:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponseItem'
+  
+  EePagedSurveyResponse:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponseItem'
+          
+  EeSurveyResponseItemInput:
+    type: object
+    properties:
+      surveyId:
+        type: string
+      statusId:
+        type: string
+      orderItemId:
+        type: string
+      answers:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EeQuestionAnswer'
+  
+  EeSurveyResponseItem:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeSurveyResponseItemInput'
+      - properties:
+          id:
+            type: string
+          eventId:
+            type: string
+          itemType:
+            type: string
+          itemId:
+            type: string
+          claimCode:
+            type: string
+  
+  EeQuestionAnswer:
+    type: object
+    properties:
+      text:
+        type: string
+      selection:
+        type: array
+        items:
+          type: string
+  EeMessageInput:
+    type: object
+    required:
+      - subject
+      - body
+    properties:
+      subject:
+        type: string
+      body:
+        type: string
+      sendAt:
+        type: integer
+        minimum: 0
+      sendEmailNow:
+        type: boolean
+      emailAllAttendees:
+        type: boolean
+        
+  EeMessage:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeMessageInput'
+      - properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          organizerId:
+            type: string
+          organizerName:
+            type: string
+          emailSentAt: 
+            type: integer
+            minimum: 0
+          attendees:
+            type: array
+            items:
+              $ref: '#/definitions/EeMessageAttendee'
+          taskName:
+            type: string
+          isScheduled:
+            type: boolean
+          
+          
+  EeMessageAttendee:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+  EePagedMessage:
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeMessage'

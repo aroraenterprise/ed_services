@@ -5,9 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-"cors-demo": "CLOUDSDK_CORE_ACCOUNT=edropin19@gmail.com gsutil cors set cors.json gs://edropin-play.appspot.com",  
-"cors-dev": "CLOUDSDK_CORE_ACCOUNT=edropin20@gmail.com gsutil cors set cors.json gs://edropin-dev-1.appspot.com"
-},
+    "cors-demo": "CLOUDSDK_CORE_ACCOUNT=edropin19@gmail.com gsutil cors set cors.json gs://edropin-play.appspot.com",
+    "cors-dev": "CLOUDSDK_CORE_ACCOUNT=edropin20@gmail.com gsutil cors set cors.json gs://edropin-dev-1.appspot.com",
+    "generate-store": "java -jar ./swagger-codegen-cli-2.4.0.jar generate -i ./store.yaml -l typescript-angular -o ./ts/store --additional-properties ngVersion=6",
+    "fix-store-ts": "node update-module-ts.js deploy-store",
+    "build-store": "npm i --prefix=./ts/store && npm run build --prefix=./ts/store",
+    "publish-store": "npm publish ./ts/store/dist --access public",
+    "deploy-store": "npm run generate-store && npm run fix-store-ts && npm run build-store && npm run publish-store"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aroraenterprise/ed_services.git"
@@ -17,5 +22,10 @@
   "bugs": {
     "url": "https://github.com/aroraenterprise/ed_services/issues"
   },
-  "homepage": "https://github.com/aroraenterprise/ed_services#readme"
+  "homepage": "https://github.com/aroraenterprise/ed_services#readme",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "latest-version": "^4.0.0",
+    "yargs": "^13.2.1"
+  }
 }
