@@ -31,5 +31,17 @@ yargs
     {},
     () => getLatestService('store', '@edropin/store-ts'),
   )
+  .command(
+    'deploy-events',
+    'Deploy the events',
+    {},
+    () => getLatestService('events', '@edropin/events-ts'),
+  )
+  .command(
+    'deploy-accounts',
+    'Deploy the accounts',
+    {},
+    () => getLatestService('accounts', '@edropin/accounts-ts'),
+  )
   .wrap(120)
   .help().argv;

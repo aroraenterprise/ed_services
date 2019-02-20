@@ -9,9 +9,23 @@ pipeline {
         sh 'npm install'
       }
     } 
-    stage('Build Store') {
-      steps {
-        sh 'npm run deploy-store'
+    stage('Deploy') {
+      parallel {
+        stage('Deploy store') {
+          steps {
+            sh 'npm run deploy-store'
+          }
+        }
+        stage('Deploy events') {
+          steps {
+            sh 'npm run deploy-events'
+          }
+        }
+        stage('Deploy accounts') {
+          steps {
+            sh 'npm run deploy-accounts'
+          }
+        }
       }
     }
   }
