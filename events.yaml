@@ -50,6 +50,7 @@ security:
   - ClientKey: []
     Authorization: []
 paths:
+  ### PERMISSIONS
   '/permissions/accept-invite/{inviteToken}':
     parameters:
       - in: path
@@ -188,7 +189,9 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-          
+  ### PERMISSION END  
+  
+  ### EVENTS
   /events:
     get:
       tags:
@@ -325,6 +328,7 @@ paths:
           description: Event not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  
   '/events/categories':
     get:
       tags:
@@ -368,7 +372,9 @@ paths:
           $ref: '#/responses/InvalidInputResponse'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  ### EVENTS END
   
+  ### EVENT TAGS
   '/events/{eventId}/tags':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -492,6 +498,9 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  ### END OF EVENT TAGS
+  
+  ### EVENT TICKETS
   '/events/{eventId}/tickets/{ticketId}':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -533,7 +542,9 @@ paths:
           description: Ticket not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
+  ### END OF EVENT TICKETS
   
+  ### EVENT DROPINS
   '/events/{eventId}/dropins':
     parameters:
       - $ref: '#/parameters/eventId'
