@@ -6,12 +6,11 @@ pipeline {
   stages {
     stage('Install dependencies') {
       when {
-          expression {
-              STORE = sh (script: "git log -1 | grep '\\[store\\]'", returnStatus: true)
-              Events = sh (script: "git log -1 | grep '\\[events\\]'", returnStatus: true)
-              Accounts = sh (script: "git log -1 | grep '\\[accounts\\]'", returnStatus: true)
-              return STORE || EVENTS || Accounts
-          }
+        anyOf {
+          changelog '.*^\\[store\\] .+$'
+          changelog '.*^\\[events\\] .+$'
+          changelog '.*^\\[accounts\\] .+$'
+        }
       }
       steps {
         sh 'npm install'
@@ -21,9 +20,7 @@ pipeline {
       parallel {
         stage('Deploy store') {
           when {
-              expression {
-                  return sh (script: "git log -1 | grep '\\[store\\]'", returnStatus: true)
-              }
+            changelog '.*^\\[store\\] .+$'
           }
           steps {
             sh 'npm run deploy-store'
@@ -31,9 +28,7 @@ pipeline {
         }
         stage('Deploy events') {
           when {
-              expression {
-                  return sh (script: "git log -1 | grep '\\[events\\]'", returnStatus: true)
-              }
+            changelog '.*^\\[events\\] .+$'            
           }
           steps {
             sh 'npm run deploy-events'
@@ -41,9 +36,7 @@ pipeline {
         }
         stage('Deploy accounts') {
           when {
-              expression {
-                  return sh (script: "git log -1 | grep '\\[accounts\\]'", returnStatus: true)
-              }
+            changelog '.*^\\[accounts\\] .+$'          
           }
           steps {
             sh 'npm run deploy-accounts'
