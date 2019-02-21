@@ -860,7 +860,6 @@ paths:
         - esOrderItems
       operationId: createCharge
       summary: 'Create an additional charge on an order item'
-
   '/order-items/{orderItemId}/refunds':
     parameters:
       - $ref: '#/parameters/orderItemId'
@@ -1637,7 +1636,7 @@ definitions:
         type: boolean
       feeAmount:
         default: 0
-        type: integer
+        type: number
       feeMaximum:
         type: integer
       feeMinimum:
@@ -1770,6 +1769,9 @@ definitions:
     type: object
   EsOrderItemCharge:
     type: object
+    required:
+      - amount
+      - reason
     properties:
       amount:
         minimum: 0
@@ -1778,6 +1780,9 @@ definitions:
         type: string
   EsOrderItemRefund:
     type: object
+    required:
+      - amount
+      - reason
     properties:
       amount:
         minimum: 0
