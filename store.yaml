@@ -825,6 +825,9 @@ paths:
         - esOrderItems
       operationId: getOrderItem
       summary: Get the order item
+  '/order-items/{orderItemId}/charge':
+    parameters:
+      - $ref: '#/parameters/orderItemId'
     post:
       consumes:
         - application/json
@@ -836,7 +839,42 @@ paths:
           name: body
           required: true
           schema:
-            $ref: '#/definitions/EsMerchantOrderUpdate'
+            $ref: '#/definitions/EsOrderItemCharge'
+      responses:
+        '200':
+          description: Order Item
+          schema:
+            $ref: '#/definitions/EsOrderItemCharge'
+        '401':
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+        '404':
+          description: Order Item not found
+        '500':
+          description: An unexpected error occured.
+          schema:
+            $ref: '#/definitions/EsDefaultError'
+      tags:
+        - esOrderItems
+      operationId: createCharge
+      summary: 'Create an additional charge on an order item'
+  '/order-items/{orderItemId}/refunds':
+    parameters:
+      - $ref: '#/parameters/orderItemId'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - description: Refund Input
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsOrderItemRefund'
       responses:
         '200':
           description: Order Item
@@ -855,9 +893,9 @@ paths:
             $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
-      operationId: updateOrderItem
-      summary: 'Updater order (e.g. refund, charges, cancel items, re-activate item)'
-  '/order-items/{orderItemId}/refunds':
+      operationId: createRefund
+      summary: 'Create a refund for an order item'
+  '/order-items/{orderItemId}/refund-requests':
     parameters:
       - $ref: '#/parameters/orderItemId'
     post:
@@ -892,7 +930,7 @@ paths:
             $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
-      operationId: createRefund
+      operationId: createRefundRequest
       summary: Create a refund for an item
   '/merchants/{merchantId}':
     parameters:
@@ -1729,23 +1767,28 @@ definitions:
       - name
       - storeCurrency
     type: object
-  EsMerchantOrderUpdate:
+  EsOrderItemCharge:
+    type: object
     properties:
       amount:
         minimum: 0
         type: integer
-      cancelStatusIds:
-        items:
-          type: string
-        type: array
-      isCharge:
-        default: false
-        type: boolean
-      transactionId:
-        type: string
       reason:
         type: string
+  EsOrderItemRefund:
     type: object
+    properties:
+      amount:
+        minimum: 0
+        type: integer
+      reason:
+        type: string
+      refundRequestId:
+        type: string
+      transactionIds:
+        type: array
+        items:
+          type: string
   EsCartInput:
     type: object
     properties:
