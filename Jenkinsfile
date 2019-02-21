@@ -7,9 +7,9 @@ pipeline {
     stage('Install dependencies') {
       when {
         anyOf {
-          changelog '.*^\\[store\\] .+$'
-          changelog '.*^\\[events\\] .+$'
-          changelog '.*^\\[accounts\\] .+$'
+          changeset 'store.yaml'
+          changeset 'events.yaml'
+          changeset 'accounts.yaml'
         }
       }
       steps {
@@ -20,7 +20,7 @@ pipeline {
       parallel {
         stage('Deploy store') {
           when {
-            changelog '.*^\\[store\\] .+$'
+            changeset 'store.yaml'
           }
           steps {
             sh 'npm run deploy-store'
@@ -28,7 +28,7 @@ pipeline {
         }
         stage('Deploy events') {
           when {
-            changelog '.*^\\[events\\] .+$'            
+            changeset 'events.yaml'                       
           }
           steps {
             sh 'npm run deploy-events'
@@ -36,7 +36,7 @@ pipeline {
         }
         stage('Deploy accounts') {
           when {
-            changelog '.*^\\[accounts\\] .+$'          
+            changeset 'accounts.yaml'
           }
           steps {
             sh 'npm run deploy-accounts'

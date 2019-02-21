@@ -860,6 +860,7 @@ paths:
         - esOrderItems
       operationId: createCharge
       summary: 'Create an additional charge on an order item'
+
   '/order-items/{orderItemId}/refunds':
     parameters:
       - $ref: '#/parameters/orderItemId'
