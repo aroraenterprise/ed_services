@@ -1442,7 +1442,57 @@ paths:
         - esUserMemberships
       operationId: updateUserMembership
       summary: Update an existing user membership
-
+  
+  /charge-transactions/retrieve-multi:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - collectionFormat: multi
+          in: query
+          items:
+            type: string
+          name: transactionIds
+          type: array
+        - $ref: '#/parameters/expand'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedChargeTransactions'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+      tags:
+        - esTransactions
+      operationId: retrieveChargeTransactionsById
+      summary: Get multiple charge transactions. Must all belong to one merchant ID
+  /refund-transactions/retrieve-multi:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - collectionFormat: multi
+          in: query
+          items:
+            type: string
+          name: transactionIds
+          type: array
+        - $ref: '#/parameters/expand'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedRefundTransactions'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Store Item not found
+      tags:
+        - esTransactions
+      operationId: retrieveRefundTransactionsById
+      summary: Get multiple refund transactions. Must all belong to one merchant ID
 definitions:
   EsBaseId:
     properties:
@@ -2530,6 +2580,24 @@ definitions:
       pageData:
         $ref: '#/definitions/EsPagination'
     type: object
+  EsPagedChargeTransactions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/EsChargeTransaction'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
+  EsPagedRefundTransactions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/EsRefundTransaction'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
   EsPagination:
     properties:
       nextCursor:
@@ -2961,6 +3029,8 @@ tags:
     name: esUserMemberships
   - description: Currency Exchange
     name: esCurrencyExchange
+  - description: Transactional information
+    name: esTransactions
 
 parameters:
   accountId:
