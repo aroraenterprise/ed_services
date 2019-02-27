@@ -37,12 +37,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPermissionAccept'
-        '404':
-          description: Permission invite not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esPermissions
       operationId: acceptPermissionInvite
@@ -62,17 +56,6 @@ paths:
           description: Permissions for account
           schema:
             $ref: '#/definitions/EsPagedPermission'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esPermissions
       operationId: paginatePermissions
@@ -91,17 +74,6 @@ paths:
           description: Permissions for account
           schema:
             $ref: '#/definitions/EsSuccess'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esPermissions
       operationId: removePermissionsForAccount
@@ -119,15 +91,6 @@ paths:
           description: Account has Permission
           schema:
             $ref: '#/definitions/EsPermissionCheck'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esPermissions
       operationId: hasPermission
@@ -148,15 +111,6 @@ paths:
           description: Set Account Permission
           schema:
             $ref: '#/definitions/EsPermission'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esPermissions
       operationId: setPermission
@@ -182,10 +136,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedPermissionInvite'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esPermissions
       operationId: sendPermissionInvite
@@ -202,10 +152,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsExchange'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCurrencyExchange
       operationId: getLatestExchange
@@ -222,10 +168,6 @@ paths:
           description: Order cleared
           schema:
             $ref: '#/definitions/EsOrder'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: emptyCart
@@ -245,10 +187,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsCart'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: updateCart
@@ -271,21 +209,6 @@ paths:
           description: Updated Cart
           schema:
             $ref: '#/definitions/EsCartChangeResponse'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Cart Store Item not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: applyPromotion
@@ -310,21 +233,6 @@ paths:
             checked out
           schema:
             $ref: '#/definitions/EsCartChangeResponse'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Cart Store Item not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: checkout
@@ -341,17 +249,6 @@ paths:
           description: Cart Item deleted
           schema:
             $ref: '#/definitions/EsCartChangeResponse'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Cart Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: removeItem
@@ -377,21 +274,6 @@ paths:
           description: Cart Item upserted
           schema:
             $ref: '#/definitions/EsCartChangeResponse'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Cart Store Item not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: addItem
@@ -410,21 +292,6 @@ paths:
           description: Cart Item validated
           schema:
             $ref: '#/definitions/EsOrder'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Cart Store Item not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCart
       operationId: validate
@@ -449,10 +316,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsCustomer'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
       operationId: getUserCustomer
@@ -474,17 +337,6 @@ paths:
           description: Customer updated
           schema:
             $ref: '#/definitions/EsCustomer'
-        '400':
-          description: Invalid attributes
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
       operationId: updateCustomer
@@ -504,17 +356,6 @@ paths:
                   $ref: '#/definitions/EsCard'
                 type: array
             type: object
-        '400':
-          description: Invalid attributes
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
       operationId: listAllCards
@@ -531,15 +372,6 @@ paths:
           description: Card removed
           schema:
             $ref: '#/definitions/EsSuccess'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esCustomers
       operationId: removeCard
@@ -558,15 +390,6 @@ paths:
           description: Memberships
           schema:
             $ref: '#/definitions/EsPagedMembership'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: getAllMemberships
@@ -588,17 +411,6 @@ paths:
           description: Membership created
           schema:
             $ref: '#/definitions/EsMembership'
-        '400':
-          description: Validation exception
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: createMembership
@@ -615,17 +427,6 @@ paths:
           description: Membership deleted
           schema:
             $ref: '#/definitions/EsSuccess'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: deleteMembership
@@ -639,12 +440,6 @@ paths:
           description: Membership
           schema:
             $ref: '#/definitions/EsMembership'
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: getMembership
@@ -666,19 +461,6 @@ paths:
           description: Membership updated
           schema:
             $ref: '#/definitions/EsMembership'
-        '400':
-          description: Validation exception
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: updateMembership
@@ -701,12 +483,6 @@ paths:
           description: Members belonging to this membership
           schema:
             $ref: '#/definitions/EsPagedMember'
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: getMembers
@@ -728,12 +504,6 @@ paths:
           description: Membership updated
           schema:
             $ref: '#/definitions/EsPagedMember'
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMemberships
       operationId: updateMembers
@@ -754,12 +524,6 @@ paths:
           description: Members deleted
           schema:
             $ref: '#/definitions/EsSuccess'
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       security: []
       tags:
         - esMemberships
@@ -784,14 +548,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedOrderItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
       operationId: listOrderItemsByMerchant
@@ -808,19 +564,6 @@ paths:
           description: Order Item
           schema:
             $ref: '#/definitions/EsOrderItem'
-        '400':
-          description: Invalid Request
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Order Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
       operationId: getOrderItem
@@ -834,7 +577,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - description: Order update options
+        - description: Charge body
           in: body
           name: body
           required: true
@@ -844,18 +587,7 @@ paths:
         '200':
           description: Order Item
           schema:
-            $ref: '#/definitions/EsOrderItemCharge'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Order Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
+            $ref: '#/definitions/EsOrderItemTransaction'
       tags:
         - esOrderItems
       operationId: createCharge
@@ -879,18 +611,7 @@ paths:
         '200':
           description: Order Item
           schema:
-            $ref: '#/definitions/EsOrderItem'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Order Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
+            $ref: '#/definitions/EsOrderItemTransaction'
       tags:
         - esOrderItems
       operationId: createRefund
@@ -915,19 +636,6 @@ paths:
           description: Order Item
           schema:
             $ref: '#/definitions/EsOrderItem'
-        '400':
-          description: Invalid Request
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Order Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrderItems
       operationId: createRefundRequest
@@ -944,14 +652,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMerchants
       operationId: getMerchant
@@ -973,12 +673,6 @@ paths:
           description: Merchant Updated
           schema:
             $ref: '#/definitions/EsMerchant'
-        '404':
-          description: Profile not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMerchants
       operationId: updateMerchant
@@ -1003,14 +697,6 @@ paths:
           description: Billing updated
           schema:
             $ref: '#/definitions/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Profile not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMerchants
       operationId: enableBilling
@@ -1036,21 +722,6 @@ paths:
           description: Merchant fee structure updated
           schema:
             $ref: '#/definitions/EsMerchant'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Profile not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esMerchants
       operationId: updateFeeStructure
@@ -1070,8 +741,6 @@ paths:
           description: Paged Feed Items
           schema:
             $ref: '#/definitions/EsPagedFeedItem'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
   ### ORDERS
   /orders:
@@ -1088,12 +757,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedOrder'
-        '400':
-          description: Invalid ID supplied
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrder
       operationId: listUserOrders
@@ -1110,14 +773,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsOrder'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       security:
         - AuthorizationOptional: []
           ClientKey: []
@@ -1141,14 +796,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedOrderItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esOrder
       operationId: listOrderItems
@@ -1172,14 +819,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       security:
         - AuthorizationOptional: []
           ClientKey: []
@@ -1203,14 +842,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esStore
       operationId: listStoreItems
@@ -1232,21 +863,6 @@ paths:
           description: Store Item updated
           schema:
             $ref: '#/definitions/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Store Item not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esStore
       operationId: createStoreItem
@@ -1263,17 +879,6 @@ paths:
           description: Store Item deleted
           schema:
             $ref: '#/definitions/EsStoreItem'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: StoreItem not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esStore
       operationId: deleteStoreItem
@@ -1288,14 +893,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       security:
         - AuthorizationOptional: []
           ClientKey: []
@@ -1322,21 +919,6 @@ paths:
           description: Store Item updated
           schema:
             $ref: '#/definitions/EsStoreItem'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '404':
-          description: Store Item not found
-        '405':
-          description: Validation exception
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esStore
       operationId: updateStoreItem
@@ -1355,15 +937,6 @@ paths:
           description: Customer Memberships
           schema:
             $ref: '#/definitions/EsPagedUserMembership'
-        '401':
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esUserMemberships
       operationId: listUserMemberships
@@ -1385,10 +958,6 @@ paths:
           description: Membership created
           schema:
             $ref: '#/definitions/EsMembership'
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esUserMemberships
       operationId: addUserMembership
@@ -1405,12 +974,6 @@ paths:
           description: Membership deleted
           schema:
             $ref: '#/definitions/EsSuccess'
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esUserMemberships
       operationId: removeUserMembership
@@ -1432,12 +995,6 @@ paths:
           description: Membership updated
           schema:
             $ref: '#/definitions/EsUserMembership'
-        '404':
-          description: Membership not found
-        '500':
-          description: An unexpected error occured.
-          schema:
-            $ref: '#/definitions/EsDefaultError'
       tags:
         - esUserMemberships
       operationId: updateUserMembership
@@ -1460,10 +1017,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedChargeTransactions'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
       tags:
         - esTransactions
       operationId: retrieveChargeTransactionsById
@@ -1485,14 +1038,33 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EsPagedRefundTransactions'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Store Item not found
       tags:
         - esTransactions
       operationId: retrieveRefundTransactionsById
       summary: Get multiple refund transactions. Must all belong to one merchant ID
+  
+  /subscriptions/retrieve-multi:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - collectionFormat: multi
+          in: query
+          items:
+            type: string
+          name: transactionIds
+          type: array
+        - $ref: '#/parameters/expand'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsPagedSubscriptions'
+      tags:
+        - esSubscriptions
+      operationId: retrieveSubscriptionsById
+      summary: Get multiple subscriptions. Must all belong to one merchant ID
+      
 definitions:
   EsBaseId:
     properties:
@@ -1628,16 +1200,6 @@ definitions:
     required:
       - defaultCurrency
     type: object
-  EsDefaultError:
-    properties:
-      code:
-        format: int32
-        type: integer
-      message:
-        type: string
-    required:
-      - code
-      - message
   EsDiscount:
     allOf:
       - $ref: '#/definitions/EsDiscountInput'
@@ -1845,6 +1407,20 @@ definitions:
         type: array
         items:
           type: string
+  EsOrderItemTransaction:
+    type: object
+    properties:
+      transactionType:
+        type: string
+        enum:
+          - refund
+          - charge
+      orderItem:
+        $ref: '#/definitions/EsOrderItem'
+      chargeTransaction:
+        $ref: '#/definitions/EsChargeTransaction'
+      refundTransaction:
+        $ref: '#/definitions/EsRefundTransaction'
   EsCartInput:
     type: object
     properties:
@@ -2598,6 +2174,15 @@ definitions:
       pageData:
         $ref: '#/definitions/EsPagination'
     type: object
+  EsPagedSubscriptions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/EsSubscription'
+        type: array
+      pageData:
+        $ref: '#/definitions/EsPagination'
+    type: object
   EsPagination:
     properties:
       nextCursor:
@@ -3031,6 +2616,8 @@ tags:
     name: esCurrencyExchange
   - description: Transactional information
     name: esTransactions
+  - description: Subscription information
+    name: esSubscriptions
 
 parameters:
   accountId:
@@ -3140,16 +2727,4 @@ parameters:
     name: userMembershipId
     required: true
     type: string
-responses:
-  Default500ErrorResponse:
-    description: An unexpected error occured.
-    schema:
-      $ref: '#/definitions/EsDefaultError'
-  InvalidInputResponse:
-    description: Validation exception
-  UnauthorizedError:
-    description: API key is missing or invalid
-    headers:
-      WWW_Authenticate:
-        type: string
 
