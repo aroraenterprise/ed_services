@@ -1832,87 +1832,89 @@ definitions:
 
   EsChargeTransaction:
     type: object
-    properties:
-      updatedWhen:
-        type: integer
-      orderId:
-        type: string
-      orderItemAllocations:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/EsOrderItemAllocation'
-      isProcessed:
-        type: boolean
-      processedWhen:
-        type: integer
-        minimum: 0
-      chargeId:
-        type: string
-      merchantId:
-        type: string
-      merchantName:
-        type: string
-      merchantUsername:
-        type: string
-      merchantStripeId:
-        type: string
-      customerId:
-        type: string
-      email:
-        type: string
-      txnStatus:
-        type: string
-      notes:
-        type: string
-      presentmentCurrency:
-        type: string
-      currency:
-        type: string
-      presentmentAmount:
-        minimum: 0
-        default: 0
-        type: integer
-      amount:
-        minimum: 0
-        default: 0
-        type: integer
-      platformFee:
-        minimum: 0
-        type: integer
-        default: 0
-      presentmentPlatformFee:
-        minimum: 0
-        type: integer
-        default: 0
-      paymentProcessorFee:
-        minimum: 0
-        type: integer
-        default: 0
-      paymentProcessorExchangeRate:
-        minimum: 0
-        type: number
-        format: float
-        default: 0
-      net:
-        minimum: 0
-        type: integer
-        default: 0
-      platformFeeId:
-        type: string
-      refundTotal:
-        minimum: 0
-        type: integer
-        default: 0
-      presentmentRefundTotal:
-        minimum: 0
-        type: integer
-        default: 0
-      refundIds:
-        type: array
-        items:
-          type: string
-      refundStatus:
-        type: string
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          updatedWhen:
+            type: integer
+          orderId:
+            type: string
+          orderItemAllocations:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsOrderItemAllocation'
+          isProcessed:
+            type: boolean
+          processedWhen:
+            type: integer
+            minimum: 0
+          chargeId:
+            type: string
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          merchantUsername:
+            type: string
+          merchantStripeId:
+            type: string
+          customerId:
+            type: string
+          email:
+            type: string
+          txnStatus:
+            type: string
+          notes:
+            type: string
+          presentmentCurrency:
+            type: string
+          currency:
+            type: string
+          presentmentAmount:
+            minimum: 0
+            default: 0
+            type: integer
+          amount:
+            minimum: 0
+            default: 0
+            type: integer
+          platformFee:
+            minimum: 0
+            type: integer
+            default: 0
+          presentmentPlatformFee:
+            minimum: 0
+            type: integer
+            default: 0
+          paymentProcessorFee:
+            minimum: 0
+            type: integer
+            default: 0
+          paymentProcessorExchangeRate:
+            minimum: 0
+            type: number
+            format: float
+            default: 0
+          net:
+            minimum: 0
+            type: integer
+            default: 0
+          platformFeeId:
+            type: string
+          refundTotal:
+            minimum: 0
+            type: integer
+            default: 0
+          presentmentRefundTotal:
+            minimum: 0
+            type: integer
+            default: 0
+          refundIds:
+            type: array
+            items:
+              type: string
+          refundStatus:
+            type: string
   
   EsOrderItemAllocation:
     type: object
@@ -1939,118 +1941,122 @@ definitions:
   
   EsRefundTransaction:
     type: object
-    properties:
-      updatedWhen:
-        type: integer
-      chargeTxId:
-        type: string
-      chargeId:
-        type: string
-      orderItemAllocations:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/EsAllocatedRefund'
-      merchantId:
-        type: string
-      merchantName:
-        type: string
-      merchantUsername:
-        type: string
-      merchantStripeId:
-        type: string
-      email:
-        type: string
-      txnStatus:
-        type: string
-      notes:
-        type: string
-      presentmentCurrency:
-        type: string
-      currency:
-        type: string
-      presentmentAmount:
-        minimum: 0
-        default: 0
-        type: integer
-      amount:
-        minimum: 0
-        default: 0
-        type: integer
-      paymentProcessorExchangeRate:
-        minimum: 0
-        type: number
-        format: float
-        default: 0
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          updatedWhen:
+            type: integer
+          chargeTxId:
+            type: string
+          chargeId:
+            type: string
+          orderItemAllocations:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EsAllocatedRefund'
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          merchantUsername:
+            type: string
+          merchantStripeId:
+            type: string
+          email:
+            type: string
+          txnStatus:
+            type: string
+          notes:
+            type: string
+          presentmentCurrency:
+            type: string
+          currency:
+            type: string
+          presentmentAmount:
+            minimum: 0
+            default: 0
+            type: integer
+          amount:
+            minimum: 0
+            default: 0
+            type: integer
+          paymentProcessorExchangeRate:
+            minimum: 0
+            type: number
+            format: float
+            default: 0
   
   EsSubscription:
     type: object
-    properties:
-      updatedWhen:
-        type: integer
-      merchantId:
-        type: string
-      merchantName:
-        type: string
-      merchantUsername:
-        type: string
-      merchantStripeId:
-        type: string
-      customerId:
-        type: string
-      storeItemId:
-        type: string
-      orderItemId:
-        type: string
-      orderId:
-        type: string
-      presentmentCurrency:
-        type: string
-      presentmentAmount:
-        minimum: 0
-        default: 0
-        type: integer
-      isActive:
-        type: boolean
-        default: false
-      activatedWhen:
-        type: integer
-        minimum: 0
-      planId:
-        type: string
-      subId:
-        type: string
-      billingCycleAnchorTimestamp:
-        type: integer
-        minimum: 0
-      payByTimestamp:
-        type: integer
-        minimum: 0
-      interval:
-        type: string
-      intervalCount:
-        type: integer
-        minimum: 1
-        maximum: 2
-        default: 1
-      totalNumberOfPayments:
-        type: integer
-        minimum: 0
-        default: 0
-      totalPaymentsMade:
-        type: integer
-        minimum: 0
-      status:
-        type: string
-      failure:
-        type: string
-      isCanceled:
-        type: boolean
-      canceledWhen:
-        type: integer
-      isComplete:
-        type: boolean
-      completedWhen:
-        type: integer 
+    allOf:
+      - $ref: '#/definitions/EsBaseId'
+      - properties:
+          updatedWhen:
+            type: integer
+          merchantId:
+            type: string
+          merchantName:
+            type: string
+          merchantUsername:
+            type: string
+          merchantStripeId:
+            type: string
+          customerId:
+            type: string
+          storeItemId:
+            type: string
+          orderItemId:
+            type: string
+          orderId:
+            type: string
+          presentmentCurrency:
+            type: string
+          presentmentAmount:
+            minimum: 0
+            default: 0
+            type: integer
+          isActive:
+            type: boolean
+            default: false
+          activatedWhen:
+            type: integer
+            minimum: 0
+          planId:
+            type: string
+          subId:
+            type: string
+          billingCycleAnchorTimestamp:
+            type: integer
+            minimum: 0
+          payByTimestamp:
+            type: integer
+            minimum: 0
+          interval:
+            type: string
+          intervalCount:
+            type: integer
+            minimum: 1
+            maximum: 2
+            default: 1
+          totalNumberOfPayments:
+            type: integer
+            minimum: 0
+            default: 0
+          totalPaymentsMade:
+            type: integer
+            minimum: 0
+          status:
+            type: string
+          failure:
+            type: string
+          isCanceled:
+            type: boolean
+          canceledWhen:
+            type: integer
+          isComplete:
+            type: boolean
+          completedWhen:
+            type: integer 
         
   EsOrderItemStatus:
     properties:
