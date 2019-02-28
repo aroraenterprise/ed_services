@@ -1000,6 +1000,21 @@ paths:
       operationId: updateUserMembership
       summary: Update an existing user membership
   
+  /charge-transactions/{transactionId}/refresh:
+    post:
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/transactionId'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsChargeTransaction'
+      tags:
+        - esTransactions
+      operationId: refreshChargeTransaction
+      summary: Refreshes a charge transaction against the stripe account in order to make sure all amounts are synced
   /charge-transactions/retrieve-multi:
     get:
       produces:
@@ -2726,6 +2741,12 @@ parameters:
   searchQuery:
     in: query
     name: q
+    type: string
+  transactionId:
+    in: path
+    description: Transaction ID
+    name: transactionId
+    required: true
     type: string
   userMembershipId:
     description: User membership id
