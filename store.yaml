@@ -1079,6 +1079,21 @@ paths:
         - esSubscriptions
       operationId: retrieveSubscriptionsById
       summary: Get multiple subscriptions. Must all belong to one merchant ID
+  /subscriptions/{subscriptionId}:
+    parameters:
+      - $ref: '#/parameters/subscriptionId'
+    delete:
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EsSubscription'
+      tags:
+        - esSubscriptions
+      operationId: deleteSubscription
+      summary: Cancel a subscription
       
 definitions:
   EsBaseId:
@@ -1673,6 +1688,10 @@ definitions:
             default: false
           checkedOutWhen:
             type: integer
+          isFailed:
+            type: boolean
+          failure:
+            type: string
           appliedPromotions:
             type: array
             items:
@@ -2746,6 +2765,12 @@ parameters:
     in: path
     description: Transaction ID
     name: transactionId
+    required: true
+    type: string
+  subscriptionId:
+    in: path
+    description: Subscription ID
+    name: subscriptionId
     required: true
     type: string
   userMembershipId:
