@@ -2861,6 +2861,9 @@ definitions:
         type: array
         items:
           type: string
+      notIncluded:
+        type: boolean
+        default: false
       when:
         $ref: '#/definitions/EeSurveyQuestionWhen'
       metadata:
@@ -2877,9 +2880,6 @@ definitions:
           enum:
             - email
             - required
-      active:
-        type: boolean
-        default: true
   
   EeSurveyQuestionWhen:
     type: object
@@ -2910,8 +2910,6 @@ definitions:
             type: string
           name:
             type: string
-          autoAggregate:
-            type: boolean
           autoActiveResponse:
             type: boolean
           isClosed:
