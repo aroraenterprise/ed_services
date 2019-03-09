@@ -1545,20 +1545,21 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
-  /survey-responses:
+  /survey-responses/{surveyId}:
     post:
       tags:
         - eeSurveys
-      summary: Create responses for surveys
+      summary: Create responses for a survey with the given id
       operationId: createResponse
       parameters:
+        - $ref: '#/parameters/surveyId'
         - in: body
           name: body
           schema:
             $ref: '#/definitions/EeSurveyResponseInput'
       responses:
         '200':
-          description: Survey responses claim code
+          description: Survey responses with claim code
           schema:
             $ref: '#/definitions/EeSurveyResponse'
         '400':
@@ -2901,12 +2902,20 @@ definitions:
       - properties:
           eventId:
             type: string
+          organizerId:
+            type: string
           itemType:
             type: string
           itemId:
             type: string
           name:
             type: string
+          autoAggregate:
+            type: boolean
+          autoActiveResponse:
+            type: boolean
+          isClosed:
+            type: boolean
           questions:
             type: object
             additionalProperties:
@@ -2915,24 +2924,24 @@ definitions:
   EeAggregate:
     type: object
     properties:
-      responses:
+      label:
+        type: string
+      values:
         type: object
         additionalProperties:
-          type: array
-          items:
-            type: string
-      values:
-        type: array
-        items:
           $ref: '#/definitions/EeAggregateValue'
   
   EeAggregateValue:
     type: object
     properties:
-      id:
+      label:
         type: string
       total:
         type: integer
+      attendeeIds:
+        type: array
+        items:
+          type: string
     
   EeSurveyAggregate:
     type: object
@@ -2941,12 +2950,12 @@ definitions:
       - properties:
           eventId:
             type: string
-          itemType:
+          organizerId:
             type: string
-          itemId:
-            type: string
-          name:
-            type: string
+          isDirty:
+            type: boolean
+          lastTalliedWhen:
+            type: integer
           aggregates:
             type: object
             additionalProperties:
@@ -3001,8 +3010,6 @@ definitions:
   EeSurveyResponseItemInput:
     type: object
     properties:
-      surveyId:
-        type: string
       statusId:
         type: string
       orderItemId:
@@ -3015,11 +3022,14 @@ definitions:
   EeSurveyResponseItem:
     type: object
     allOf:
+      - $ref: '#/definitions/EeBaseId'
       - $ref: '#/definitions/EeSurveyResponseItemInput'
       - properties:
-          id:
-            type: string
           eventId:
+            type: string
+          organizerId:
+            type: string
+          surveyId:
             type: string
           itemType:
             type: string
