@@ -2480,16 +2480,6 @@ definitions:
         type: boolean
       timezone:
         type: string
-    required:
-      - name
-      - category
-      - categoryId
-      - itemType
-      - totalInventory
-      - startSaleTimestamp
-      - endSaleTimestamp
-      - retailPrice
-      - timezone
     type: object
   
   EsCheckoutSurveyInput:
@@ -2545,6 +2535,15 @@ definitions:
             type: string
     required:
       - merchantId
+      - name
+      - category
+      - categoryId
+      - itemType
+      - totalInventory
+      - startSaleTimestamp
+      - endSaleTimestamp
+      - retailPrice
+      - timezone
   EsSuccess:
     properties:
       message:
