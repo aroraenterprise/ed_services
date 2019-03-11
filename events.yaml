@@ -2994,6 +2994,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeSurveyResponseItem'
+      attendees:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventAttendee'
   
   EePagedSurveyResponse:
     type: object
