@@ -659,7 +659,7 @@ paths:
         '200':
           description: Dropin assigned
           schema:
-            $ref: '#/definitions/EePagedEventAttendee'
+            $ref: '#/definitions/EeEventAttendeeDropin'
         '404':
           description: Dropin not found
         '500':
@@ -905,61 +905,6 @@ paths:
           description: Attendee not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  # '/attendees/ticketsale':
-  #   post:
-  #     tags:
-  #       - eeEventAttendees
-  #     security: []
-  #     parameters:
-  #       - in: query
-  #         name: apiKey
-  #         type: string
-  #         required: true
-  #       - in: body
-  #         name: subData
-  #         description: Base64 encoded message
-  #         required: true
-  #         schema:
-  #           $ref: '#/definitions/EePubSubMessage'
-  #     summary: Pub sub to generate claims for event tickets sold
-  #     operationId: createAttendeesForTicketSale
-  #     responses:
-  #       '200':
-  #         description: OK
-  #         schema:
-  #           type: string
-  #       '400':
-  #         description: Invalid ID supplied
-  #       '500':
-  #         $ref: '#/responses/Default500ErrorResponse'
-  # '/attendees/ticketrefund':
-  #   post:
-  #     tags:
-  #       - eeEventAttendees
-  #     security: []
-  #     parameters:
-  #       - in: query
-  #         name: apiKey
-  #         type: string
-  #         required: true
-  #       - in: body
-  #         name: subData
-  #         description: Base64 encoded message
-  #         required: true
-  #         schema:
-  #           $ref: '#/definitions/EePubSubMessage'
-  #     summary: Pub sub to cancel tickets for refunded order items
-  #     operationId: deactivateAttendeesForTicketRefund
-  #     responses:
-  #       '200':
-  #         description: OK
-  #         schema:
-  #           type: string
-  #       '400':
-  #         description: Invalid ID supplied
-  #       '500':
-  #         $ref: '#/responses/Default500ErrorResponse'
-  
           
   '/events/{eventId}/certificates':
     parameters:
@@ -2377,6 +2322,8 @@ definitions:
     allOf:
       - $ref: '#/definitions/EeBaseId'
       - properties:
+          timestamp:
+            type: integer
           ownerId:
             type: string
           isAnonymous:
@@ -2476,11 +2423,29 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEvent'
+  
+  EeEventAttendeeDropin:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventAttendee'
+      newDropins:
+        type: array
+        items:
+          type: string
+      surveyResponses:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponseItem'
+  
   EeSendLinkInput:
     type: object
     properties:
       email:
         type: string
+
   EeMembership:
     type: object
     properties:
@@ -2490,7 +2455,7 @@ definitions:
         type: string
       memberId:
         type: string
-        
+
   EePubSubMessage:
     type: object
     properties:
@@ -2505,6 +2470,7 @@ definitions:
             type: object
           message_id:
             type: string
+
   EeFacetSearch:
     type: object
     properties:
@@ -2523,6 +2489,7 @@ definitions:
         type: boolean
       processingTimeMS:
         type: integer
+
   EeCsv:
     type: object
     properties:
@@ -2530,7 +2497,7 @@ definitions:
         type: string
       filename:
         type: string
-        
+
   EeEventCertificateUpdate:
     type: object
     required:
@@ -2550,7 +2517,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventCertificatePlaceholder'
-  
+
   EeEventCertificatePlaceholder:
     type: object
     required:
@@ -2562,8 +2529,7 @@ definitions:
         type: string
       autocomplete:
         type: boolean
-        
-    
+
   EeEventCertificate:
     type: object
     allOf:
@@ -2584,7 +2550,7 @@ definitions:
             type: string
           organizerUsername:
             type: string
-  
+
   EeAttendeeCertificate:
     type: object
     properties:
@@ -2598,7 +2564,7 @@ definitions:
         type: integer
       code:
         type: string
-  
+
   EeCertificateInspect:
     type: object
     properties:
@@ -2617,7 +2583,7 @@ definitions:
             type: array
             items:
               type: string
-  
+
   EePagedEventCertificate:
     properties:
       pageData:
@@ -2626,7 +2592,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventCertificate'
-  
+
   EeEventDropinUpdate:
     type: object
     required:
@@ -2665,11 +2631,23 @@ definitions:
         type:
           string
         maxLength: 500
-      ticketIds:
+      tickets:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventDropinTicketUpdate'
+
+  EeEventDropinTicketUpdate:
+    type: object
+    properties:
+      id:
+        type: string
+      showSurvey:
+        type: boolean
+      surveyFields:
         type: array
         items:
           type: string
-      
+
   EeEventDropin:
     type: object
     allOf:
@@ -2704,8 +2682,14 @@ definitions:
         type: string
       shortName:
         type: string
-      active:
+      showSurvey:
         type: boolean
+      surveyId:
+        type: string
+      surveyFields:
+        type: array
+        items:
+          type: string
       
   EeAttendeeDropin:
     type: object
