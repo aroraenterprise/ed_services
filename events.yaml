@@ -1106,11 +1106,11 @@ paths:
     post:
       tags:
         - eeKiosk
-      summary: Activate kiosk [used by kiosk to get its unique id]
+      summary: Activate a kiosk
       operationId: activateKiosk
       responses:
         '200':
-          description: Kiosk created
+          description: Kiosk activated
           schema:
             $ref: '#/definitions/EeKiosk'
         '500':
@@ -1165,20 +1165,6 @@ paths:
           description: Kiosk not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-    delete:
-      tags:
-        - eeKiosk
-      summary: Remove kiosk dropin
-      operationId: removeKioskDropin
-      responses:
-        '204':
-          description: Kiosk dropin removed
-          schema:
-            $ref: '#/definitions/EeKiosk'
-        '404':
-          description: Kiosk not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
   '/kiosks/{kioskId}/unlink':
     parameters:
@@ -1189,10 +1175,10 @@ paths:
       summary: Unlink a kiosk
       operationId: unlinkKiosk
       responses:
-        '204':
+        '200':
           description: Unlink a kiosk
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EeKiosk'
         '404':
           description: Kiosk not found
         '500':
@@ -2746,20 +2732,46 @@ definitions:
         type: string
       color:
         type: string
-      dropinId:
-        type: string
+      removeDropin:
+        type: boolean
+      isLocked:
+        type: boolean
+      screenBrightness:
+        type: number
+        minimum: 0
+        maximum: 1.0
+      
         
   EeKiosk:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeKioskUpdate'
       - properties:
-          isNew:
+          name:
+            type: string
+          description:
+            type: string
+          color:
+            type: string
+          removeDropin:
             type: boolean
-            default: false
+          isLocked:
+            type: boolean
+          screenBrightness:
+            type: number
+            minimum: 0
+            maximum: 1.0
+          linkedAccountId:
+            type: string
+          isDropinConnected:
+            type: boolean
           dropin:
             $ref: '#/definitions/EeEventDropin'
+          isDeactivated:
+            type: boolean
+          deactivatedWhen:
+            type: integer
+          
   EePagedKiosk:
     type: object
     properties:
