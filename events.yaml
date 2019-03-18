@@ -2726,6 +2726,8 @@ definitions:
   EeKioskUpdate:
     type: object
     properties:
+      dropinId:
+        type: string
       name:
         type: string
       description:
