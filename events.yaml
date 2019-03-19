@@ -1124,7 +1124,7 @@ paths:
         '200':
           description: Kiosk deactivated
           schema:
-            $ref: '#/definitions/EeSuccess'
+            $ref: '#/definitions/EeKiosk'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   '/kiosks/{kioskId}':
