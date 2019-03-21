@@ -1812,11 +1812,22 @@ definitions:
       pageSize:
         type: integer
         format: int32
-      nextCursor:
-        type: string
+      page:
+        type: integer
       total:
         type: integer
+      totalPages:
+        type: integer
+      facets:
+        type: object
+  EeDSPagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
         format: int32
+      nextCursor:
+        type: string
   EeDefaultError:
     required:
       - code
@@ -1951,7 +1962,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       allPermission:
         type: array
         items:
@@ -2199,8 +2210,6 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
-      facets:
-        type: object
       items:
         type: array
         items:
@@ -2397,8 +2406,6 @@ definitions:
   EePagedEventAttendee:
     type: object
     properties:
-      facets:
-        type: object
       pageData:
         $ref: '#/definitions/EePagination'
       items:
@@ -2779,8 +2786,6 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
-      facets:
-        type: object
       items:
         type: array
         items:
@@ -2840,7 +2845,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       items:
         type: array
         items:
@@ -2961,7 +2966,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       items:
         type: array
         items:
@@ -2971,7 +2976,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       items:
         type: array
         items:
@@ -3001,7 +3006,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       items:
         type: array
         items:
@@ -3104,7 +3109,7 @@ definitions:
   EePagedMessage:
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       items:
         type: array
         items:
