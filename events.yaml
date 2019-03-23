@@ -2073,6 +2073,10 @@ definitions:
           type: string
       address:
         $ref: '#/definitions/EeAddress'
+      marketLocations:
+        type: array
+        items:
+          $ref: '#/definitions/EeGeocodeLocation'
       policy:
         type: string
       modules:
@@ -2083,6 +2087,14 @@ definitions:
         type: string
         enum:
           - v1
+  
+  EeGeocodeLocation:
+    type: object
+    properties:
+      geoloc:
+        $ref: '#/definitions/EeGeoloc'
+      location:
+        type: string
   
   EeEventModule:
     type: object
