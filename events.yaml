@@ -2093,7 +2093,7 @@ definitions:
     properties:
       geoloc:
         $ref: '#/definitions/EeGeoloc'
-      location:
+      formatted:
         type: string
   
   EeEventModule:
@@ -2188,6 +2188,10 @@ definitions:
               $ref: '#/definitions/EeTicket'
           priceStartingAt:
             $ref: '#/definitions/EePriceStartingAt'
+          location:
+            type: array
+            items:
+              $ref: '#/definitions/EeGeocodeLocation'
   
   EePriceStartingAt:
     type: object
