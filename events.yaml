@@ -1949,7 +1949,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       allPermission:
         type: array
         items:

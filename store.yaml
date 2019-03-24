@@ -2123,7 +2123,7 @@ definitions:
           $ref: '#/definitions/EsMember'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedMembership:
     properties:
@@ -2132,7 +2132,7 @@ definitions:
           $ref: '#/definitions/EsMembership'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedOrder:
     properties:
@@ -2141,7 +2141,7 @@ definitions:
           $ref: '#/definitions/EsOrder'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedOrderItem:
     properties:
@@ -2163,7 +2163,7 @@ definitions:
           $ref: '#/definitions/EsPermission'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedPermissionInvite:
     properties:
@@ -2176,7 +2176,7 @@ definitions:
           $ref: '#/definitions/EsPermissionInvite'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedStoreItem:
     properties:
@@ -2203,7 +2203,7 @@ definitions:
           $ref: '#/definitions/EsChargeTransaction'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedRefundTransactions:
     properties:
@@ -2212,7 +2212,7 @@ definitions:
           $ref: '#/definitions/EsRefundTransaction'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagedSubscriptions:
     properties:
@@ -2221,21 +2221,30 @@ definitions:
           $ref: '#/definitions/EsSubscription'
         type: array
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
     type: object
   EsPagination:
+    type: object
     properties:
-      nextCursor:
-        type: string
       pageSize:
+        type: integer
         format: int32
+      page:
         type: integer
       total:
-        format: int32
+        type: integer
+      totalPages:
         type: integer
       facets:
         type: object
+  EsDSPagination:
     type: object
+    properties:
+      pageSize:
+        type: integer
+        format: int32
+      nextCursor:
+        type: string
   EsPaymentInput:
     properties:
       email:
@@ -2603,7 +2612,7 @@ definitions:
         items:
           $ref: '#/definitions/EsFeedItem'
       pageData:
-        $ref: '#/definitions/EsPagination'
+        $ref: '#/definitions/EsDSPagination'
   
   EsValidationInput:
     type: object

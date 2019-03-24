@@ -900,12 +900,22 @@ definitions:
       pageSize:
         type: integer
         format: int32
-      nextCursor:
-        type: string
+      page:
+        type: integer
       total:
         type: integer
+      totalPages:
+        type: integer
+      facets:
+        type: object
+  EaDSPagination:
+    type: object
+    properties:
+      pageSize:
+        type: integer
         format: int32
-  
+      nextCursor:
+        type: string
   EaFeedItem:
     type: object
     properties:
@@ -930,36 +940,7 @@ definitions:
         items:
           $ref: '#/definitions/EaFeedItem'
       pageData:
-        $ref: '#/definitions/EaPagination'
-  
-  EaAddress:
-    type: object
-    properties:
-      formatted:
-        type: string
-      streetNumberOrBuilding:
-        type: string
-      street:
-        type: string
-      city:
-        type: string
-      state:
-        type: string
-      country:
-        type: string
-      zip:
-        type: string
-      _geoloc:
-        $ref: '#/definitions/EaGeoloc'
-  EaGeoloc:
-    type: object
-    properties:
-      lat:
-        type: number
-        format: float
-      lng:
-        type: number
-        format: float
+        $ref: '#/definitions/EaDSPagination'
   DefaultError:
     required:
       - code
@@ -1052,7 +1033,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EaPagination'
+        $ref: '#/definitions/EaDSPagination'
       allPermission:
         type: array
         items:
@@ -1065,7 +1046,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EaPagination'
+        $ref: '#/definitions/EaDSPagination'
       allPermission:
         type: array
         items:
@@ -1141,7 +1122,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EaPagination'
+        $ref: '#/definitions/EaDSPagination'
       items:
         type: array
         items:
@@ -1258,8 +1239,6 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EaPagination'
-      facets:
-        type: object
       items:
         type: array
         items:
@@ -1335,8 +1314,6 @@ definitions:
     properties:
       pageData:
         $ref: '#/definitions/EaPagination'
-      facets:
-        type: object
       items:
         type: array
         items:
