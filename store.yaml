@@ -291,7 +291,7 @@ paths:
         '200':
           description: Cart Item validated
           schema:
-            $ref: '#/definitions/EsOrder'
+            $ref: '#/definitions/EsCartChangeResponse'
       tags:
         - esCart
       operationId: validate
