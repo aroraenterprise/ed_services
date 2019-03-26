@@ -167,7 +167,7 @@ paths:
         '204':
           description: Order cleared
           schema:
-            $ref: '#/definitions/EsOrder'
+            $ref: '#/definitions/EsCartChangeResponse'
       tags:
         - esCart
       operationId: emptyCart
