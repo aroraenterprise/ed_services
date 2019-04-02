@@ -1314,6 +1314,13 @@ paths:
         name: data
         required: true
         type: string
+      - in: query
+        name: background
+        type: string
+        enum:
+         - light
+         - dark
+        default: light
     get:
       tags:
         - eeQrCode
@@ -2087,6 +2094,14 @@ definitions:
         type: string
         enum:
           - v1
+      isPace:
+        type: boolean
+      paceId:
+        type: string
+      paceCreditAmount:
+        type: integer
+      paceSubjectCode:
+        type: string
   
   EeGeocodeLocation:
     type: object
@@ -2157,6 +2172,8 @@ definitions:
           organizerName:
             type: string
           organizerUsername:
+            type: string
+          organizerPicture:
             type: string
           profiles:
             type: array
@@ -2344,6 +2361,8 @@ definitions:
           organizerName:
             type: string
           organizerUsername:
+            type: string
+          organizerPicture:
             type: string
           eventId:
             type: string
@@ -2549,15 +2568,11 @@ definitions:
             type: string
           eventName:
             type: string
-          eventLocation:
-            type: string
           eventPicture:
             type: string
           organizerId:
             type: string
           organizerName:
-            type: string
-          organizerUsername:
             type: string
 
   EeAttendeeCertificate:
@@ -2667,15 +2682,11 @@ definitions:
             type: string
           eventName:
             type: string
-          eventLocation:
-            type: string
           eventPicture:
             type: string
           organizerId:
             type: string
           organizerName:
-            type: string
-          organizerUsername:
             type: string
           tickets:
             type: array
@@ -2846,15 +2857,9 @@ definitions:
             type: string
           eventName:
             type: string
-          eventLocation:
-            type: string
           eventPicture:
             type: string
           organizerId:
-            type: string
-          organizerName:
-            type: string
-          organizerUsername:
             type: string
 
   EePagedEventAutomation:

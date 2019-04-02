@@ -186,7 +186,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EsCart'
+            $ref: '#/definitions/EsCartChangeResponse'
       tags:
         - esCart
       operationId: updateCart
