@@ -2104,7 +2104,8 @@ definitions:
           - Nationally
           - Locally
       creditAmount:
-        type: integer
+        type: number
+        minimum: 0
       subjectCode:
         type: string
   
