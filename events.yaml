@@ -2092,11 +2092,20 @@ definitions:
           - v1
       isPace:
         type: boolean
-      paceId:
+      pace:
+        $ref: '#/definitions/EeEventPACE'
+  
+  EeEventPACE:
+    type: object
+    properties:
+      region:
         type: string
-      paceCreditAmount:
+        enum:
+          - Nationally
+          - Locally
+      creditAmount:
         type: integer
-      paceSubjectCode:
+      subjectCode:
         type: string
   
   EeGeocodeLocation:
