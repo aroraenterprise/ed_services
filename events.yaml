@@ -2048,6 +2048,13 @@ definitions:
           $ref: '#/definitions/EePicture'
       website:
         type: string
+      isPace:
+        type: boolean
+      paceRegion:
+        type: string
+        enum:
+          - Nationally
+          - Locally
       isOnline:
         type: boolean
       onlineOnly:
@@ -2090,12 +2097,8 @@ definitions:
         type: string
         enum:
           - v1
-      isPace:
-        type: boolean
-      pace:
-        $ref: '#/definitions/EeEventPACE'
   
-  EeEventPACE:
+  EePACECredit:
     type: object
     properties:
       region:
