@@ -1,14 +1,14 @@
 swagger: '2.0'
 info:
   description: Events service for eDropin
-  version: 1.0.10
+  version: 1.0.0
   title: eDropin Events
   license:
     name: UNLICENSED
   contact:
     name: Saj Arora
     email: dev@edropin.com
-host: events-dot-edropin-test.appspot.com
+host: events-dot-edropin-amalgam.appspot.com
 basePath: /
 tags:
   - name: eePermissions
@@ -33,6 +33,8 @@ tags:
     description: Manage surveys
   - name: eeMessages
     description: Manage, send and track event messages
+  - name: eePACE
+    description: AGD PACE endpoints for managing providers
 schemes:
   - https
 produces:
@@ -1432,12 +1434,6 @@ paths:
           description: Retrieve as paged survey
           schema:
             $ref: '#/definitions/EePagedSurvey'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   /surveys/{surveyId}/responses:
     get:
       tags:
@@ -1453,12 +1449,6 @@ paths:
           description: Paginated list of responses for a survey
           schema:
             $ref: '#/definitions/EePagedSurveyResponse'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   /surveys-responses/get-multi:
     get:
       tags:
@@ -1476,12 +1466,6 @@ paths:
           description: Retrieves the survey responses with the given responseIds
           schema:
             $ref: '#/definitions/EeSurveyResponse'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
   /survey-responses/{surveyId}:
     post:
@@ -1500,12 +1484,6 @@ paths:
           description: Survey responses with claim code
           schema:
             $ref: '#/definitions/EeSurveyResponse'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   /organizers/{organizerId}/survey-responses:
     get:
       parameters:
@@ -1537,12 +1515,6 @@ paths:
           description: Retrieves the survey response with the given surveyId for the current user
           schema:
             $ref: '#/definitions/EeSurveyResponse'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
   /events/{eventId}/messages:
     parameters:
@@ -1562,12 +1534,6 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     get:
       tags:
         - eeMessages
@@ -1581,12 +1547,6 @@ paths:
           description: Paged messages
           schema:
             $ref: '#/definitions/EePagedMessage'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
   /messages/{messageId}:
     parameters:
@@ -1601,12 +1561,6 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     get:
       tags:
         - eeMessages
@@ -1617,12 +1571,6 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
     put:
       tags:
         - eeMessages
@@ -1638,13 +1586,62 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
   
+  /pace-providers:
+    post:
+      tags:
+        - eePACE
+      summary: Create or update a pace provider
+      operationId: upsertPaceProvider
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EePACEProviderUpdate'
+      responses:
+        '200':
+          description: PACE Provider
+          schema:
+            $ref: '#/definitions/EePACEProvider'
+      
+    get:
+      tags:
+        - eePACE
+      summary: Paginate all PACE providers
+      operationId: listProviders
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of PACE Providers
+          schema:
+            $ref: '#/definitions/EePagedPACEProvider'
+  
+  /pace-providers/{profileId}:
+    parameters:
+      - $ref: '#/parameters/profileId'
+    delete:
+      tags:
+        - eePACE
+      summary: Delete a provider
+      operationId: deleteProvider
+      responses:
+        '200':
+          description: Delete a provider
+          schema:
+            $ref: '#/definitions/EeSuccess'
+    get:
+      tags:
+        - eePACE
+      summary: Retrieve a provider
+      operationId: retrieveProvider
+      responses:
+        '200':
+          description: Message
+          schema:
+            $ref: '#/definitions/EePACEProvider'
+    
 parameters:
   entityType:
     name: entityType
@@ -3117,7 +3114,6 @@ definitions:
           isScheduled:
             type: boolean
           
-          
   EeMessageAttendee:
     type: object
     properties:
@@ -3128,6 +3124,7 @@ definitions:
       email:
         type: string
   EePagedMessage:
+    type: object
     properties:
       pageData:
         $ref: '#/definitions/EeDSPagination'
@@ -3135,3 +3132,31 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeMessage'
+          
+  EePACEProviderUpdate:
+    type: object
+    properties:
+      providerName:
+        type: string
+      providerId:
+        type: string
+      startDate:
+        type: integer
+      endDate:
+        type: integer
+  
+  EePACEProvider:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EePACEProviderUpdate'
+  
+  EePagedPACEProvider:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EeDSPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EePACEProvider'
