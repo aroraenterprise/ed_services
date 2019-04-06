@@ -1588,22 +1588,6 @@ paths:
             $ref: '#/definitions/EeMessage'
   
   /pace-providers:
-    post:
-      tags:
-        - eePACE
-      summary: Create or update a pace provider
-      operationId: upsertPaceProvider
-      parameters:
-        - in: body
-          name: body
-          schema:
-            $ref: '#/definitions/EePACEProviderUpdate'
-      responses:
-        '200':
-          description: PACE Provider
-          schema:
-            $ref: '#/definitions/EePACEProvider'
-      
     get:
       tags:
         - eePACE
@@ -1621,6 +1605,21 @@ paths:
   /pace-providers/{profileId}:
     parameters:
       - $ref: '#/parameters/profileId'
+    post:
+      tags:
+        - eePACE
+      summary: Create or update a pace provider
+      operationId: upsertPaceProvider
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EePACEProviderUpdate'
+      responses:
+        '200':
+          description: PACE Provider
+          schema:
+            $ref: '#/definitions/EePACEProvider'
     delete:
       tags:
         - eePACE
