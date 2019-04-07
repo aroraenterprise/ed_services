@@ -1,6 +1,6 @@
 {
   "name": "services",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,13 +12,11 @@
     "build-store": "npm i --prefix=./ts/store && npm run build --prefix=./ts/store",
     "publish-store": "npm publish ./ts/store/dist --access public",
     "deploy-store": "npm run generate-store && npm run fix-store-ts && npm run build-store && npm run publish-store",
-    
     "generate-events": "java -jar ./swagger-codegen-cli-2.4.0.jar generate -i ./events.yaml -l typescript-angular -o ./ts/events --additional-properties ngVersion=6",
     "fix-events-ts": "node update-module-ts.js deploy-events",
     "build-events": "npm i --prefix=./ts/events && npm run build --prefix=./ts/events",
     "publish-events": "npm publish ./ts/events/dist --access public",
     "deploy-events": "npm run generate-events && npm run fix-events-ts && npm run build-events && npm run publish-events",
-
     "generate-accounts": "java -jar ./swagger-codegen-cli-2.4.0.jar generate -i ./accounts.yaml -l typescript-angular -o ./ts/accounts --additional-properties ngVersion=6",
     "fix-accounts-ts": "node update-module-ts.js deploy-accounts",
     "build-accounts": "npm i --prefix=./ts/accounts && npm run build --prefix=./ts/accounts",
