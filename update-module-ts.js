@@ -4,7 +4,7 @@ const fs = require('fs');
 const latestVersion = require('latest-version');
 const yargs = require('yargs');
 
-async function getLatestService(dirName, serviceName) {
+async function getLatestService(dirName, serviceName, majorVersion = 1, minorVersion = 1) {
   let npmModuleFile = fs.readFileSync('./clients/package-ts.json');
   let ngPackage = fs.readFileSync('./clients/ng-package.json');
   let packageJson = JSON.parse(npmModuleFile);
@@ -14,11 +14,10 @@ async function getLatestService(dirName, serviceName) {
   try {
     version = await latestVersion(serviceName);
     let versionParts = version.split('.');
-    version = `${versionParts[0]}.${versionParts[1]}.${parseInt(versionParts[2]) + 1}`;
+    version = `${majorVersion}.${minorVersion}.${versionParts[1] === minorVersion ? parseInt(versionParts[2]) + 1 : 0}`;
   } catch (err) {
     version = "1.0.0";
   }
-
   packageJson['version'] = version;
   fs.writeFileSync(`./ts/${dirName}/package.json`, JSON.stringify(packageJson, null, 4));
   fs.writeFileSync(`./ts/${dirName}/ng-package.json`, ngPackage);
@@ -29,19 +28,19 @@ yargs
     'deploy-store',
     'Deploy the store',
     {},
-    () => getLatestService('store', '@edropin/store-ts'),
+    () => getLatestService('store', '@edropin/store-ts', 1, 2),
   )
   .command(
     'deploy-events',
     'Deploy the events',
     {},
-    () => getLatestService('events', '@edropin/events-ts'),
+    () => getLatestService('events', '@edropin/events-ts', 1, 2),
   )
   .command(
     'deploy-accounts',
     'Deploy the accounts',
     {},
-    () => getLatestService('accounts', '@edropin/accounts-ts'),
+    () => getLatestService('accounts', '@edropin/accounts-ts', 1, 2),
   )
   .wrap(120)
   .help().argv;
