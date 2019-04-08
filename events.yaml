@@ -2077,6 +2077,10 @@ definitions:
         type: array
         items:
           type: string
+      reminders:
+        type: array
+        items:
+          $ref: '#/definitions/EeMessageInput'
       address:
         $ref: '#/definitions/EeAddress'
       marketLocations:
