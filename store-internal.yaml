@@ -14,30 +14,29 @@ schemes:
   - http
 paths:
   
-  '/order-items/{orderItemId}/status':
-    parameters:
-      - $ref: '#/parameters/orderItemId'
+  '/order-items/update-status':
     post:
       consumes:
         - application/json
       produces:
         - application/json
       parameters:
-        - description: Refund body
+        - description: Order Item Status Update
           in: body
           name: body
           required: true
           schema:
-            $ref: '#/definitions/EsOrderItem'
+            $ref: '#/definitions/EsOrderItemStatusUpdate'
       responses:
         '200':
-          description: Order Item
+          description: Updated order items
           schema:
-            $ref: '#/definitions/EsOrderItem'
+            type: array
+            items:
+              $ref: '#/definitions/EsOrderItem'
       tags:
         - esOrderItems
-      operationId: createRefundRequest
-      summary: Create a refund for an item
+      summary: Update status of order items. Useful for marking items as deleted if another service removes them.
   
 definitions:
   EsBaseId:
@@ -53,6 +52,16 @@ definitions:
       creatorId:
         type: string
     type: object
+  
+  EsOrderItemStatusUpdate:
+    type: object
+    properties:
+      deleteItems:
+        additionalProperties:
+          type: array
+          items:
+            type: string
+      
   
   EsInstallmentPlanInput:
     type: object
