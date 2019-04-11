@@ -1,5 +1,8 @@
+<a name="1.3.2"></a>
+# [1.3.1](https://github.com/aroraenterprise/ed_services/compare/1.3.2...1.3.1) (2019-04-11)
+
 ### Features
-* **store-internal.yaml**: new Store API for internal services usage.
+* **store-internal.yaml**: new Store API for internal services usage. Added update store item.
 
 <a name="1.3.1"></a>
 # [1.3.1](https://github.com/aroraenterprise/ed_services/compare/1.3.1...1.3.0) (2019-04-07)
