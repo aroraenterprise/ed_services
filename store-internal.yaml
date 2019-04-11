@@ -58,11 +58,14 @@ definitions:
     type: object
     properties:
       deleteItems:
+        type: object
         additionalProperties:
-          type: array
-          items:
-            type: string
-      
+          $ref: '#/definitions/EsDeleteItem'
+  
+  EsDeleteItem:
+    type: array
+    items:
+      type: string
   
   EsInstallmentPlanInput:
     type: object
