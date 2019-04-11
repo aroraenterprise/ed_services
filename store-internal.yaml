@@ -36,6 +36,7 @@ paths:
               $ref: '#/definitions/EsOrderItem'
       tags:
         - esOrderItems
+      operationId: updateOrderItemStatus
       summary: Update status of order items. Useful for marking items as deleted if another service removes them.
   
 definitions:
