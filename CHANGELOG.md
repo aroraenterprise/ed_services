@@ -3,6 +3,7 @@
 
 ### Features
 * **store-internal.yaml**: new Store API for internal services usage. Added update store item.
+* **all yaml**: Added isDeleted property to all output models
 
 <a name="1.3.1"></a>
 # [1.3.1](https://github.com/aroraenterprise/ed_services/compare/1.3.1...1.3.0) (2019-04-07)

@@ -1805,6 +1805,7 @@ definitions:
         readOnly: true
       isDeleted:
         type: boolean
+        default: false
   EePagination:
     type: object
     properties:

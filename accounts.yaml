@@ -894,6 +894,9 @@ definitions:
       version:
         type: string
         readOnly: true
+      isDeleted:
+        type: boolean
+        default: false
   EaPagination:
     type: object
     properties:
