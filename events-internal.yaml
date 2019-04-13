@@ -8,22 +8,24 @@ info:
     name: UNLICENSED
   title: eDropin Events Internal
   version: 1.0.0
-host: localhost:9004
-basePath: /internal
+host: localhost:9003
+basePath: /
 schemes:
   - http
 paths:
   '/events/update-ticket':
     post:
+      security:
+        - PubsubKey: []
       produces:
         - application/json
       parameters:
-        - description: Order Item Status Update
+        - description: Pubsub data
           in: body
           name: body
           required: true
           schema:
-            type: string
+            $ref: '#/definitions/EePubsubInput'
       responses:
         '200':
           description: Updated order items
@@ -42,12 +44,27 @@ definitions:
       success:
         type: boolean
     type: object
+    
+  EePubsubInput:
+    type: object
+    properties:
+      subscription:
+        type: string
+      data:
+        type: string
+      messageId:
+        type: string
   
 securityDefinitions:
   ServiceKey:
     in: header
     name: X-Service-Key
     description: Client Key
+    type: apiKey
+  PubsubKey:
+    in: query
+    name: apiKey
+    description: Pubsub Key
     type: apiKey
 security:
   - ServiceKey: []
