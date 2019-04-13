@@ -1,0 +1,57 @@
+swagger: '2.0'
+info:
+  contact:
+    email: dev@edropin.com
+    name: Saj Arora
+  description: Events Internal service for eDropin
+  license:
+    name: UNLICENSED
+  title: eDropin Events Internal
+  version: 1.0.0
+host: localhost:9004
+basePath: /internal
+schemes:
+  - http
+paths:
+  '/events/update-ticket':
+    post:
+      produces:
+        - application/json
+      parameters:
+        - description: Order Item Status Update
+          in: body
+          name: body
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated order items
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeEvents
+      operationId: updateEventTicket
+      summary: Update event ticket, subscription for store item add, update and delete
+  
+definitions:
+  EeSuccess:
+    properties:
+      message:
+        type: object
+      success:
+        type: boolean
+    type: object
+  
+securityDefinitions:
+  ServiceKey:
+    in: header
+    name: X-Service-Key
+    description: Client Key
+    type: apiKey
+security:
+  - ServiceKey: []
+tags:
+  - description: Manage Event subscriptions
+    name: eeEvents
+
