@@ -13,6 +13,8 @@ basePath: /
 schemes:
   - http
 paths:
+
+  ### CRON JOBS
   '/cron/delete':
     get:
       security: 
@@ -43,8 +45,9 @@ paths:
         - eeCron
       operationId: queueNewMessages
       summary: Queue deferred event messages that are within the window of task execution max delay
-      
-  '/events/update-ticket':
+  
+  ### PUBSUB
+  '/pubsub/update-event-ticket':
     post:
       security:
         - PubsubKey: []
@@ -59,13 +62,59 @@ paths:
             $ref: '#/definitions/EePubsubInput'
       responses:
         '200':
-          description: Updated order items
+          description: Pubsub result
           schema:
             $ref: '#/definitions/EeSuccess'
       tags:
         - eePubsub
       operationId: updateEventTicket
       summary: Update event ticket, subscription for store item add, update and delete
+  
+  '/pubsub/process-ticket-sale':
+    post:
+      security:
+        - PubsubKey: []
+      produces:
+        - application/json
+      parameters:
+        - description: Pubsub data
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EePubsubInput'
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eePubsub
+      operationId: processTicketSale
+      summary: process ticket sale data to create attendees
+  
+  '/pubsub/process-dropin-complete':
+    post:
+      security:
+        - PubsubKey: []
+      produces:
+        - application/json
+      parameters:
+        - description: Pubsub data
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EePubsubInput'
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eePubsub
+      operationId: processDropinComplete
+      summary: process automations linked to this dropin completion
   
 definitions:
   EeSuccess:
