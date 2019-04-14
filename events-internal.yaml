@@ -13,6 +13,37 @@ basePath: /
 schemes:
   - http
 paths:
+  '/cron/delete':
+    get:
+      security: 
+        - CronKey: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Cron Job Run Result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeCron
+      operationId: executeDeletionCron
+      summary: Delete all event resources marked with isDeleted flag and take all necessary actions to clean up related resources
+  '/cron/event-messages':
+    get:
+      security: 
+        - CronKey: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Cron Job Run Result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeCron
+      operationId: queueNewMessages
+      summary: Queue deferred event messages that are within the window of task execution max delay
+      
   '/events/update-ticket':
     post:
       security:
@@ -32,7 +63,7 @@ paths:
           schema:
             $ref: '#/definitions/EeSuccess'
       tags:
-        - eeEvents
+        - eePubsub
       operationId: updateEventTicket
       summary: Update event ticket, subscription for store item add, update and delete
   
@@ -66,9 +97,16 @@ securityDefinitions:
     name: apiKey
     description: Pubsub Key
     type: apiKey
+  CronKey:
+    in: query
+    name: apiKey
+    description: Cron Key
+    type: apiKey
 security:
   - ServiceKey: []
 tags:
-  - description: Manage Event subscriptions
-    name: eeEvents
+  - description: Handle all subscription callbacks
+    name: eePubsub
+  - description: Handle all cron jobs
+    name: eeCron
 
