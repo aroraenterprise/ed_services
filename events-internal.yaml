@@ -120,7 +120,7 @@ paths:
   '/tasks/process-message':
     post:
       security:
-        - PubsubKey: []
+        - TaskKey: []
       produces:
         - application/json
       parameters:
@@ -139,6 +139,35 @@ paths:
         - eeTasks
       operationId: processMessage
       summary: Process a message
+  
+  ### OPS
+  '/ops/migration/{buildId}':
+    post:
+      security:
+        - AdminKey: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          required: true
+          type: string
+          name: buildId
+          description: Build ID - Used for selecting the right case for migration
+        - description: Op data
+          in: body
+          name: body
+          required: false
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeOps
+      operationId: migrate
+      summary: Migration endpoint
   
 definitions:
   EeSuccess:
@@ -160,10 +189,10 @@ definitions:
         type: string
   
 securityDefinitions:
-  ServiceKey:
+  TaskKey:
     in: header
-    name: X-Service-Key
-    description: Client Key
+    name: apiKey
+    description: Task Key
     type: apiKey
   PubsubKey:
     in: query
@@ -175,8 +204,11 @@ securityDefinitions:
     name: apiKey
     description: Cron Key
     type: apiKey
-security:
-  - ServiceKey: []
+  AdminKey:
+    in: header
+    name: X-Admin-Key
+    description: Admin Key
+    type: apiKey
 tags:
   - description: Handle all subscription callbacks
     name: eePubsub
@@ -184,4 +216,6 @@ tags:
     name: eeCron
   - description: Handle all task callbacks
     name: eeTasks
+  - description: Handle all ops (system admin only)
+    name: eeOps
 
