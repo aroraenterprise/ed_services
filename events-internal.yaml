@@ -30,7 +30,7 @@ paths:
         - eeCron
       operationId: executeDeletionCron
       summary: Delete all event resources marked with isDeleted flag and take all necessary actions to clean up related resources
-  '/cron/event-messages':
+  '/cron/queue-messages':
     get:
       security: 
         - CronKey: []
@@ -43,7 +43,7 @@ paths:
             $ref: '#/definitions/EeSuccess'
       tags:
         - eeCron
-      operationId: queueNewMessages
+      operationId: queueMessages
       summary: Queue deferred event messages that are within the window of task execution max delay
   
   ### PUBSUB
@@ -115,6 +115,30 @@ paths:
         - eePubsub
       operationId: processDropinComplete
       summary: process automations linked to this dropin completion
+      
+  ### TASKS
+  '/tasks/process-message':
+    post:
+      security:
+        - PubsubKey: []
+      produces:
+        - application/json
+      parameters:
+        - description: Message data
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EePubsubInput'
+      responses:
+        '200':
+          description: Task result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeTasks
+      operationId: processMessage
+      summary: Process a message
   
 definitions:
   EeSuccess:
@@ -158,4 +182,6 @@ tags:
     name: eePubsub
   - description: Handle all cron jobs
     name: eeCron
+  - description: Handle all task callbacks
+    name: eeTasks
 
