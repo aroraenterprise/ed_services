@@ -2191,6 +2191,10 @@ definitions:
               $ref: '#/definitions/EeEventProfile'
           isFree:
             type: boolean
+            default: false
+          isSoldOut:
+            type: boolean
+            default: false
           pictureThumbs:
             $ref: '#/definitions/EePictureThumb'
           availableCurrencies:
@@ -2341,6 +2345,12 @@ definitions:
         type: string
       surveyId:
         type: string
+      isDeactivated:
+        type: boolean
+        default: false
+      isSoldOut:
+        type: boolean
+        default: false
 
   EeEventAttendeeUpdate:
     type: object
