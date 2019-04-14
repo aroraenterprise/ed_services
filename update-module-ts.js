@@ -14,7 +14,7 @@ async function getLatestService(dirName, serviceName, majorVersion = 1, minorVer
   try {
     version = await latestVersion(serviceName);
     let versionParts = version.split('.');
-    version = `${majorVersion}.${minorVersion}.${versionParts[1] === minorVersion ? parseInt(versionParts[2]) + 1 : 0}`;
+    version = `${majorVersion}.${minorVersion}.${parseInt(versionParts[1]) === minorVersion ? (parseInt(versionParts[2]) + 1) : 0}`;
   } catch (err) {
     version = "1.0.0";
   }
