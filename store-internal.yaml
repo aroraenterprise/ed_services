@@ -3,379 +3,150 @@ info:
   contact:
     email: dev@edropin.com
     name: Saj Arora
-  description: Store service for eDropin
+  description: Store Internal service for eDropin
   license:
     name: UNLICENSED
   title: eDropin Store Internal
-  version: 1.0.11
+  version: 1.0.0
 host: localhost:9004
 basePath: /
 schemes:
   - http
 paths:
-  
-  '/order-items/update-status':
-    post:
-      consumes:
+
+  ### CRON JOBS
+  '/cron/delete':
+    get:
+      security: 
+        - CronKey: []
+      produces:
         - application/json
+      responses:
+        '200':
+          description: Cron Job Run Result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esCron
+      operationId: executeDeletionCron
+      summary: Delete all store resources marked with isDeleted flag and take all necessary actions to clean up related resources
+  '/cron/update-exchange-rate':
+    get:
+      security: 
+        - CronKey: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Cron Job Run Result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esCron
+      operationId: updateExchangeRate
+      summary: Update the store exchange rate
+  
+  
+  ### PUBSUB
+  '/pubsub/order-item-status':
+    post:
+      security:
+        - PubsubKey: []
       produces:
         - application/json
       parameters:
-        - description: Order Item Status Update
+        - description: Pubsub data
           in: body
           name: body
           required: true
           schema:
-            $ref: '#/definitions/EsOrderItemStatusUpdate'
+            $ref: '#/definitions/EsPubsubInput'
       responses:
         '200':
-          description: Updated order items
+          description: Pubsub result
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/EsOrderItem'
+            $ref: '#/definitions/EsSuccess'
       tags:
-        - esOrderItems
+        - esPubsub
       operationId: updateOrderItemStatus
-      summary: Update status of order items. Useful for marking items as deleted if another service removes them.
+      summary: Update an order item status
+  
+  ### TASKS
+  '/tasks/checkout-order':
+    post:
+      security:
+        - TaskKey: []
+      produces:
+        - application/json
+      parameters:
+        - description: Order data
+          in: body
+          name: body
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Task result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esTasks
+      operationId: processMessage
+      summary: Process a message
+  
+  '/webhooks/stripe-subscription':
+    post:
+      security: []
+      produces:
+        - application/json
+      parameters:
+        - description: Order data
+          in: body
+          name: body
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Task result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esWebhooks
+      operationId: processSubscription
+      summary: Process a message
+  
+  ### OPS
+  '/ops/migration/{buildId}':
+    post:
+      security:
+        - AdminKey: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          required: true
+          type: string
+          name: buildId
+          description: Build ID - Used for selecting the right case for migration
+        - description: Op data
+          in: body
+          name: body
+          required: false
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esOps
+      operationId: migrate
+      summary: Migration endpoint
   
 definitions:
-  EsBaseId:
-    properties:
-      createdOn:
-        readOnly: true
-        type: string
-      id:
-        type: string
-      modifiedOn:
-        readOnly: true
-        type: string
-      creatorId:
-        type: string
-    type: object
-  
-  EsOrderItemStatusUpdate:
-    type: object
-    properties:
-      deleteItems:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/EsDeleteItem'
-  
-  EsDeleteItem:
-    type: array
-    items:
-      type: string
-  
-  EsInstallmentPlanInput:
-    type: object
-    properties:
-      interval:
-        type: string
-        enum:
-          - week
-          - month
-          - year
-      intervalCount:
-        type: integer
-        minimum: 1
-        default: 1
-      billingCycleAnchorTimestamp:
-        type: integer
-        minimum: 0
-      payByTimestamp:
-        type: integer
-        minimum: 0
-  EsInstallmentPlan:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsInstallmentPlanInput'
-      - properties:
-          isInstallment:
-            type: boolean
-          amount:
-            type: integer
-            minimum: 0
-          totalNumberOfPayments:
-            type: integer
-            minimum: 0
-          deposit:
-            type: integer
-            minimum: 0
-  
-  EsOrderItem:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsBaseId'
-      - properties:
-          ownerId:
-            type: string
-          merchantId:
-            type: string
-          merchantName:
-            type: string
-          merchantUsername:
-            type: string
-          itemType:
-            type: string
-          category:
-            type: string
-          categoryId:
-            type: string
-          storeItemId:
-            type: string
-          name:
-            type: string
-          shortName:
-            type: string
-          picture:
-            type: string
-          info:
-            type: string
-          link:
-            type: string
-          isRefundable:
-            type: boolean
-          refundAvailableUntil:
-            type: integer
-          refundPolicy:
-            type: string
-          requireCC:
-            type: boolean
-            default: true
-          isCheckedOut:
-            type: boolean
-            default: false
-          checkedOutWhen:
-            type: integer
-          isFailed:
-            type: boolean
-          failure:
-            type: string
-          appliedPromotions:
-            type: array
-            items:
-              $ref: '#/definitions/EsOrderItemPromotion'
-          itemQuantity:
-            type: integer
-            minimum: 0
-            default: 0
-          itemQuantityAvailable:
-            type: integer
-            minimum: 0
-            default: 0
-          items:
-            items:
-              $ref: '#/definitions/EsOrderItemStatus'
-            type: array
-          retailPrice:
-            type: integer
-            minimum: 0
-            default: 0
-          salePrice:
-            type: integer
-            minimum: 0
-            default: 0
-          subtotal:
-            default: 0
-            minimum: 0
-            type: integer
-          dueUpfront:
-            default: 0
-            minimum: 0
-            type: integer
-          platformFee:
-            default: 0
-            minimum: 0
-            type: integer
-          payInInstallments:
-            type: boolean
-          installmentPlan:
-            $ref: '#/definitions/EsInstallmentPlan'
-          totalPaymentsMade:
-            minimum: 0
-            type: integer
-          totalNumberOfPayments:
-            minimum: 0
-            type: integer
-          paid:
-            type: boolean
-            default: false
-          orderId:
-            type: string
-          user:
-            $ref: '#/definitions/EsOrderUser'
-          surveys:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsCheckoutSurvey'
-          storeCurrency:
-            type: string
-          presentmentCurrency:
-            type: string
-          exchangeRate:
-            type: number
-            default: 1.0
-          exchangeId:
-            type: string
-          customerId:
-            type: string
-          transactionIds:
-            type: array
-            items:
-              type: string
-          subscriptionId:
-            type: string
-          chargeTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          chargedInPresentmentCurrency:
-            default: 0
-            minimum: 0
-            type: integer
-          refundTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          refundInPresentmentCurrency:
-            default: 0
-            minimum: 0
-            type: integer
-          platformFeeTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          paymentProcessorFeeTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          feeTotal:
-            default: 0
-            minimum: 0
-            type: integer
-          isRefundPending:
-            type: boolean
-          pendingRefundId:
-            type: string
-          refunds:
-            type: array
-            items:
-              $ref: '#/definitions/EsRefund'
-          exchangeRates:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EsExchangeRate'
-          claimCode:
-            type: string
-  EsRefundRequest:
-    properties:
-      message:
-        type: string
-      quantity:
-        type: integer
-    required:
-      - quantity
-      - reason
-    type: object
-  
-  EsRefund:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsRefundRequest'
-      - properties:
-          requestedWhen:
-            type: integer
-          processedWhen:
-            type: integer
-          isProcessed:
-            type: boolean
-          processedById:
-            type: string
-          quantity:
-            type: integer
-          message:
-            type: integer
-          merchantNotes:
-            type: string
-          amountRefunded:
-            type: integer
-            
-  EsOrderItemPromotion:
-    type: object
-    properties:
-      discountType: 
-        type: string
-      memberId:
-        type: string
-      membershipId:
-        type: string
-      membershipName:
-        type: string
-      referralCode:
-        type: string
-      appliedWhen:
-        type: integer
-      discountByAmount:
-        type: integer
-        minimum: 0
-      discountByPercentage:
-        type: number
-        minimum: 0
-        maximum: 0
-
-  EsOrderItemStatus:
-    properties:
-      id:
-        type: string
-      surveyResponses:
-        type: object
-        additionalProperties:
-          type: string
-    type: object
-
-  EsOrderUser:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      phone:
-        type: string
-    type: object
-    
-  EsDSPagination:
-    type: object
-    properties:
-      pageSize:
-        type: integer
-        format: int32
-      nextCursor:
-        type: string
-  
-  EsExchangeRate:
-    type: number
-    format: float
-  
-  EsCheckoutSurveyInput:
-    type: object
-    properties:
-      service:
-        type: string
-      surveyId:
-        type: string
-  
-  EsCheckoutSurvey:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EsCheckoutSurveyInput'
-      - properties:
-          completedWhen:
-            type: integer
-            minimum: 0
-          isCompleted:
-            type: boolean
-  
   EsSuccess:
     properties:
       message:
@@ -383,25 +154,47 @@ definitions:
       success:
         type: boolean
     type: object
+    
+  EsPubsubInput:
+    type: object
+    properties:
+      subscription:
+        type: string
+      data:
+        type: string
+      messageId:
+        type: string
   
 securityDefinitions:
-  ServiceKey:
+  TaskKey:
     in: header
-    name: X-Service-Key
-    description: Client Key
+    name: apiKey
+    description: Task Key
     type: apiKey
-security:
-  - ServiceKey: []
+  PubsubKey:
+    in: query
+    name: apiKey
+    description: Pubsub Key
+    type: apiKey
+  CronKey:
+    in: query
+    name: apiKey
+    description: Cron Key
+    type: apiKey
+  AdminKey:
+    in: header
+    name: X-Admin-Key
+    description: Admin Key
+    type: apiKey
 tags:
-  - description: Manage Order items
-    name: esOrderItems
-
-parameters:
-  
-  orderItemId:
-    description: Order Item Id
-    in: path
-    name: orderItemId
-    required: true
-    type: string
+  - description: Handle all subscription callbacks
+    name: esPubsub
+  - description: Handle all cron jobs
+    name: esCron
+  - description: Handle all task callbacks
+    name: esTasks
+  - description: Handle all webhook callbacks
+    name: esWebhooks
+  - description: Handle all ops (system admin only)
+    name: esOps
 
