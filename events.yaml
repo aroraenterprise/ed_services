@@ -78,10 +78,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EePermissionAccept'
-        '404':
-          description: Permission invite not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
           
   '/permissions/{entityType}/{entityId}/send-invite':
     parameters:
@@ -104,8 +104,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EePagedPermissionInvite'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/permissions/{entityType}/{entityId}/accounts':
     parameters:
@@ -124,12 +126,10 @@ paths:
           description: Permissions for account
           schema:
             $ref: '#/definitions/EePagedPermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/permissions/{entityType}/{entityId}/accounts/{accountId}':
     parameters:
@@ -151,10 +151,10 @@ paths:
           description: Account has Permission
           schema:
             $ref: '#/definitions/EePermissionCheck'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eePermissions
@@ -171,10 +171,10 @@ paths:
           description: Set Account Permission
           schema:
             $ref: '#/definitions/EePermission'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eePermissions
@@ -185,12 +185,10 @@ paths:
           description: Permissions for account
           schema:
             $ref: '#/definitions/EeSuccess'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   ### PERMISSION END  
   
   ### EVENTS
@@ -212,12 +210,10 @@ paths:
           description: Events
           schema:
             $ref: '#/definitions/EePagedEvent'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     post:
       tags:
         - eeEvents
@@ -235,14 +231,10 @@ paths:
           description: Event created
           schema:
             $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/events/get-multi':
     get:
       tags:
@@ -262,12 +254,10 @@ paths:
             type: array
             items:
               $ref: '#/definitions/EeEvent'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/events/{eventId}':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -281,12 +271,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeEvents
@@ -304,16 +292,10 @@ paths:
           description: Event updated
           schema:
             $ref: '#/definitions/EeEvent'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEvents
@@ -322,14 +304,10 @@ paths:
       responses:
         '204':
           description: Event deleted
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/events/categories':
     get:
@@ -346,10 +324,10 @@ paths:
           description: Categories
           schema:
             $ref: '#/definitions/EeFacetSearch'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/events/search':
     get:
       tags:
@@ -368,12 +346,10 @@ paths:
           description: Events
           schema:
             $ref: '#/definitions/EePagedEvent'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   ### EVENTS END
   
   ### EVENT TAGS
@@ -393,14 +369,10 @@ paths:
           description: Event Profiles
           schema:
             $ref: '#/definitions/EePagedEventTag'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/events/{eventId}/tags-search':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -418,10 +390,10 @@ paths:
           description: Event Profiles
           schema:
             $ref: '#/definitions/EePagedEventTag'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/events/{eventId}/tags/{profileId}':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -443,14 +415,10 @@ paths:
           description: Event Profile
           schema:
             $ref: '#/definitions/EeEventTag'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/event-tags/{tagId}':
     parameters:
       - $ref: '#/parameters/tagId'
@@ -464,14 +432,10 @@ paths:
           description: Removed profile
           schema:
             $ref: '#/definitions/EeSuccess'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/events/eventTagStatusUpdate':
     post:
       tags:
@@ -495,10 +459,10 @@ paths:
           description: OK
           schema:
             type: string
-        '400':
-          description: Invalid ID supplied
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   ### END OF EVENT TAGS
   
@@ -522,12 +486,10 @@ paths:
           description: Event Ticket added
           schema:
             $ref: '#/definitions/EeEvent'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEvents
@@ -536,14 +498,10 @@ paths:
       responses:
         '204':
           description: Ticket removed
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Ticket not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   ### END OF EVENT TICKETS
   
   ### EVENT DROPINS
@@ -565,12 +523,10 @@ paths:
           description: Attendees for the event
           schema:
             $ref: '#/definitions/EePagedEventDropin'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     post:
       tags:
         - eeEventDropins
@@ -588,10 +544,10 @@ paths:
           description: Dropin added
           schema:
             $ref: '#/definitions/EeEventDropin'
-        '400':
-          description: Invalid request
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/dropins/{dropinId}':
     parameters:
       - $ref: '#/parameters/dropinId'
@@ -605,10 +561,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeEventDropin'
-        '404':
-          description: Dropin not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeEventDropins
@@ -626,10 +582,10 @@ paths:
           description: Event Dropin updated
           schema:
             $ref: '#/definitions/EeEventDropin'
-        '404':
-          description: Dropin not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEventDropins
@@ -640,10 +596,10 @@ paths:
           description: Dropin deleted
           schema:
             $ref: '#/definitions/EeEventDropin'
-        '404':
-          description: Dropin not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/dropins/{dropinId}/attendees':
     parameters:
       - $ref: '#/parameters/dropinId'
@@ -662,10 +618,10 @@ paths:
           description: Dropin assigned
           schema:
             $ref: '#/definitions/EeEventAttendeeDropin'
-        '404':
-          description: Dropin not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEventDropins
@@ -676,8 +632,10 @@ paths:
           description: Dropin removed
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Dropin not found
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/events/{eventId}/attendees':
     parameters:
@@ -697,12 +655,10 @@ paths:
           description: Attendees for the event
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     post:
       tags:
         - eeEventAttendees
@@ -725,14 +681,10 @@ paths:
           description: Attendee added
           schema:
             $ref: '#/definitions/EeEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '405':
-          $ref: '#/responses/InvalidInputResponse'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/events/{eventId}/attendees/export':
     parameters:
@@ -749,12 +701,10 @@ paths:
           description: Export attendees for the event as a csv
           schema:
             $ref: '#/definitions/EeCsv'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/attendees':
     get:
@@ -772,12 +722,10 @@ paths:
           description: Get attendees for user
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/attendees/{attendeeId}':
     parameters:
@@ -792,12 +740,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeEventAttendees
@@ -815,12 +761,10 @@ paths:
           description: Attendee updated
           schema:
             $ref: '#/definitions/EeEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEventAttendees
@@ -831,14 +775,10 @@ paths:
           description: Event Attendee deleted
           schema:
             $ref: '#/definitions/EeEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '404':
-          description: Event Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/attendees/{attendeeId}/link':
     post:
       tags:
@@ -858,10 +798,10 @@ paths:
           description: Claim sent
           schema:
             $ref: '#/definitions/EeSuccess'
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/attendees/transfer':
     post:
       tags:
@@ -880,10 +820,10 @@ paths:
           description: Attendees transfered
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/attendees/code':
     parameters:
@@ -901,12 +841,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
           
   '/events/{eventId}/certificates':
     parameters:
@@ -926,8 +864,10 @@ paths:
           description: Certificates for the event
           schema:
             $ref: '#/definitions/EePagedEventCertificate'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     post:
       tags:
         - eeEventCertificates
@@ -945,10 +885,10 @@ paths:
           description: Certificate added
           schema:
             $ref: '#/definitions/EeEventCertificate'
-        '400':
-          description: Invalid request
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/certificates/{certificateId}':
     parameters:
       - $ref: '#/parameters/certificateId'
@@ -962,10 +902,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeEventCertificate'
-        '404':
-          description: Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeEventCertificates
@@ -983,24 +923,24 @@ paths:
           description: Event Certificate updated
           schema:
             $ref: '#/definitions/EeEventCertificate'
-        '404':
-          description: Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEventCertificates
       summary: Delete an existing certificate
       operationId: deleteCertificate
       responses:
-        '204':
+        '200':
           description: Certificate deleted
           schema:
             $ref: '#/definitions/EeEventCertificate'
-        '404':
-          description: Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
           
   '/certificates/{certificateId}/attendees':
     parameters:
@@ -1020,22 +960,24 @@ paths:
           description: Certificate assigned
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEventCertificates
       summary: Delete certificate from attendees
       operationId: deleteAttendeeCertificate
       responses:
-        '204':
+        '200':
           description: Certificate removed
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
-        '404':
-          description: Certificate not found
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/certificates/download/{certificateCode}':
     parameters:
       - $ref: '#/parameters/certificateCode'
@@ -1049,12 +991,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeAttendeeCertificate'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee/Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
           
   '/certificates/inspectTemplate':
     get:
@@ -1072,12 +1012,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeCertificateInspect'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Attendee/Certificate not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
           
   /kiosks:
     get:
@@ -1095,12 +1033,10 @@ paths:
           description: Paged list of kiosks
           schema:
             $ref: '#/definitions/EePagedKiosk'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     post:
       tags:
         - eeKiosk
@@ -1111,8 +1047,10 @@ paths:
           description: Kiosk activated
           schema:
             $ref: '#/definitions/EeKiosk'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeKiosk
@@ -1123,8 +1061,10 @@ paths:
           description: Kiosk deactivated
           schema:
             $ref: '#/definitions/EeKiosk'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/kiosks/{kioskId}':
     parameters:
       - $ref: '#/parameters/kioskId'
@@ -1138,10 +1078,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeKiosk'
-        '404':
-          description: Kiosk not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeKiosk
@@ -1159,10 +1099,10 @@ paths:
           description: Kiosk linked
           schema:
             $ref: '#/definitions/EeKiosk'
-        '404':
-          description: Kiosk not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/kiosks/{kioskId}/unlink':
     parameters:
@@ -1177,10 +1117,10 @@ paths:
           description: Unlink a kiosk
           schema:
             $ref: '#/definitions/EeKiosk'
-        '404':
-          description: Kiosk not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
           
   '/events/{eventId}/automations':
     parameters:
@@ -1198,8 +1138,10 @@ paths:
           description: Automations for the event
           schema:
             $ref: '#/definitions/EePagedEventAutomation'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     post:
       tags:
         - eeEventAutomations
@@ -1217,10 +1159,10 @@ paths:
           description: Automation added
           schema:
             $ref: '#/definitions/EeEventAutomation'
-        '400':
-          description: Invalid request
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/automations/{automationId}':
     parameters:
       - $ref: '#/parameters/automationId'
@@ -1234,10 +1176,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/EeEventAutomation'
-        '404':
-          description: Automation not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeEventAutomations
@@ -1255,10 +1197,10 @@ paths:
           description: Event Automation updated
           schema:
             $ref: '#/definitions/EeEventAutomation'
-        '404':
-          description: Automation not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eeEventAutomations
@@ -1269,10 +1211,10 @@ paths:
           description: Automation deleted
           schema:
             $ref: '#/definitions/EeSuccess'
-        '404':
-          description: Automation not found
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/automations/{triggerType}/trigger':
     post:
@@ -1301,10 +1243,10 @@ paths:
           description: OK
           schema:
             type: string
-        '400':
-          description: Invalid type/id supplied
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   '/qr-code/{data}':
     parameters:
@@ -1334,6 +1276,10 @@ paths:
           description: OK
           schema:
             type: file
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   /organizers/{organizerId}/surveys:
     get:
@@ -1365,12 +1311,34 @@ paths:
           description: Paged list of Surveys
           schema:
             $ref: '#/definitions/EePagedSurvey'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  /events/{eventId}/surveys:
+    parameters:
+      - $ref: '#/parameters/eventId'
+    post:
+      tags:
+        - eeSurveys
+      operationId: createSurvey
+      parameters:
+        - in: body
+          name: body
+          description: Survey questions
+          required: true
+          schema:
+            $ref: '#/definitions/EeSurvey'
+      responses:
+        '200':
+          description: Creates a survey
+          schema:
+            $ref: '#/definitions/EeSurvey'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+          
   /surveys/{surveyId}:
     parameters:
       - $ref: '#/parameters/surveyId'
@@ -1384,12 +1352,43 @@ paths:
           description: Retrieves the survey with the given surveyID
           schema:
             $ref: '#/definitions/EeSurvey'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    put:
+      tags:
+        - eeSurveys
+      operationId: updateSurvey
+      parameters:
+        - in: body
+          name: body
+          description: Survey questions
+          required: true
+          schema:
+            $ref: '#/definitions/EeSurvey'
+      responses:
+        '200':
+          description: Creates a survey
+          schema:
+            $ref: '#/definitions/EeSurvey'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    delete:
+      tags:
+        - eeSurveys
+      operationId: deleteSurvey
+      responses:
+        '200':
+          description: Survey
+          schema:
+            $ref: '#/definitions/EeSurvey'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   /surveys-aggregate/get-multi:
     parameters:
       - in: query
@@ -1407,12 +1406,10 @@ paths:
           description: Retrieves the survey with the given surveyID
           schema:
             $ref: '#/definitions/EePagedSurveyAggregate'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-        '500':
-          $ref: '#/responses/Default500ErrorResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   /surveys/get-multi:
     get:
       parameters:
@@ -1430,6 +1427,10 @@ paths:
           description: Retrieve as paged survey
           schema:
             $ref: '#/definitions/EePagedSurvey'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   /surveys/{surveyId}/responses:
     get:
       tags:
@@ -1445,6 +1446,10 @@ paths:
           description: Paginated list of responses for a survey
           schema:
             $ref: '#/definitions/EePagedSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   /surveys-responses/get-multi:
     get:
       tags:
@@ -1462,6 +1467,10 @@ paths:
           description: Retrieves the survey responses with the given responseIds
           schema:
             $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   /survey-responses/{surveyId}:
     post:
@@ -1480,6 +1489,10 @@ paths:
           description: Survey responses with claim code
           schema:
             $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   /organizers/{organizerId}/survey-responses:
     get:
       parameters:
@@ -1511,6 +1524,10 @@ paths:
           description: Retrieves the survey response with the given surveyId for the current user
           schema:
             $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   /events/{eventId}/messages:
     parameters:
@@ -1530,6 +1547,10 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     get:
       tags:
         - eeMessages
@@ -1543,6 +1564,10 @@ paths:
           description: Paged messages
           schema:
             $ref: '#/definitions/EePagedMessage'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   /messages/{messageId}:
     parameters:
@@ -1557,6 +1582,10 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     get:
       tags:
         - eeMessages
@@ -1567,6 +1596,10 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     put:
       tags:
         - eeMessages
@@ -1582,6 +1615,10 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EeMessage'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   /pace-providers:
     get:
@@ -1597,6 +1634,10 @@ paths:
           description: Paged list of PACE Providers
           schema:
             $ref: '#/definitions/EePagedPACEProvider'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   
   /pace-providers/{profileId}:
     parameters:
@@ -1616,6 +1657,10 @@ paths:
           description: PACE Provider
           schema:
             $ref: '#/definitions/EePACEProvider'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     delete:
       tags:
         - eePACE
@@ -1626,6 +1671,10 @@ paths:
           description: Delete a provider
           schema:
             $ref: '#/definitions/EeSuccess'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     get:
       tags:
         - eePACE
@@ -1636,6 +1685,10 @@ paths:
           description: Message
           schema:
             $ref: '#/definitions/EePACEProvider'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
     
 parameters:
   entityType:
@@ -1776,18 +1829,7 @@ parameters:
     description: Ticket Id
     type: string
     required: true
-responses:
-  Default500ErrorResponse:
-    description: An unexpected error occured.
-    schema:
-      $ref: '#/definitions/EeDefaultError'
-  InvalidInputResponse:
-    description: Validation exception
-  UnauthorizedError:
-    description: API key is missing or invalid
-    headers:
-      WWW_Authenticate:
-        type: string
+
 definitions:
   EeBaseId:
     type: object

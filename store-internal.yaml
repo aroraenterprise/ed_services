@@ -167,7 +167,7 @@ definitions:
   
 securityDefinitions:
   TaskKey:
-    in: header
+    in: query
     name: apiKey
     description: Task Key
     type: apiKey

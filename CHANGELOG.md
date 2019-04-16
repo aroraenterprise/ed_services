@@ -1,3 +1,6 @@
+### Features
+* **events.yaml**: added create survey and delete survey endpoints
+
 <a name="1.3.3"></a>
 # [1.3.3](https://github.com/aroraenterprise/ed_services/compare/1.3.3...1.3.2) (2019-04-16)
 
