@@ -2102,6 +2102,15 @@ definitions:
         type: object
         additionalProperties:
           type: string
+      isDeleted:
+        type: boolean
+        default: false
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
     type: object
 
   EsOrderUser:
@@ -2390,6 +2399,9 @@ definitions:
             type: object
             additionalProperties:
               $ref: '#/definitions/EsExchangeRate'
+          isDeactivated:
+            type: boolean
+            default: false
     type: object
   
   EsExchangeRate:
