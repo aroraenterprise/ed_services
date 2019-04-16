@@ -1,5 +1,13 @@
+<a name="1.3.3"></a>
+# [1.3.3](https://github.com/aroraenterprise/ed_services/compare/1.3.3...1.3.2) (2019-04-16)
+
+### Features
+* **store.yaml**: updated attributes for storeitem and orderitem for deletion and deactivation.
+* **store-internal.yaml**: Updated store-internal to follow events internal design
+* **events-internal.yaml**: Internal events yaml added to handle all cron, tasks, pubsub and admin endpoints.
+
 <a name="1.3.2"></a>
-# [1.3.1](https://github.com/aroraenterprise/ed_services/compare/1.3.2...1.3.1) (2019-04-11)
+# [1.3.2](https://github.com/aroraenterprise/ed_services/compare/1.3.2...1.3.1) (2019-04-11)
 
 ### Features
 * **store-internal.yaml**: new Store API for internal services usage. Added update store item.
