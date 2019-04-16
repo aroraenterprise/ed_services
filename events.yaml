@@ -1281,40 +1281,7 @@ paths:
           schema:
             $ref: '#/definitions/EeDefaultError'
   
-  /organizers/{organizerId}/surveys:
-    get:
-      tags:
-        - eeSurveys
-      summary: List all user's surveys
-      operationId: listSurveys
-      parameters:
-        - in: path
-          name: organizerId
-          type: string
-          required: true
-        - in: query
-          name: category
-          type: string
-        - in: query
-          name: categoryId
-          type: string
-        - in: query
-          name: item
-          type: string
-        - in: query
-          name: itemType
-          type: string
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Paged list of Surveys
-          schema:
-            $ref: '#/definitions/EePagedSurvey'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
+  ### Surveys
   /events/{eventId}/surveys:
     parameters:
       - $ref: '#/parameters/eventId'
@@ -1322,6 +1289,7 @@ paths:
       tags:
         - eeSurveys
       operationId: createSurvey
+      summary: Create a survey
       parameters:
         - in: body
           name: body
@@ -1360,6 +1328,7 @@ paths:
       tags:
         - eeSurveys
       operationId: updateSurvey
+      summary: Update a survey
       parameters:
         - in: body
           name: body
@@ -1380,6 +1349,7 @@ paths:
       tags:
         - eeSurveys
       operationId: deleteSurvey
+      summary: Delete a survey
       responses:
         '200':
           description: Survey
@@ -1397,6 +1367,7 @@ paths:
         items:
           type: string
     get:
+      deprecated: true
       tags:
         - eeSurveys
       summary: Retrieve survey aggregate with the given surveyID
@@ -1412,6 +1383,7 @@ paths:
             $ref: '#/definitions/EeDefaultError'
   /surveys/get-multi:
     get:
+      deprecated: true
       parameters:
         - in: query
           name: surveyIds
@@ -1431,12 +1403,13 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-  /surveys/{surveyId}/responses:
+  '/surveys/{surveyId}/responses':
+    parameters:
+      - $ref: '#/parameters/surveyId'
     get:
       tags:
         - eeSurveys
       parameters:
-        - $ref: '#/parameters/surveyId'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       summary: List responses for a survey
@@ -1450,8 +1423,30 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
+    
+    post:
+      tags:
+        - eeSurveys
+      summary: Create responses for a survey with the given id
+      operationId: bulkCreateResponses
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeSurveyResponseInput'
+      responses:
+        '200':
+          description: Survey responses with claim code
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+
   /surveys-responses/get-multi:
     get:
+      deprecated: true
       tags:
         - eeSurveys
       parameters:
@@ -1472,8 +1467,88 @@ paths:
           schema:
             $ref: '#/definitions/EeDefaultError'
   
+  '/surveys/bulk':
+    get:
+      parameters:
+        - in: query
+          name: surveyIds
+          type: array
+          items:
+            type: string
+      tags:
+        - eeSurveys
+      summary: List all surveys by surveyIDs
+      operationId: bulkRetrieveSurveys
+      responses:
+        '200':
+          description: Retrieves the surveys with the given surveyIds
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+            
+  '/surveys-aggregates/bulk':
+    parameters:
+      - in: query
+        name: surveyIds
+        type: array
+        items:
+          type: string
+    get:
+      tags:
+        - eeSurveys
+      summary: Retrieve survey aggregate with the given surveyID
+      operationId: bulkRetrieveAggregates
+      responses:
+        '200':
+          description: Retrieves the aggregates with the given surveyIds
+          schema:
+            $ref: '#/definitions/EePagedSurveyAggregate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  '/surveys-responses/bulk':
+    parameters:
+      - in: query
+        name: responseIds
+        type: array
+        items:
+          type: string
+    get:
+      tags:
+        - eeSurveys
+      summary: Bulk Retrieve response for survey
+      operationId: bulkRetrieveResponses
+      responses:
+        '200':
+          description: Retrieves the survey responses with the given responseIds
+          schema:
+            $ref: '#/definitions/EePagedResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    delete:
+      tags:
+        - eeSurveys
+      summary: Bulk delete responses
+      operationId: bulkDeleteResponses
+      responses:
+        '200':
+          description: Successfully deleted responses
+          schema:
+            $ref: '#/definitions/EeDeleteResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  
   /survey-responses/{surveyId}:
     post:
+      deprecated: true
       tags:
         - eeSurveys
       summary: Create responses for a survey with the given id
@@ -1493,7 +1568,43 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-  /organizers/{organizerId}/survey-responses:
+  
+  '/organizers/{organizerId}/surveys':
+    get:
+      tags:
+        - eeSurveys
+      summary: List all surveys for the organizers
+      operationId: listSurveys
+      parameters:
+        - in: path
+          name: organizerId
+          type: string
+          required: true
+        - in: query
+          name: category
+          type: string
+        - in: query
+          name: categoryId
+          type: string
+        - in: query
+          name: item
+          type: string
+        - in: query
+          name: itemType
+          type: string
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged list of Surveys
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+            
+  '/organizers/{organizerId}/survey-responses':
     get:
       parameters:
         - in: path
@@ -1528,6 +1639,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
+  ### End Survey
   
   /events/{eventId}/messages:
     parameters:
@@ -2028,7 +2140,35 @@ definitions:
         $ref: '#/definitions/EePermissionInvite'
       permission:
         $ref: '#/definitions/EePermission'
-        
+  EePagedSurveyResponse:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EeDSPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeSurveyResponse'
+  EeDeleteResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: true
+      list:
+        additionalProperties:
+          $ref: '#/definitions/EeDeleteIds'
+  
+  EeDeleteIds:
+    type: object
+    properties:
+      type:
+        type: string
+      ids:
+        type: array
+        items:
+          type: string
+  
   EeSuccess:
     type: object
     properties:
@@ -3085,7 +3225,7 @@ definitions:
         items:
           $ref: '#/definitions/EeEventAttendee'
   
-  EePagedSurveyResponse:
+  EePagedResponse:
     type: object
     properties:
       pageData:
