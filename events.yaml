@@ -1296,7 +1296,7 @@ paths:
           description: Survey questions
           required: true
           schema:
-            $ref: '#/definitions/EeSurvey'
+            $ref: '#/definitions/EeSurveyUpdate'
       responses:
         '200':
           description: Creates a survey
@@ -1335,7 +1335,7 @@ paths:
           description: Survey questions
           required: true
           schema:
-            $ref: '#/definitions/EeSurvey'
+            $ref: '#/definitions/EeSurveyUpdate'
       responses:
         '200':
           description: Creates a survey
@@ -1359,50 +1359,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-  /surveys-aggregate/get-multi:
-    parameters:
-      - in: query
-        name: surveyIds
-        type: array
-        items:
-          type: string
-    get:
-      deprecated: true
-      tags:
-        - eeSurveys
-      summary: Retrieve survey aggregate with the given surveyID
-      operationId: retrieveSurveyAggregate
-      responses:
-        '200':
-          description: Retrieves the survey with the given surveyID
-          schema:
-            $ref: '#/definitions/EePagedSurveyAggregate'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  /surveys/get-multi:
-    get:
-      deprecated: true
-      parameters:
-        - in: query
-          name: surveyIds
-          type: array
-          items:
-            type: string
-      tags:
-        - eeSurveys
-      summary: List all surveys by surveyIDs
-      operationId: retrieveAllSurveys
-      responses:
-        '200':
-          description: Retrieve as paged survey
-          schema:
-            $ref: '#/definitions/EePagedSurvey'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
+  
   '/surveys/{surveyId}/responses':
     parameters:
       - $ref: '#/parameters/surveyId'
@@ -1437,29 +1394,6 @@ paths:
       responses:
         '200':
           description: Survey responses with claim code
-          schema:
-            $ref: '#/definitions/EeSurveyResponse'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-
-  /surveys-responses/get-multi:
-    get:
-      deprecated: true
-      tags:
-        - eeSurveys
-      parameters:
-        - in: query
-          name: responseIds
-          type: array
-          items:
-            type: string
-      summary: Retrieve response for survey
-      operationId: retrieveResponse
-      responses:
-        '200':
-          description: Retrieves the survey responses with the given responseIds
           schema:
             $ref: '#/definitions/EeSurveyResponse'
         default:
@@ -1546,29 +1480,6 @@ paths:
           schema:
             $ref: '#/definitions/EeDefaultError'
   
-  /survey-responses/{surveyId}:
-    post:
-      deprecated: true
-      tags:
-        - eeSurveys
-      summary: Create responses for a survey with the given id
-      operationId: createResponse
-      parameters:
-        - $ref: '#/parameters/surveyId'
-        - in: body
-          name: body
-          schema:
-            $ref: '#/definitions/EeSurveyResponseInput'
-      responses:
-        '200':
-          description: Survey responses with claim code
-          schema:
-            $ref: '#/definitions/EeSurveyResponse'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  
   '/organizers/{organizerId}/surveys':
     get:
       tags:
@@ -1635,6 +1546,96 @@ paths:
           description: Retrieves the survey response with the given surveyId for the current user
           schema:
             $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  
+  /surveys-responses/get-multi:
+    get:
+      deprecated: true
+      tags:
+        - eeSurveys
+      parameters:
+        - in: query
+          name: responseIds
+          type: array
+          items:
+            type: string
+      summary: Retrieve response for survey
+      operationId: retrieveResponse
+      responses:
+        '200':
+          description: Retrieves the survey responses with the given responseIds
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  /survey-responses/{surveyId}:
+    post:
+      deprecated: true
+      tags:
+        - eeSurveys
+      summary: Create responses for a survey with the given id
+      operationId: createResponse
+      parameters:
+        - $ref: '#/parameters/surveyId'
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/EeSurveyResponseInput'
+      responses:
+        '200':
+          description: Survey responses with claim code
+          schema:
+            $ref: '#/definitions/EeSurveyResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+            
+  /surveys-aggregate/get-multi:
+    parameters:
+      - in: query
+        name: surveyIds
+        type: array
+        items:
+          type: string
+    get:
+      deprecated: true
+      tags:
+        - eeSurveys
+      summary: Retrieve survey aggregate with the given surveyID
+      operationId: retrieveSurveyAggregate
+      responses:
+        '200':
+          description: Retrieves the survey with the given surveyID
+          schema:
+            $ref: '#/definitions/EePagedSurveyAggregate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  /surveys/get-multi:
+    get:
+      deprecated: true
+      parameters:
+        - in: query
+          name: surveyIds
+          type: array
+          items:
+            type: string
+      tags:
+        - eeSurveys
+      summary: List all surveys by surveyIDs
+      operationId: retrieveAllSurveys
+      responses:
+        '200':
+          description: Retrieve as paged survey
+          schema:
+            $ref: '#/definitions/EePagedSurvey'
         default:
           description: Error
           schema:
@@ -2155,7 +2156,8 @@ definitions:
       success:
         type: boolean
         default: true
-      list:
+      deletedItems:
+        type: object
         additionalProperties:
           $ref: '#/definitions/EeDeleteIds'
   
@@ -3121,29 +3123,36 @@ definitions:
         items:
           type: string
   
+  EeSurveyUpdate:
+    type: object
+    required:
+      - organizerId
+      - name
+    properties:
+      organizerId:
+        type: string
+      itemType:
+        type: string
+      itemId:
+        type: string
+      name:
+        type: string
+      questions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EeSurveyQuestion'
   EeSurvey:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeSurveyUpdate'
       - properties:
           eventId:
-            type: string
-          organizerId:
-            type: string
-          itemType:
-            type: string
-          itemId:
-            type: string
-          name:
             type: string
           autoActiveResponse:
             type: boolean
           isClosed:
             type: boolean
-          questions:
-            type: object
-            additionalProperties:
-              $ref: '#/definitions/EeSurveyQuestion'
   
   EeAggregate:
     type: object
