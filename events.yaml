@@ -3079,6 +3079,8 @@ definitions:
   EeSurveyQuestion:
     type: object
     properties:
+      id:
+        type: string
       questionType:
         type: string
       prompt:
@@ -3126,11 +3128,8 @@ definitions:
   EeSurveyUpdate:
     type: object
     required:
-      - organizerId
       - name
     properties:
-      organizerId:
-        type: string
       itemType:
         type: string
       itemId:
@@ -3138,8 +3137,8 @@ definitions:
       name:
         type: string
       questions:
-        type: object
-        additionalProperties:
+        type: array
+        items:
           $ref: '#/definitions/EeSurveyQuestion'
   EeSurvey:
     type: object
@@ -3149,10 +3148,16 @@ definitions:
       - properties:
           eventId:
             type: string
+          organizerId:
+            type: string
           autoActiveResponse:
             type: boolean
           isClosed:
             type: boolean
+          questions:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/EeSurveyQuestion'
   
   EeAggregate:
     type: object
