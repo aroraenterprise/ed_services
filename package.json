@@ -16,7 +16,7 @@
     "fix-events-ts": "node update-module-ts.js deploy-events",
     "build-events": "npm i --prefix=./ts/events && npm run build --prefix=./ts/events",
     "publish-events": "npm publish ./ts/events/dist --access public",
-    "deploy-events": "npm run generate-events && npm run build-events && npm run fix-events-ts && npm run publish-events",
+    "deploy-events": "npm run generate-events && npm run fix-events-ts && npm run build-events && npm run publish-events",
     "generate-accounts": "java -jar ./swagger-codegen-cli-2.4.0.jar generate -i ./accounts.yaml -l typescript-angular -o ./ts/accounts --additional-properties ngVersion=6",
     "fix-accounts-ts": "node update-module-ts.js deploy-accounts",
     "build-accounts": "npm i --prefix=./ts/accounts && npm run build --prefix=./ts/accounts",

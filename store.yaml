@@ -1498,6 +1498,9 @@ definitions:
           valid:
             default: false
             type: boolean
+          needsMoreInformation:
+            type: boolean
+            default: false
           validUntil:
             default: 0
             minimum: 0
@@ -1708,7 +1711,7 @@ definitions:
             default: 0
           items:
             items:
-              $ref: '#/definitions/EsOrderItemStatus'
+              $ref: '#/definitions/EsOrderItemUser'
             type: array
           retailPrice:
             type: integer
@@ -1810,6 +1813,9 @@ definitions:
               $ref: '#/definitions/EsExchangeRate'
           claimCode:
             type: string
+          needsMoreInformation:
+            type: boolean
+            default: false
   EsRefundRequest:
     properties:
       message:
@@ -2094,7 +2100,7 @@ definitions:
           completedWhen:
             type: integer 
         
-  EsOrderItemStatus:
+  EsOrderItemUser:
     properties:
       id:
         type: string
@@ -2450,6 +2456,10 @@ definitions:
         type: string
       info:
         type: string
+      noItemDetails:
+        type: boolean
+        description: 'Collects first name, last name and email for each item sold independently. Default true'
+        default: false
       totalInventory:
         format: int32
         type: integer
@@ -2631,6 +2641,10 @@ definitions:
   EsValidationInput:
     type: object
     properties:
+      orderItemUsers:
+        type: array
+        items:
+          $ref: '#/definitions/EsOrderItemUser'
       surveyResponses:
         type: array
         items:
