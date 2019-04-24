@@ -2642,8 +2642,8 @@ definitions:
     type: object
     properties:
       orderItemUsers:
-        type: array
-        items:
+        type: object
+        additionalProperties:
           $ref: '#/definitions/EsOrderItemUser'
       surveyResponses:
         type: array
