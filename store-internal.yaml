@@ -70,6 +70,28 @@ paths:
         - esPubsub
       operationId: updateOrderItemStatus
       summary: Update an order item status
+  '/pubsub/event-survey':
+    post:
+      security:
+        - PubsubKey: []
+      produces:
+        - application/json
+      parameters:
+        - description: Pubsub data
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/EsPubsubInput'
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esPubsub
+      operationId: updateEventSurvey
+      summary: Update any event tickets that depend on this survey
   
   ### TASKS
   '/tasks/checkout-order':
