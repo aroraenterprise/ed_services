@@ -1,5 +1,5 @@
 ### Features
-* **events.yaml**: added create survey and delete survey endpoints
+* **events.yaml**: added create survey and delete survey endpoints, added isDeactivated flag to events and id to survey answers
 * **store.yaml**: cart validation added order item user information and needs more information flag
 * **store_internal.yaml**: Added pubsub endpoint for event survey update
 

@@ -307,7 +307,7 @@ paths:
         default:
           description: Error
           schema:
-            $ref: '#/definitions/EeDefaultError'
+            $ref: '#/definitions/EeEvent'
   
   '/events/categories':
     get:
@@ -1961,6 +1961,9 @@ definitions:
       isDeleted:
         type: boolean
         default: false
+      isDeactivated:
+        type: boolean
+        default: false
   EePagination:
     type: object
     properties:
@@ -3007,8 +3010,6 @@ definitions:
             type: boolean
           dropin:
             $ref: '#/definitions/EeEventDropin'
-          isDeactivated:
-            type: boolean
           deactivatedWhen:
             type: integer
           
@@ -3283,6 +3284,8 @@ definitions:
   EeQuestionAnswer:
     type: object
     properties:
+      id:
+        type: string
       text:
         type: string
       selection:
