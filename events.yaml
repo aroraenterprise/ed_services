@@ -942,7 +942,30 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-          
+  '/certificates/{certificateId}/preview':
+    parameters:
+      - $ref: '#/parameters/certificateId'
+    post:
+      tags:
+        - eeEventCertificates
+      summary: Preview a certificate
+      operationId: previewCertificate
+      parameters:
+        - in: body
+          name: body
+          description: Data to preview certificate
+          required: true
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Event Certificate preview
+          schema:
+            $ref: '#/definitions/EeEventCertificatePreview'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/certificates/{certificateId}/attendees':
     parameters:
       - $ref: '#/parameters/certificateId'
@@ -1001,6 +1024,7 @@ paths:
     get:
       tags:
         - eeEventCertificates
+      deprecated: true
       summary: Inspect a template for all the placeholders
       operationId: inspectTemplate
       parameters:
@@ -2762,6 +2786,16 @@ definitions:
             type: string
           organizerId:
             type: string
+  
+  EeEventCertificatePreview:
+    type: object
+    properties:
+      id:
+        type: string
+      pdfLink:
+        type: string
+      previewLink:
+        type: string
 
   EeAttendeeCertificate:
     type: object
