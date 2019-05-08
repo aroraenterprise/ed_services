@@ -889,6 +889,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
+  
   '/certificates/{certificateId}':
     parameters:
       - $ref: '#/parameters/certificateId'
@@ -2744,26 +2745,10 @@ definitions:
         type: string
       template:
         type: string
-      variableMap:
-        type: array
-        items:
-          $ref: '#/definitions/EeEventCertificatePlaceholder'
-      substitutionMap:
-        type: array
-        items:
-          $ref: '#/definitions/EeEventCertificatePlaceholder'
-
-  EeEventCertificatePlaceholder:
-    type: object
-    required:
-      - key
-    properties:
-      key:
-        type: string
-      value:
-        type: string
-      autocomplete:
-        type: boolean
+      annotation:
+        type: object
+      certVersion:
+        type: integer
 
   EeEventCertificate:
     type: object
@@ -2775,11 +2760,7 @@ definitions:
             type: string
           eventName:
             type: string
-          eventPicture:
-            type: string
           organizerId:
-            type: string
-          organizerName:
             type: string
 
   EeAttendeeCertificate:
@@ -2795,6 +2776,8 @@ definitions:
         type: integer
       code:
         type: string
+      certVersion:
+        type: integer
 
   EeCertificateInspect:
     type: object

@@ -34,7 +34,7 @@ yargs
     'deploy-events',
     'Deploy the events',
     {},
-    () => getLatestService('events', '@edropin/events-ts', 1, 2),
+    () => getLatestService('events', '@edropin/events-ts', 1, 3),
   )
   .command(
     'deploy-accounts',
