@@ -966,6 +966,34 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
+  
+  '/certificates/{certificateId}/rules':
+    parameters:
+      - $ref: '#/parameters/certificateId'
+    post:
+      tags:
+        - eeEventCertificates
+      summary: Update certificate assignment rules
+      parameters:
+        - in: body
+          name: body
+          description: Rules for certificate assignment
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EeCertificateRuleInput'
+      operationId: upsertAssignmentRule
+      responses:
+        '200':
+          description: Certificate rules assigned
+          schema:
+            $ref: '#/definitions/EeEventCertificate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+            
   '/certificates/{certificateId}/attendees':
     parameters:
       - $ref: '#/parameters/certificateId'
@@ -2409,6 +2437,10 @@ definitions:
             default: false
           pictureThumbs:
             $ref: '#/definitions/EePictureThumb'
+          memberships:
+            type: array
+            items:
+              $ref: '#/definitions/EeEventMembership'
           availableCurrencies:
             type: array
             items:
@@ -2435,6 +2467,7 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeGeocodeLocation'
+  
   
   EePriceStartingAt:
     type: object
@@ -2542,6 +2575,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      shortName:
         type: string
       availableCurrencies:
         type: array
@@ -2715,6 +2750,13 @@ definitions:
         type: string
       memberId:
         type: string
+  EeEventMembership:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
 
   EePubSubMessage:
     type: object
@@ -2786,6 +2828,34 @@ definitions:
             type: string
           organizerId:
             type: string
+          rules:
+            type: array
+            items:
+              $ref: '#/definitions/EeCertificateRule'
+  
+  EeCertificateRuleInput:
+    type: object
+    properties:
+      dropinIds:
+        type: array
+        items:
+          type: string
+          
+  EeCertificateRule:
+    type: object
+    properties:
+      dropins:
+        type: array
+        items:
+          $ref: '#/definitions/EeCertificateRuleDropin'
+  
+  EeCertificateRuleDropin:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
   
   EeEventCertificatePreview:
     type: object
