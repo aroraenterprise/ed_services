@@ -2,6 +2,8 @@
 * **events.yaml**: Added preview endpoint for certificates and support for version of 2 of certificates
 * **events.yaml**: Added memberships to event model that are populated based on store items
 * **events.yaml**: Added endpoint for certificate assignment rules which now replaces automations (deprecated) for dropin trigger and certificate assignment
+* **events.yaml**: Added endpoint for certificate templates listing
+* **events_internal.yaml**: Added endpoint for upserting and deleting certificate templates
 
 <a name="1.3.4"></a>
 # [1.3.3](https://github.com/aroraenterprise/ed_services/compare/1.3.4...1.3.3) (2019-04-16)

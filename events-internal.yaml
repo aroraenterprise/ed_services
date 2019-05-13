@@ -169,6 +169,51 @@ paths:
       operationId: migrate
       summary: Migration endpoint
   
+  '/ops/certificate-templates':
+    post:
+      security:
+        - AdminKey: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          required: true
+          name: body
+          description: Certificate template object to edit/create
+          schema:
+            $ref: '#/definitions/EeEventCertificateTemplate'
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeOps
+      operationId: upsertCertificateTemplate
+      summary: Update/Create certificate templates
+  '/ops/certificate-templates/{id}':
+    delete:
+      security:
+        - AdminKey: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          required: true
+          type: string
+          name: id
+          description: Certificate Template ID
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/EeSuccess'
+      tags:
+        - eeOps
+      operationId: deleteCertificateTemplate
+      summary: Delete a certificate template with the given ID
+  
+  
 definitions:
   EeSuccess:
     properties:
@@ -177,6 +222,27 @@ definitions:
       success:
         type: boolean
     type: object
+  
+  EeBaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      createdOn:
+        type: string
+        readOnly: true
+      modifiedOn:
+        type: string
+        readOnly: true
+      version:
+        type: string
+        readOnly: true
+      isDeleted:
+        type: boolean
+        default: false
+      isDeactivated:
+        type: boolean
+        default: false
     
   EePubsubInput:
     type: object
@@ -187,6 +253,29 @@ definitions:
         type: string
       messageId:
         type: string
+  
+  EeEventCertificateTemplate:
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - required:
+          - name
+          - templateUrl
+          - thumbnail
+          - id
+          - annotation
+      - properties:
+          name:
+            type: string
+          templateUrl:
+            type: string
+          annotation:
+            type: object
+          thumbnail:
+            type: string
+          isPace:
+            type: boolean
+          isCerp:
+            type: boolean
   
 securityDefinitions:
   TaskKey:

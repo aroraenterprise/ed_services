@@ -1047,7 +1047,24 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-          
+  '/certificate-templates':
+    get:
+      tags:
+        - eeEventCertificates
+      summary: List all certificate templates
+      operationId: listCertificateTemplates
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Certificate templates
+          schema:
+            $ref: '#/definitions/EePagedEventCertificateTemplate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'       
   '/certificates/inspectTemplate':
     get:
       tags:
@@ -2800,6 +2817,23 @@ definitions:
       filename:
         type: string
 
+  EeEventCertificateTemplate:
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          name:
+            type: string
+          templateUrl:
+            type: string
+          annotation:
+            type: object
+          thumbnail:
+            type: string
+          isPace:
+            type: boolean
+          isCerp:
+            type: boolean
+          
   EeEventCertificateUpdate:
     type: object
     required:
@@ -2808,8 +2842,6 @@ definitions:
       name:
         type: string
       templateUrl:
-        type: string
-      template:
         type: string
       annotation:
         type: object
@@ -2903,6 +2935,7 @@ definitions:
               type: string
 
   EePagedEventCertificate:
+    type: object
     properties:
       pageData:
         $ref: '#/definitions/EePagination'
@@ -2910,6 +2943,16 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeEventCertificate'
+  
+  EePagedEventCertificateTemplate:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EePagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventCertificateTemplate'
 
   EeEventDropinUpdate:
     type: object
