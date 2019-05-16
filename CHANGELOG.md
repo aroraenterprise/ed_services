@@ -3,6 +3,7 @@
 * **events.yaml**: Added memberships to event model that are populated based on store items
 * **events.yaml**: Added endpoint for certificate assignment rules which now replaces automations (deprecated) for dropin trigger and certificate assignment
 * **events.yaml**: Added endpoint for certificate templates listing
+* **events.yaml**: Added isPace/pace to certificate to make them credit aware
 * **events_internal.yaml**: Added endpoint for upserting and deleting certificate templates
 
 <a name="1.3.4"></a>
