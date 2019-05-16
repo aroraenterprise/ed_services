@@ -4,10 +4,14 @@
 * **events.yaml**: Added endpoint for certificate assignment rules which now replaces automations (deprecated) for dropin trigger and certificate assignment
 * **events.yaml**: Added endpoint for certificate templates listing
 * **events.yaml**: Added isPace/pace to certificate to make them credit aware
+* **events.yaml**: Added auth signature to pace providers
 * **events_internal.yaml**: Added endpoint for upserting and deleting certificate templates
 
+### Bug Fixes:
+* **store.yaml**: Fixed pagination for memberships
+
 <a name="1.3.4"></a>
-# [1.3.3](https://github.com/aroraenterprise/ed_services/compare/1.3.4...1.3.3) (2019-04-16)
+# [1.3.4](https://github.com/aroraenterprise/ed_services/compare/1.3.4...1.3.3) (2019-04-16)
 
 ### Features
 * **events.yaml**: added create survey and delete survey endpoints, added isDeactivated flag to events and id to survey answers

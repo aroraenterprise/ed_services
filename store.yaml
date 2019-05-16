@@ -2149,7 +2149,7 @@ definitions:
           $ref: '#/definitions/EsMembership'
         type: array
       pageData:
-        $ref: '#/definitions/EsDSPagination'
+        $ref: '#/definitions/EsPagination'
     type: object
   EsPagedOrder:
     properties:

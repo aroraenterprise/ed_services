@@ -2356,20 +2356,6 @@ definitions:
         enum:
           - v1
   
-  EePACECredit:
-    type: object
-    properties:
-      region:
-        type: string
-        enum:
-          - Nationally
-          - Locally
-      creditAmount:
-        type: number
-        minimum: 0
-      subjectCode:
-        type: string
-  
   EeGeocodeLocation:
     type: object
     properties:
@@ -2963,7 +2949,7 @@ definitions:
     type: object
     properties:
       pageData:
-        $ref: '#/definitions/EePagination'
+        $ref: '#/definitions/EeDSPagination'
       items:
         type: array
         items:
@@ -3512,7 +3498,7 @@ definitions:
         type: integer
       endDate:
         type: integer
-      signatureImage:
+      authSignatureImage:
         type: string
   
   EePACEProvider:
