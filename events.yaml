@@ -1064,7 +1064,51 @@ paths:
         default:
           description: Error
           schema:
-            $ref: '#/definitions/EeDefaultError'       
+            $ref: '#/definitions/EeDefaultError' 
+  '/certificates/{certificateId}/attendees/{attendeeId}':
+    parameters:
+      - $ref: '#/parameters/certificateId'
+      - $ref: '#/parameters/attendeeId'
+    get:
+      tags:
+        - eeEventCertificates
+      summary: Retrieve a user certificate
+      operationId: retrieveUserCertificate
+      parameters:
+        - in: query
+          type: boolean
+          name: getAnnotation
+          default: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeUserCertificate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    put:
+      tags:
+        - eeEventCertificates
+      summary: Update user certificate to event
+      operationId: updateUserCertificate
+      parameters:
+        - in: body
+          name: body
+          description: Certificate data
+          required: true
+          schema:
+            $ref: '#/definitions/EeUserCertificateUpdate'
+      responses:
+        '200':
+          description: User Certificate updated
+          schema:
+            $ref: '#/definitions/EeUserCertificate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
   '/certificates/inspectTemplate':
     get:
       tags:
@@ -1086,7 +1130,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-          
+        
   /kiosks:
     get:
       tags:
@@ -1198,6 +1242,7 @@ paths:
     get:
       tags:
         - eeEventAutomations
+      deprecated: true
       summary: List all event Automations
       operationId: listAllEventAutomations
       parameters:
@@ -1216,6 +1261,7 @@ paths:
       tags:
         - eeEventAutomations
       summary: Add an automation to an event
+      deprecated: true
       operationId: addEventAutomation
       parameters:
         - in: body
@@ -1239,6 +1285,7 @@ paths:
     get:
       tags:
         - eeEventAutomations
+      deprecated: true
       summary: Get an Automation
       operationId: getEventAutomation
       responses:
@@ -1254,6 +1301,7 @@ paths:
       tags:
         - eeEventAutomations
       summary: Update Automation to event
+      deprecated: true
       operationId: updateEventAutomation
       parameters:
         - in: body
@@ -1275,6 +1323,7 @@ paths:
       tags:
         - eeEventAutomations
       summary: Delete an existing Automation
+      deprecated: true
       operationId: deleteEventAutomation
       responses:
         '204':
@@ -1307,6 +1356,7 @@ paths:
           schema:
             $ref: '#/definitions/EePubSubMessage'
       summary: Pub sub to trigger an event automation
+      deprecated: true
       operationId: triggerEventAutomation
       responses:
         '200':
@@ -2856,6 +2906,45 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeCertificateRule'
+  
+  EeUserCertificateUpdate:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          isPace:
+            type: boolean
+          pace:
+            $ref: '#/definitions/EePaceCredit'
+          isCerp:
+            type: boolean
+          
+  EeUserCertificate:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeUserCertificateUpdate'
+      - properties:
+          eventId: 
+            type: string
+          eventName:
+            type: string
+          generatedLink: 
+            type: string
+          generatedWhen: 
+            type: integer
+          certVersion: 
+            type: integer
+          attendeeId: 
+            type: string
+          certificateId: 
+            type: string
+          timestamp: 
+            type: integer
+          assignedById: 
+            type: string
+          name:
+            type: string
   
   EeCertificateRuleInput:
     type: object

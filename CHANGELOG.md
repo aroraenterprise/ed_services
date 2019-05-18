@@ -5,6 +5,7 @@
 * **events.yaml**: Added endpoint for certificate templates listing
 * **events.yaml**: Added isPace/pace to certificate to make them credit aware
 * **events.yaml**: Added auth signature to pace providers
+* **events.yaml**: Added user certificate retrieving and updating endpoints
 * **events_internal.yaml**: Added endpoint for upserting and deleting certificate templates
 
 ### Bug Fixes:
