@@ -2992,7 +2992,7 @@ definitions:
   EeAttendeeCertificate:
     type: object
     properties:
-      certificateId:
+      id:
         type: string
       name:
         type: string
