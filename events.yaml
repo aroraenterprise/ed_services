@@ -2993,10 +2993,10 @@ definitions:
         items:
           $ref: '#/definitions/EeCredit'
   
-  EeCredit:
+  EeCreditUpdate:
     type: object
     required:
-      - id
+      - name
       - startDropinName
       - startDropinId
       - endDropinName
@@ -3005,7 +3005,7 @@ definitions:
       - creditInterval
       - minCreditIncrement
     properties:
-      id:
+      name:
         type: string
       startDropinName: 
         type: string
@@ -3028,6 +3028,18 @@ definitions:
       roundUp:
         type: boolean
   
+  EeCredit:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - $ref: '#/definitions/EeCreditUpdate'
+      - properties:
+          eventId:
+            type: string
+          eventName:
+            type: string
+          organizerId:
+            type: string
   EePagedCredit:
     type: object
     properties:
