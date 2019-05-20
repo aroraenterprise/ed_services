@@ -938,7 +938,29 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-         
+  
+  '/profiles/{profileId}/certificates':
+    parameters:
+      - $ref: '#/parameters/profileId'
+    get:
+      tags:
+        - eeEventCertificates
+      summary: List all profile certificates
+      operationId: listCertificatesByProfile
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Certificates in the profile
+          schema:
+            $ref: '#/definitions/EePagedEventCertificate'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'    
   '/events/{eventId}/certificates':
     parameters:
       - $ref: '#/parameters/eventId'
