@@ -21,6 +21,8 @@ tags:
     description: Event Attendees
   - name: eeEventDropins
     description: Event Dropins
+  - name: eeEventCredits
+    description: Manage eCredits
   - name: eeEventCertificates
     description: Manage eCertificates - creation, update and deletion and assigning to attendees
   - name: eeKiosk
@@ -845,7 +847,98 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-          
+  
+  '/events/{eventId}/credits':
+    parameters:
+      - $ref: '#/parameters/eventId'
+    get:
+      tags:
+        - eeEventCredits
+      summary: List all event credits
+      operationId: listCreditsByEvent
+      responses:
+        '200':
+          description: Credits for the event
+          schema:
+            $ref: '#/definitions/EePagedCredit'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    post:
+      tags:
+        - eeEventCredits
+      summary: Create a credit for an event
+      operationId: createCredit
+      parameters:
+        - in: body
+          name: body
+          description: Credit object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/EeCredit'
+      responses:
+        '200':
+          description: Certificate added
+          schema:
+            $ref: '#/definitions/EeCredit'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  '/credits/{creditId}':
+    parameters:
+      - $ref: '#/parameters/creditId'
+    get:
+      tags:
+        - eeEventCredits
+      summary: Retrieve a credit
+      operationId: retrieveCredit
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/EeCredit'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    put:
+      tags:
+        - eeEventCredits
+      summary: Update credit to event
+      operationId: updateCredit
+      parameters:
+        - in: body
+          name: body
+          description: Credit to update
+          required: true
+          schema:
+            $ref: '#/definitions/EeCredit'
+      responses:
+        '200':
+          description: Event Credit updated
+          schema:
+            $ref: '#/definitions/EeCredit'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+    delete:
+      tags:
+        - eeEventCredits
+      summary: Delete an existing credit
+      operationId: deleteCredit
+      responses:
+        '200':
+          description: Credit deleted
+          schema:
+            $ref: '#/definitions/EeCredit'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+         
   '/events/{eventId}/certificates':
     parameters:
       - $ref: '#/parameters/eventId'
@@ -1971,6 +2064,12 @@ parameters:
     description: Automation Id
     type: string
     required: true
+  creditId:
+    name: creditId
+    in: path
+    description: Credit Id
+    type: string
+    required: true
   certificateId:
     name: certificateId
     in: path
@@ -2889,7 +2988,55 @@ definitions:
         $ref: '#/definitions/EePaceCredit'
       isCerp:
         type: boolean
-
+      credits:
+        type: array
+        items:
+          $ref: '#/definitions/EeCredit'
+  
+  EeCredit:
+    type: object
+    required:
+      - id
+      - startDropinName
+      - startDropinId
+      - endDropinName
+      - endDropinId
+      - maxCredit
+      - creditInterval
+      - minCreditIncrement
+    properties:
+      id:
+        type: string
+      startDropinName: 
+        type: string
+      startDropinId: 
+        type: string
+      endDropinName: 
+        type: string
+      endDropinId: 
+        type: string
+      maxCredit: 
+        type: number
+      creditInterval: 
+        type: integer
+      minCreditIncrement: 
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 4
+      roundUp:
+        type: boolean
+  
+  EePagedCredit:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EeDSPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeCredit'
   EeEventCertificate:
     type: object
     allOf:
@@ -2978,6 +3125,13 @@ definitions:
       creditAmount:
         type: integer
         minimum: 0
+      useCredits:
+        type: boolean
+        default: false
+      creditIds:
+        type: array
+        items:
+          type: string
   
   EeEventCertificatePreview:
     type: object
