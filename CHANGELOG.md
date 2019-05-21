@@ -1,3 +1,6 @@
+<a name="1.3.5"></a>
+# [1.3.5](https://github.com/aroraenterprise/ed_services/compare/1.3.5...1.3.4) (2019-05-21)
+
 ### Features
 * **events.yaml**: Added preview endpoint for certificates and support for version of 2 of certificates
 * **events.yaml**: Added memberships to event model that are populated based on store items
