@@ -640,6 +640,22 @@ paths:
         - esOrderItems
       operationId: createRefundRequest
       summary: Create a refund for an item
+  '/order-items/{merchantId}/export':
+    parameters:
+      - $ref: '#/parameters/merchantId'
+    get:
+      tags:
+        - esOrderItems
+      summary: Export order items data
+      operationId: exportOrderItems
+      parameters:
+        - $ref: '#/parameters/searchFacets'
+      responses:
+        '200':
+          description: Export order items as a csv
+          schema:
+            $ref: '#/definitions/EsCsv'
+  
   '/merchants/{merchantId}':
     parameters:
       - $ref: '#/parameters/merchantId'
@@ -2649,6 +2665,14 @@ definitions:
         type: array
         items:
           type: string
+  
+  EsCsv:
+    type: object
+    properties:
+      csv:
+        type: string
+      filename:
+        type: string
 
 securityDefinitions:
   Authorization:
