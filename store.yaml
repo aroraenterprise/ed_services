@@ -650,6 +650,7 @@ paths:
       operationId: exportOrderItems
       parameters:
         - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/filterTimestamp'
       responses:
         '200':
           description: Export order items as a csv
@@ -2821,6 +2822,14 @@ parameters:
     in: query
     name: q
     type: string
+  filterTimestamp:
+    in: query
+    name: filterTimestamp
+    description: Filter by start and end time e.g. (starting after 1111 ending before 1234 = 1111,1234)
+    type: array
+    items:
+      type: integer
+    maxLength: 2
   transactionId:
     in: path
     description: Transaction ID
