@@ -541,6 +541,7 @@ paths:
           type: string
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
+        - $ref: '#/parameters/filterTimestamp'
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
