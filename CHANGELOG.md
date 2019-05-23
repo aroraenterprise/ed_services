@@ -1,3 +1,6 @@
+<a name="1.3.6"></a>
+# [1.3.6](https://github.com/aroraenterprise/ed_services/compare/1.3.6...1.3.5) (2019-05-22)
+
 ### Features:
 * **store.yaml**: Add export endpoint for order items
 * **store.yaml**: Added filter timestamp for order items
