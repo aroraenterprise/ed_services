@@ -476,6 +476,11 @@ paths:
       produces:
         - application/json
       parameters:
+        - in: query
+          type: string
+          name: filter
+          description: 'Member Id or email'
+          required: false
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -485,7 +490,7 @@ paths:
             $ref: '#/definitions/EsPagedMember'
       tags:
         - esMemberships
-      operationId: getMembers
+      operationId: listMembers
       summary: Get members for a membership
     put:
       consumes:

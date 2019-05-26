@@ -1,3 +1,8 @@
+* **store.yaml**: Added filter to list members
+
+### Breaking Changes:
+* **store.yaml**: Renamed getMembers endpoint to list members
+  
 <a name="1.3.6"></a>
 # [1.3.6](https://github.com/aroraenterprise/ed_services/compare/1.3.6...1.3.5) (2019-05-22)
 
