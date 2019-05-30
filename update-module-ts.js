@@ -28,19 +28,19 @@ yargs
     'deploy-store',
     'Deploy the store',
     {},
-    () => getLatestService('store', '@edropin/store-ts', 1, 4),
+    () => getLatestService('store', '@edropin/store-ts', 1, 5),
   )
   .command(
     'deploy-events',
     'Deploy the events',
     {},
-    () => getLatestService('events', '@edropin/events-ts', 1, 4),
+    () => getLatestService('events', '@edropin/events-ts', 1, 5),
   )
   .command(
     'deploy-accounts',
     'Deploy the accounts',
     {},
-    () => getLatestService('accounts', '@edropin/accounts-ts', 1, 4),
+    () => getLatestService('accounts', '@edropin/accounts-ts', 1, 5),
   )
   .wrap(120)
   .help().argv;
