@@ -17,6 +17,8 @@ tags:
     description: User accounts on eDropin
   - name: eaProfiles
     description: Profiles such as course providers and businesses
+  - name: eaFiles
+    description: Manage user files
   - name: eaProfileInvites
     description: Profile invitations
   - name: eaProfileTags
@@ -520,8 +522,6 @@ paths:
           description: Profile Status
           schema:
             $ref: '#/definitions/EaProfileStatus'
-        '404':
-          description: Profile not found
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   /profiles/usernamecheck:
@@ -546,8 +546,6 @@ paths:
           description: Username is available
           schema:
             $ref: '#/definitions/EaSuccess'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
@@ -571,10 +569,6 @@ paths:
           description: Profiles
           schema:
             $ref: '#/definitions/EaPagedProfile'
-        '400':
-          $ref: '#/responses/InvalidInputResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
@@ -596,6 +590,69 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
 
+  /files:
+    get:
+      tags:
+        - eaFiles
+      summary: List of files
+      operationId: listFiles
+      parameters:
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged Files
+          schema:
+            $ref: '#/definitions/EaPagedFile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaFiles
+      summary: Create a file
+      operationId: createFile
+      parameters:
+        - in: body
+          name: body
+          description: File Info
+          required: true
+          schema:
+            $ref: '#/definitions/EaFileUpdate'
+      responses:
+        '200':
+          description: File
+          schema:
+            $ref: '#/definitions/EaFile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /files/{fileId}:
+    parameters:
+      - $ref: '#/parameters/fileId'
+    get:
+      tags:
+        - eaFiles
+      summary: Retrieve a file
+      operationId: retrieveFile
+      responses:
+        '200':
+          description: File
+          schema:
+            $ref: '#/definitions/EaFile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    delete:
+      tags:
+        - eaFiles
+      summary: Delete a file
+      operationId: deleteFile
+      responses:
+        '200':
+          description: File
+          schema:
+            $ref: '#/definitions/EaFile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  
   '/profile-invites':
     get:
       tags:
@@ -832,6 +889,12 @@ parameters:
     description: Gives you a more detailed entity but requires admin permissions usually
     type: boolean
     required: false
+  fileId:
+    name: fileId
+    in: path
+    description: File Id
+    type: string
+    required: true
   profileId:
     name: profileId
     in: path
@@ -883,14 +946,16 @@ definitions:
     properties:
       id:
         type: string
-      created:
+      createdOn:
         type: integer
         format: int32
         readOnly: true
-      modified:
+      modifiedOn:
         type: integer
         format: int32
         readOnly: true
+      creatorId:
+        type: string
       version:
         type: string
         readOnly: true
@@ -1395,3 +1460,38 @@ definitions:
         type: string
       profileId:
         type: string
+        
+  EaFileUpdate:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      extension:
+        type: string
+      size:
+        type: string
+      type:
+        type: array
+        items:
+          type: string
+      path:
+        type: string
+      meta:
+        type: object
+  EaFile:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaFileUpdate'
+  
+  EaPagedFile:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaDSPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaFile'
