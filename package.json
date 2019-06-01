@@ -21,7 +21,7 @@
     "fix-accounts-ts": "node update-module-ts.js deploy-accounts",
     "build-accounts": "npm i --prefix=./ts/accounts && npm run build --prefix=./ts/accounts",
     "publish-accounts": "npm publish ./ts/accounts/dist --access public",
-    "deploy-accounts": "npm run generate-accounts && npm run build-accounts && npm run fix-accounts-ts && npm run publish-accounts"
+    "deploy-accounts": "npm run generate-accounts && npm run fix-accounts-ts && npm run build-accounts && npm run publish-accounts"
   },
   "repository": {
     "type": "git",

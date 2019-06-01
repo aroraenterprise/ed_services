@@ -1,5 +1,6 @@
 ### Features:
 * **accounts.yaml**: Added user files endpoint
+* **accounts.yaml**: Addes unsplash endpoints for search and download event
 
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.5.0...1.3.6) (2019-05-22)

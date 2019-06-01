@@ -19,6 +19,8 @@ tags:
     description: Profiles such as course providers and businesses
   - name: eaFiles
     description: Manage user files
+  - name: eaUnsplash
+    description: Unsplash image search
   - name: eaProfileInvites
     description: Profile invitations
   - name: eaProfileTags
@@ -653,6 +655,45 @@ paths:
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   
+  /unsplash:
+    get:
+      tags:
+        - eaUnsplash
+      summary: Search unsplash for images
+      operationId: searchPhotos
+      parameters:
+        - in: query
+          type: string
+          description: Keywords for search
+          name: query
+          required: false
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Paged Photos
+          schema:
+            $ref: '#/definitions/EaPagedUnsplashPhoto'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+    post:
+      tags:
+        - eaUnsplash
+      summary: Download trigger
+      operationId: downloadPhoto
+      parameters:
+        - in: query
+          name: photoId
+          description: Photo Id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: File
+          schema:
+            $ref: '#/definitions/EaSuccess'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   '/profile-invites':
     get:
       tags:
@@ -1495,3 +1536,29 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaFile'
+  
+  EaUnsplashPhoto:
+    type: object
+    properties:
+      id:
+        type: string
+      attributionUsername:
+        type: string
+      attributionName:
+        type: string
+      description:
+        type: string
+      photoUrlRaw:
+        type: string
+      photoUrl:
+        type: string
+  
+  EaPagedUnsplashPhoto:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EaPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EaUnsplashPhoto'  
