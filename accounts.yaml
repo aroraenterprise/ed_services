@@ -654,7 +654,26 @@ paths:
             $ref: '#/definitions/EaFile'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  
+  /files/create-image:
+    post:
+      tags:
+        - eaFiles
+      summary: Create an image file
+      operationId: createImage
+      parameters:
+        - in: body
+          name: body
+          description: File Info
+          required: true
+          schema:
+            $ref: '#/definitions/EaFileUpdate'
+      responses:
+        '200':
+          description: File with Signature
+          schema:
+            $ref: '#/definitions/EaFileSignature'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
   /unsplash:
     get:
       tags:
@@ -1526,7 +1545,14 @@ definitions:
     allOf:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaFileUpdate'
-  
+  EaFileSignature:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EaBaseId'
+      - $ref: '#/definitions/EaFile'
+      - properties:
+          signature:
+            type: string
   EaPagedFile:
     type: object
     properties:
