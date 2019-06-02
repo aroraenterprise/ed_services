@@ -654,7 +654,7 @@ paths:
             $ref: '#/definitions/EaFile'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
-  /files/create-image:
+  /files/image:
     post:
       tags:
         - eaFiles
@@ -666,12 +666,32 @@ paths:
           description: File Info
           required: true
           schema:
-            $ref: '#/definitions/EaFileUpdate'
+            $ref: '#/definitions/EaFileUpload'
       responses:
         '200':
-          description: File with Signature
+          description: File
           schema:
-            $ref: '#/definitions/EaFileSignature'
+            $ref: '#/definitions/EaFile'
+        '500':
+          $ref: '#/responses/Default500ErrorResponse'
+  /files/unsplash-image:
+    post:
+      tags:
+        - eaFiles
+      summary: Create an unsplash image file
+      operationId: createUnsplashImage
+      parameters:
+        - in: body
+          name: body
+          description: File Info
+          required: true
+          schema:
+            $ref: '#/definitions/EaUnsplashPhoto'
+      responses:
+        '200':
+          description: File
+          schema:
+            $ref: '#/definitions/EaFile'
         '500':
           $ref: '#/responses/Default500ErrorResponse'
   /unsplash:
@@ -1540,18 +1560,26 @@ definitions:
         type: string
       meta:
         type: object
+      isImagekit:
+        type: boolean
+      isUnsplash:
+        type: boolean
+      externalId:
+        type: string
   EaFile:
     type: object
     allOf:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaFileUpdate'
-  EaFileSignature:
+  EaFileUpload:
     type: object
+    required:
+      - base64Image
     allOf:
       - $ref: '#/definitions/EaBaseId'
       - $ref: '#/definitions/EaFile'
       - properties:
-          signature:
+          base64Image:
             type: string
   EaPagedFile:
     type: object
@@ -1578,6 +1606,10 @@ definitions:
         type: string
       photoUrl:
         type: string
+      width:
+        type: integer
+      height:
+        type: integer
   
   EaPagedUnsplashPhoto:
     type: object
