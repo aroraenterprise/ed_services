@@ -2467,10 +2467,10 @@ definitions:
         type: string
       picture:
         type: string
-      pictures:
+      featuredImages:
         type: array
         items:
-          $ref: '#/definitions/EePicture'
+          $ref: '#/definitions/EeImage'
       website:
         type: string
       isPace:
@@ -2586,6 +2586,25 @@ definitions:
       square:
         type: string
       wide:
+        type: string
+  EeImage:
+    type: object
+    properties:
+      isUnsplash: 
+        type: boolean
+      isImagekit: 
+        type: boolean
+      fileId:
+        type: string
+      path:
+        type: string
+      editParams:
+        type: object
+      url:
+        type: string
+      thumbnail:
+        type: string
+      caption:
         type: string
   EeEvent:
     type: object

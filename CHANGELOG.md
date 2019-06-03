@@ -2,6 +2,7 @@
 * **accounts.yaml**: Added user files endpoint
 * **accounts.yaml**: Added unsplash endpoints for search and download event
 * **accounts.yaml**: Added create image endpoint to files for Imagekit and Unsplash
+* **events.yaml**: Added support for new images as featured image and removed pictures
 
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.5.0...1.3.6) (2019-05-22)
