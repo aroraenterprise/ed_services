@@ -1249,6 +1249,8 @@ definitions:
         type: string
       picture:
         type: string
+      image:
+        $ref: '#/definitions/EaImage'        
       website:
         type: string
       bio:
