@@ -1303,10 +1303,8 @@ definitions:
         type: string
       picture:
         type: string
-      pictures:
-        type: array
-        items:
-          $ref: '#/definitions/EaPicture'
+      image:
+        $ref: '#/definitions/EaImage'
       bio:
         type: string
       website:
@@ -1326,13 +1324,6 @@ definitions:
         type: string
         enum:
           - v1
-  EaPicture:
-    type: object
-    properties:
-      src:
-        type: string
-      caption:
-        type: string
   
   EaProfile:
     type: object
@@ -1620,3 +1611,23 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EaUnsplashPhoto'  
+  
+  EaImage:
+    type: object
+    properties:
+      isUnsplash: 
+        type: boolean
+      isImagekit: 
+        type: boolean
+      fileId:
+        type: string
+      path:
+        type: string
+      editParams:
+        type: object
+      url:
+        type: string
+      thumbnail:
+        type: string
+      caption:
+        type: string
