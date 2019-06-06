@@ -1,0 +1,183 @@
+swagger: '2.0'
+info:
+  contact:
+    email: dev@edropin.com
+    name: Saj Arora
+  description: Accounts Internal service for eDropin
+  license:
+    name: UNLICENSED
+  title: eDropin Accounts Internal
+  version: 1.0.0
+host: localhost:9001
+basePath: /
+schemes:
+  - http
+paths:
+
+  ### CRON JOBS
+  '/cron/delete':
+    get:
+      security: 
+        - CronKey: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Cron Job Run Result
+          schema:
+            $ref: '#/definitions/EaSuccess'
+      tags:
+        - eaCron
+      operationId: executeDeletionCron
+      summary: Delete all resources marked with isDeleted flag and take all necessary actions to clean up related resources
+  
+  ### PUBSUB
+  # '/pubsub/update-event-ticket':
+  #   post:
+  #     security:
+  #       - PubsubKey: []
+  #     produces:
+  #       - application/json
+  #     parameters:
+  #       - description: Pubsub data
+  #         in: body
+  #         name: body
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/EePubsubInput'
+  #     responses:
+  #       '200':
+  #         description: Pubsub result
+  #         schema:
+  #           $ref: '#/definitions/EeSuccess'
+  #     tags:
+  #       - eePubsub
+  #     operationId: updateEventTicket
+  #     summary: Update event ticket, subscription for store item add, update and delete
+
+  ### TASKS
+  # '/tasks/process-message':
+  #   post:
+  #     security:
+  #       - TaskKey: []
+  #     produces:
+  #       - application/json
+  #     parameters:
+  #       - description: Message data
+  #         in: body
+  #         name: body
+  #         required: true
+  #         schema:
+  #           $ref: '#/definitions/EePubsubInput'
+  #     responses:
+  #       '200':
+  #         description: Task result
+  #         schema:
+  #           $ref: '#/definitions/EeSuccess'
+  #     tags:
+  #       - eeTasks
+  #     operationId: processMessage
+  #     summary: Process a message
+  
+  ### OPS
+  '/ops/migration/{buildId}':
+    post:
+      security:
+        - AdminKey: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          required: true
+          type: string
+          name: buildId
+          description: Build ID - Used for selecting the right case for migration
+        - description: Op data
+          in: body
+          name: body
+          required: false
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EaSuccess'
+      tags:
+        - eeOps
+      operationId: migrate
+      summary: Migration endpoint
+  
+  
+  
+definitions:
+  EaSuccess:
+    properties:
+      message:
+        type: object
+      success:
+        type: boolean
+    type: object
+  
+  EaBaseId:
+    type: object
+    properties:
+      id:
+        type: string
+      createdOn:
+        type: string
+        readOnly: true
+      modifiedOn:
+        type: string
+        readOnly: true
+      version:
+        type: string
+        readOnly: true
+      isDeleted:
+        type: boolean
+        default: false
+      isDeactivated:
+        type: boolean
+        default: false
+    
+  EaPubsubInput:
+    type: object
+    properties:
+      subscription:
+        type: string
+      data:
+        type: string
+      messageId:
+        type: string
+  
+securityDefinitions:
+  TaskKey:
+    in: query
+    name: apiKey
+    description: Task Key
+    type: apiKey
+  PubsubKey:
+    in: query
+    name: apiKey
+    description: Pubsub Key
+    type: apiKey
+  CronKey:
+    in: query
+    name: apiKey
+    description: Cron Key
+    type: apiKey
+  AdminKey:
+    in: header
+    name: X-Admin-Key
+    description: Admin Key
+    type: apiKey
+tags:
+  - description: Handle all subscription callbacks
+    name: eaPubsub
+  - description: Handle all cron jobs
+    name: eaCron
+  - description: Handle all task callbacks
+    name: eaTasks
+  - description: Handle all ops (system admin only)
+    name: eaOps
+
