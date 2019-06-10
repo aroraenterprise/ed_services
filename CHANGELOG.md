@@ -1,3 +1,6 @@
+<a name="1.5.1"></a>
+# [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.5.1...1.5.0) (2019-05-22)
+
 ### Features:
 * **accounts.yaml**: Added user files endpoint
 * **accounts.yaml**: Added unsplash endpoints for search and download event
