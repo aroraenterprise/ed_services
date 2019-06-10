@@ -2465,6 +2465,18 @@ definitions:
         type: string
       bio:
         type: string
+      description:
+        type: string
+      faqs:
+        type: array
+        items:
+          $ref: '#/definitions/EeFAQ'
+      topic:
+        type: string
+      eventOutline:
+        type: array
+        items:
+          type: string
       picture:
         type: string
       featuredImages:
@@ -2569,15 +2581,7 @@ definitions:
       isDeleted:
         type: boolean
         default: false
-  EePicture:
-    type: object
-    required:
-      - src
-    properties:
-      src:
-        type: string
-      caption:
-        type: string 
+  
   EePictureThumb:
     type: object
     properties:
@@ -2612,6 +2616,10 @@ definitions:
       - $ref: '#/definitions/EeBaseId'
       - $ref: '#/definitions/EeEventUpdate'
       - properties:
+          city:
+            type: string
+          country:
+            type: string
           organizerName:
             type: string
           organizerUsername:
@@ -2709,6 +2717,14 @@ definitions:
         type: object
         additionalProperties:
           $ref: '#/definitions/EeSurveyQuestion'
+
+  EeFAQ:
+    type: object
+    properties:
+      question:
+        type: string
+      answer:
+        type: string
 
   EeEventTagUpsert:
     type: object

@@ -1,3 +1,9 @@
+### Features:
+* **events.yaml**: Added faqs, description, city and country to event
+
+### Breaking Changes:
+* **events.yaml**: Removed EePicture as it is deprecated an no longer used
+
 <a name="1.5.1"></a>
 # [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.5.1...1.5.0) (2019-05-22)
 
