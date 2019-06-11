@@ -2441,13 +2441,8 @@ definitions:
         type: string
       isInvited:
         type: boolean
-
   EeEventUpdate:
     type: object
-    required:
-      - organizerId
-      - name
-      - agreeTerms
     properties:
       organizerId:
         type: string
@@ -2471,8 +2466,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/EeFAQ'
-      topic:
-        type: string
       eventOutline:
         type: array
         items:
