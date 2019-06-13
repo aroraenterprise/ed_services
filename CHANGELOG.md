@@ -1,5 +1,7 @@
+
 ### Features:
 * **events.yaml**: Added faqs, description, city and country to event
+* **events.yaml**: Search facets for events
 
 ### Breaking Changes:
 * **events.yaml**: Removed EePicture as it is deprecated an no longer used

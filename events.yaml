@@ -311,6 +311,33 @@ paths:
           schema:
             $ref: '#/definitions/EeEvent'
   
+  '/events/facets/{facetName}':
+    parameters:
+      - in: path
+        name: facetName
+        required: true
+        type: string
+        description: Name of the facet
+    get:
+      tags:
+        - eeEvents
+      summary: Search for event facets
+      operationId: searchEventFacets
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Facet result
+          schema:
+            $ref: '#/definitions/EeFacetSearch'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  
+  
   '/events/categories':
     get:
       tags:
@@ -330,6 +357,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
+  
   '/events/search':
     get:
       tags:
