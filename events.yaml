@@ -364,6 +364,7 @@ paths:
         - eeEvents
       summary: Search Events
       operationId: searchEvent
+      deprecated: true
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -380,6 +381,43 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
+  
+  '/events/search/2':
+    get:
+      tags:
+        - eeEvents
+      summary: Search Events
+      operationId: searchEvent2
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/searchFacets'
+        - in: query
+          type: string
+          name: placeId
+        - in: query
+          type: string
+          name: startDate
+        - in: query
+          type: string
+          name: endDate
+        - in: query
+          type: string
+          name: priceMin
+        - in: query
+          type: string
+          name: priceMax
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Events
+          schema:
+            $ref: '#/definitions/EePagedEvent'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  
   ### EVENTS END
   
   ### EVENT TAGS
