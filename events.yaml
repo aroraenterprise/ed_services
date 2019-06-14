@@ -395,16 +395,16 @@ paths:
           type: string
           name: placeId
         - in: query
-          type: string
+          type: integer
           name: startDate
         - in: query
-          type: string
+          type: integer
           name: endDate
         - in: query
-          type: string
+          type: integer
           name: priceMin
         - in: query
-          type: string
+          type: integer
           name: priceMax
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
