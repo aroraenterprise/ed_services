@@ -4,6 +4,9 @@
 * **events.yaml**: Search facets for events
 * **events.yaml**: Search 2 for events with more query inputs
 
+### Fixes:
+* **events.yaml**: Fixed location in events and added city/country/placeId to location and added placeId to address
+
 ### Breaking Changes:
 * **events.yaml**: Removed EePicture as it is deprecated an no longer used
 
