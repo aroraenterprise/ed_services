@@ -1978,6 +1978,10 @@ paths:
       summary: List messages for event attendees
       operationId: listMessages
       parameters:
+        - in: query
+          name: isReminder
+          type: boolean
+          default: false
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -2585,10 +2589,6 @@ definitions:
         type: array
         items:
           type: string
-      reminders:
-        type: array
-        items:
-          $ref: '#/definitions/EeMessageInput'
       address:
         $ref: '#/definitions/EeAddress'
       policy:
@@ -3819,6 +3819,8 @@ definitions:
         type: boolean
       emailAllAttendees:
         type: boolean
+      reminderId:
+        type: string
         
   EeMessage:
     type: object
@@ -3826,6 +3828,8 @@ definitions:
       - $ref: '#/definitions/EeBaseId'
       - $ref: '#/definitions/EeMessageInput'
       - properties:
+          isReminder:
+            type: boolean
           eventId:
             type: string
           eventName:
