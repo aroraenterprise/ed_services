@@ -325,6 +325,12 @@ paths:
       operationId: searchEventFacets
       parameters:
         - $ref: '#/parameters/searchQuery'
+        - in: query
+          type: integer
+          name: startDate
+        - in: query
+          type: integer
+          name: endDate
         - $ref: '#/parameters/cursor'
         - $ref: '#/parameters/limit'
       responses:
@@ -344,6 +350,7 @@ paths:
         - eeEvents
       summary: Get Event Categories
       operationId: getEventCategories
+      deprecated: true
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/cursor'

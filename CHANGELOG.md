@@ -4,6 +4,7 @@
 * **events.yaml**: Search facets for events
 * **events.yaml**: Search 2 for events with more query inputs
 * **events.yaml**: Remove multiple 10 requirement for limits
+* **events.yaml**: Added filters for facet search
 
 ### Fixes:
 * **events.yaml**: Fixed location in events and added city/country/placeId to location and added placeId to address

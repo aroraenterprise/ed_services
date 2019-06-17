@@ -2792,7 +2792,6 @@ parameters:
     in: query
     maximum: 100
     minimum: 0
-    multipleOf: 10
     name: limit
     type: integer
   membershipId:

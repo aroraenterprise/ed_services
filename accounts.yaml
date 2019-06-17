@@ -950,7 +950,6 @@ parameters:
     exclusiveMinimum: true
     maximum: 50
     exclusiveMaximum: false
-    multipleOf: 10
     default: 20
   cursor:
     name: cursor
