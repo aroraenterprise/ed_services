@@ -3405,13 +3405,13 @@ definitions:
     type: object
     allOf:
       - $ref: '#/definitions/EeEventDropinTicketUpdate'
-    properties:
-      name:
-        type: string
-      shortName:
-        type: string
-      surveyId:
-        type: string
+      - properties:
+          name:
+            type: string
+          shortName:
+            type: string
+          surveyId:
+            type: string
 
   EeEventDropin:
     type: object
