@@ -3388,6 +3388,30 @@ definitions:
         type: array
         items:
           type: string
+      fields:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventDropinTicketField'
+
+  EeEventDropinTicketField:
+    type: object
+    properties:
+      key:
+        type: string
+      label:
+        type: string
+  
+  EeEventDropinTicket:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeEventDropinTicketUpdate'
+    properties:
+      name:
+        type: string
+      shortName:
+        type: string
+      surveyId:
+        type: string
 
   EeEventDropin:
     type: object
@@ -3413,24 +3437,6 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeImage'
-                
-  EeEventDropinTicket:
-    type: object
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-      shortName:
-        type: string
-      showSurvey:
-        type: boolean
-      surveyId:
-        type: string
-      surveyFields:
-        type: array
-        items:
-          type: string
       
   EeAttendeeDropin:
     type: object

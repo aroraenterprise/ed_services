@@ -10,7 +10,8 @@
 
 ### Fixes:
 * **events.yaml**: Fixed location in events and added city/country/placeId to location and added placeId to address
-
+* **events.yaml**: Fix survey fields in dropin tickets
+  
 ### Breaking Changes:
 * **events.yaml**: Removed EePicture as it is deprecated an no longer used
 
