@@ -3409,6 +3409,10 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/EeEventDropinTicket'
+          images:
+            type: array
+            items:
+              $ref: '#/definitions/EeImage'
                 
   EeEventDropinTicket:
     type: object

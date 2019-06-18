@@ -6,6 +6,7 @@
 * **events.yaml**: Remove multiple 10 requirement for limits
 * **events.yaml**: Added filters for facet search
 * **events.yaml**: Removed reminders input from event and added isReminder attribute to messages
+* **events.yaml**: Added event images to dropins/kiosks
 
 ### Fixes:
 * **events.yaml**: Fixed location in events and added city/country/placeId to location and added placeId to address
