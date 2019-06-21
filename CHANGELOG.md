@@ -1,6 +1,9 @@
 
+### Features:
+* **events.yaml**: Added endpoint for email lookup of attendees, sending email code and also importing.
+  
 <a name="1.6.0"></a>
-# [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.6.0...1.5.1) (2019-06-20)
+# [1.6.0](https://github.com/aroraenterprise/ed_services/compare/1.6.0...1.5.1) (2019-06-20)
 
 ### Features:
 * **events.yaml**: Added faqs, description, city and country to event
@@ -10,7 +13,6 @@
 * **events.yaml**: Added filters for facet search
 * **events.yaml**: Removed reminders input from event and added isReminder attribute to messages
 * **events.yaml**: Added event images to dropins/kiosks
-* **events.yaml**: Added endpoint for email lookup of attendees, sending email code and also importing.
 
 ### Fixes:
 * **events.yaml**: Fixed location in events and added city/country/placeId to location and added placeId to address
@@ -20,7 +22,7 @@
 * **events.yaml**: Removed EePicture as it is deprecated an no longer used
 
 <a name="1.5.1"></a>
-# [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.5.1...1.5.0) (2019-05-22)
+# [1.5.1](https://github.com/aroraenterprise/ed_services/compare/1.5.1...1.5.0) (2019-05-22)
 
 ### Features:
 * **accounts.yaml**: Added user files endpoint
