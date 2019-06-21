@@ -7,6 +7,7 @@
 * **events.yaml**: Added filters for facet search
 * **events.yaml**: Removed reminders input from event and added isReminder attribute to messages
 * **events.yaml**: Added event images to dropins/kiosks
+* **events.yaml**: Added endpoint for email lookup of attendees, sending email code and also importing.
 
 ### Fixes:
 * **events.yaml**: Fixed location in events and added city/country/placeId to location and added placeId to address
