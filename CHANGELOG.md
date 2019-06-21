@@ -1,4 +1,7 @@
 
+<a name="1.6.0"></a>
+# [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.6.0...1.5.1) (2019-06-20)
+
 ### Features:
 * **events.yaml**: Added faqs, description, city and country to event
 * **events.yaml**: Search facets for events
