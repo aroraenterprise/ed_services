@@ -40,7 +40,7 @@ tags:
 schemes:
   - https
 produces:
-  - application/json
+  - applicationuser/json
 securityDefinitions:
   Authorization:
     type: apiKey
@@ -707,6 +707,34 @@ paths:
           description: Dropin removed
           schema:
             $ref: '#/definitions/EePagedEventAttendee'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  
+  '/user/events':
+    get:
+      tags:
+        - eeEventAttendees
+      summary: List all events for user
+      operationId: listUserEvents
+      parameters:
+        - in: query
+          name: timestamp
+          type: integer
+          description: Timestamp to filter events
+        - in: query
+          name: desc
+          type: boolean
+          default: true
+          description: Order of event listing
+        - $ref: '#/parameters/cursor'
+        - $ref: '#/parameters/limit'
+      responses:
+        '200':
+          description: Attendees for the event
+          schema:
+            $ref: '#/definitions/EePagedEventUser'
         default:
           description: Error
           schema:
@@ -4004,4 +4032,35 @@ definitions:
       - properties:
           code:
             type: string
+
+  EeEventUser:
+    type: object
+    allOf:
+      - $ref: '#/definitions/EeBaseId'
+      - properties:
+          eventId:
+            type: string
+          event:
+            $ref: '#/definitions/EeEvent'
+          accountId:
+            type: string
+          attendeeIds:
+            type: array
+            items:
+              type: string
+          endTimestamp:
+            type: integer
+          totalTickets:
+            type: integer
+            minimum: 0
+          
+  EePagedEventUser:
+    type: object
+    properties:
+      pageData:
+        $ref: '#/definitions/EeDSPagination'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/EeEventUser'
 
