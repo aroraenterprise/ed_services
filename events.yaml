@@ -15,8 +15,8 @@ tags:
     description: Permissions
   - name: eeEvents
     description: Events
-  - name: eeEventTags
-    description: Tagging profiles and invites in an event
+  - name: eeUserEvents
+    description: User events
   - name: eeEventAttendees
     description: Event Attendees
   - name: eeEventDropins
@@ -27,8 +27,6 @@ tags:
     description: Manage eCertificates - creation, update and deletion and assigning to attendees
   - name: eeKiosk
     description: Self-serve kiosks
-  - name: eeEventAutomations
-    description: Automated actions based on triggers such as dropin => assign certificate
   - name: eeQrCode
     description: Generate qr codes
   - name: eeSurveys
@@ -427,120 +425,6 @@ paths:
   
   ### EVENTS END
   
-  ### EVENT TAGS
-  '/events/{eventId}/tags':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventTags
-      summary: Paginate tags linked to an event
-      operationId: listEventTags
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Event Profiles
-          schema:
-            $ref: '#/definitions/EePagedEventTag'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  '/events/{eventId}/tags-search':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventTags
-      summary: Paginate tags linked to an event
-      operationId: searchTagsForEvent
-      parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Event Profiles
-          schema:
-            $ref: '#/definitions/EePagedEventTag'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  '/events/{eventId}/tags/{profileId}':
-    parameters:
-      - $ref: '#/parameters/eventId'
-      - $ref: '#/parameters/profileId'
-    put:
-      tags:
-        - eeEventTags
-      summary: Create or update a tag in an event [will make tag request if new tag]
-      operationId: upsertEventTag
-      parameters:
-        - in: body
-          name: roleProp
-          description: Profile role to update
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventTagUpsert'
-      responses:
-        '200':
-          description: Event Profile
-          schema:
-            $ref: '#/definitions/EeEventTag'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  '/event-tags/{tagId}':
-    parameters:
-      - $ref: '#/parameters/tagId'
-    delete:
-      tags:
-        - eeEventTags
-      summary: Remove tag from event
-      operationId: removeEventTag
-      responses:
-        '200':
-          description: Removed profile
-          schema:
-            $ref: '#/definitions/EeSuccess'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  '/events/eventTagStatusUpdate':
-    post:
-      tags:
-        - eeEventTags
-      security: []
-      parameters:
-        - in: query
-          name: apiKey
-          type: string
-          required: true
-        - in: body
-          name: subData
-          description: Base64 encoded message
-          required: true
-          schema:
-            $ref: '#/definitions/EePubSubMessage'
-      summary: Pub sub to update event tag, accept or decline [used by service account]
-      operationId: updateEventTagStatus
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: string
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  
-  ### END OF EVENT TAGS
-  
   ### EVENT TICKETS
   '/events/{eventId}/tickets/{ticketId}':
     parameters:
@@ -715,8 +599,8 @@ paths:
   '/user/events':
     get:
       tags:
-        - eeEventAttendees
-      summary: List all events for user
+        - eeUserEvents
+      summary: List all events for which a user has tickets. Each record contains the list of all tickets under the user account for the event
       operationId: listUserEvents
       parameters:
         - in: query
@@ -734,7 +618,24 @@ paths:
         '200':
           description: Attendees for the event
           schema:
-            $ref: '#/definitions/EePagedEventUser'
+            $ref: '#/definitions/EePagedUserEvent'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/EeDefaultError'
+  '/user/events/{eventId}':
+    get:
+      tags:
+        - eeUserEvents
+      summary: Retrieve a record for event with a given id for the user if one exists. This record contains a list of all the tickets bought by the user for this event
+      operationId: retrieveUserEvent
+      parameters:
+        - $ref: '#/parameters/eventId'
+      responses:
+        '200':
+          description: User event
+          schema:
+            $ref: '#/definitions/EeUserEvent'
         default:
           description: Error
           schema:
@@ -1522,139 +1423,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/EeDefaultError'
-          
-  '/events/{eventId}/automations':
-    parameters:
-      - $ref: '#/parameters/eventId'
-    get:
-      tags:
-        - eeEventAutomations
-      deprecated: true
-      summary: List all event Automations
-      operationId: listAllEventAutomations
-      parameters:
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Automations for the event
-          schema:
-            $ref: '#/definitions/EePagedEventAutomation'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-    post:
-      tags:
-        - eeEventAutomations
-      summary: Add an automation to an event
-      deprecated: true
-      operationId: addEventAutomation
-      parameters:
-        - in: body
-          name: automationProps
-          description: Automation object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAutomationUpdate'
-      responses:
-        '200':
-          description: Automation added
-          schema:
-            $ref: '#/definitions/EeEventAutomation'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  '/automations/{automationId}':
-    parameters:
-      - $ref: '#/parameters/automationId'
-    get:
-      tags:
-        - eeEventAutomations
-      deprecated: true
-      summary: Get an Automation
-      operationId: getEventAutomation
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/EeEventAutomation'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-    put:
-      tags:
-        - eeEventAutomations
-      summary: Update Automation to event
-      deprecated: true
-      operationId: updateEventAutomation
-      parameters:
-        - in: body
-          name: automationProps
-          description: Automation to update
-          required: true
-          schema:
-            $ref: '#/definitions/EeEventAutomationUpdate'
-      responses:
-        '200':
-          description: Event Automation updated
-          schema:
-            $ref: '#/definitions/EeEventAutomation'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-    delete:
-      tags:
-        - eeEventAutomations
-      summary: Delete an existing Automation
-      deprecated: true
-      operationId: deleteEventAutomation
-      responses:
-        '204':
-          description: Automation deleted
-          schema:
-            $ref: '#/definitions/EeSuccess'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  
-  '/automations/{triggerType}/trigger':
-    post:
-      tags:
-        - eeEventAutomations
-      security: []
-      parameters:
-        - in: path
-          name: triggerType
-          type: string
-          required: true
-        - in: query
-          name: apiKey
-          type: string
-          required: true
-        - in: body
-          name: subData
-          description: Base64 encoded message
-          required: true
-          schema:
-            $ref: '#/definitions/EePubSubMessage'
-      summary: Pub sub to trigger an event automation
-      deprecated: true
-      operationId: triggerEventAutomation
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: string
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  
+    
   '/qr-code/{data}':
     parameters:
       - in: path
@@ -2253,12 +2022,6 @@ parameters:
     name: attendeeId
     in: path
     description: Attendee Id
-    type: string
-    required: true
-  automationId:
-    name: automationId
-    in: path
-    description: Automation Id
     type: string
     required: true
   creditId:
@@ -2892,58 +2655,6 @@ definitions:
       answer:
         type: string
 
-  EeEventTagUpsert:
-    type: object
-    properties:
-      roles:
-        type: array
-        items:
-          type: string
-        default: []
-      isInvited:
-        type: boolean
-        default: false
-      
-  EeEventTag:
-    type: object
-    properties:
-      id:
-        type: string
-      roles:
-        type: array
-        items:
-          type: string
-      profileId:
-        type: string
-      taggedById:
-        type: string
-      taggedByName:
-        type: string
-      eventId:
-        type: string
-      isInvited:
-        type: boolean
-      referralCode:
-        type: string
-      acceptedWhen:
-        type: number
-      declinedWhen:
-        type: number
-            
-  EePagedEventTag:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EePagination'
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EeEventTag'
-      profiles:
-        type: array
-        items:
-          $ref: '#/definitions/EeProfile'
-  
   EeTicket:
     type: object
     properties:
@@ -3638,60 +3349,6 @@ definitions:
         items:
           $ref: '#/definitions/EeKiosk'
         
-  EeEventAutomationUpdate:
-    type: object
-    required:
-      - triggerType
-      - actionType
-    properties:
-      triggerType:
-        type: string
-        enum:
-          - 'dropin'
-          - 'certificate'
-      triggerCondition:
-        type: string
-      attendeeStateCondition:
-        type: string
-      actionType:
-        type: string
-        enum:
-          - 'assignCertificate'
-      actionData:
-        type: object
-      dropletId:
-        type: string
-      dropletData:
-        type: object
-      active:
-        type: boolean
-        default: true
-  
-  EeEventAutomation:
-    type: object
-    allOf:
-      - $ref: '#/definitions/EeBaseId'
-      - $ref: '#/definitions/EeEventAutomationUpdate'
-      - properties:
-          eventId:
-            type: string
-          eventName:
-            type: string
-          eventPicture:
-            type: string
-          organizerId:
-            type: string
-
-  EePagedEventAutomation:
-    type: object
-    properties:
-      pageData:
-        $ref: '#/definitions/EeDSPagination'
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/EeEventAutomation'
-      
   EeSurveyQuestion:
     type: object
     properties:
@@ -4033,7 +3690,7 @@ definitions:
           code:
             type: string
 
-  EeEventUser:
+  EeUserEvent:
     type: object
     allOf:
       - $ref: '#/definitions/EeBaseId'
@@ -4053,8 +3710,10 @@ definitions:
           totalTickets:
             type: integer
             minimum: 0
+          ticketCode:
+            type: string
           
-  EePagedEventUser:
+  EePagedUserEvent:
     type: object
     properties:
       pageData:
@@ -4062,5 +3721,5 @@ definitions:
       items:
         type: array
         items:
-          $ref: '#/definitions/EeEventUser'
+          $ref: '#/definitions/EeUserEvent'
 
