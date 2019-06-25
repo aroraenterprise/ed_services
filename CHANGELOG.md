@@ -1,6 +1,11 @@
+<a name="1.6.1"></a>
+# [1.6.1](https://github.com/aroraenterprise/ed_services/compare/1.6.1...1.5.1) (2019-06-25)
+
+### Fixes:
+* **store_internal.yaml**: Added endpoint for attendee sale fix
 
 <a name="1.6.0"></a>
-# [1.5.0](https://github.com/aroraenterprise/ed_services/compare/1.6.0...1.5.1) (2019-06-20)
+# [1.6.0](https://github.com/aroraenterprise/ed_services/compare/1.6.0...1.5.1) (2019-06-20)
 
 ### Features:
 * **events.yaml**: Added faqs, description, city and country to event
