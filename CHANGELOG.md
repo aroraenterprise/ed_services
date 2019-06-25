@@ -1,3 +1,8 @@
+<a name="1.6.1"></a>
+# [1.6.1](https://github.com/aroraenterprise/ed_services/compare/1.6.1...1.5.1) (2019-06-25)
+
+### Fixes:
+* **store_internal.yaml**: Added endpoint for attendee sale fix
 
 ### Features:
 * **events.yaml**: Added endpoint for email lookup of attendees, sending email code and also importing.

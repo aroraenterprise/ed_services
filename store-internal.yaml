@@ -168,6 +168,28 @@ paths:
       operationId: migrate
       summary: Migration endpoint
   
+  '/ops/attendee-sale-fix/{orderId}':
+    post:
+      security:
+        - AdminKey: []
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          required: true
+          type: string
+          name: orderId
+          description: Order id to resend pubsub
+      responses:
+        '200':
+          description: Pubsub result
+          schema:
+            $ref: '#/definitions/EsSuccess'
+      tags:
+        - esOps
+      operationId: attendeeSaleFix
+      summary: Attendee sale fix endpoint
+  
 definitions:
   EsSuccess:
     properties:
