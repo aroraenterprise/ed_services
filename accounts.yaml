@@ -316,6 +316,10 @@ paths:
         - eaProfiles
       summary: List all profiles
       operationId: getAllProfiles
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -360,6 +364,10 @@ paths:
         - eaProfiles
       summary: Get Multiple Profiles
       operationId: getMultipleProfiles
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - in: query
           name: profileIds
@@ -386,6 +394,10 @@ paths:
         - eaProfiles
       summary: Get a profile from the directory
       operationId: getProfile
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - $ref: '#/parameters/enhanced'
       responses:

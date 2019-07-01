@@ -219,6 +219,10 @@ paths:
         - eeEvents
       summary: Create Event
       operationId: createEvent
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - in: body
           name: eventProps
@@ -241,6 +245,10 @@ paths:
         - eeEvents
       summary: Get Multiple Events
       operationId: getMultipleEvents
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - in: query
           name: eventIds
@@ -266,6 +274,10 @@ paths:
         - eeEvents
       summary: Get a Event from the directory
       operationId: getEvent
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       responses:
         '200':
           description: OK
@@ -321,6 +333,10 @@ paths:
         - eeEvents
       summary: Search for event facets
       operationId: searchEventFacets
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - in: query
@@ -341,58 +357,16 @@ paths:
           schema:
             $ref: '#/definitions/EeDefaultError'
   
-  
-  '/events/categories':
-    get:
-      tags:
-        - eeEvents
-      summary: Get Event Categories
-      operationId: getEventCategories
-      deprecated: true
-      parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Categories
-          schema:
-            $ref: '#/definitions/EeFacetSearch'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  
-  '/events/search':
-    get:
-      tags:
-        - eeEvents
-      summary: Search Events
-      operationId: searchEvent
-      deprecated: true
-      parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/searchFacets'
-        - $ref: '#/parameters/searchCoords'
-        - $ref: '#/parameters/filterTimestamp'
-        - $ref: '#/parameters/cursor'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: Events
-          schema:
-            $ref: '#/definitions/EePagedEvent'
-        default:
-          description: Error
-          schema:
-            $ref: '#/definitions/EeDefaultError'
-  
   '/events/search/2':
     get:
       tags:
         - eeEvents
       summary: Search Events
       operationId: searchEvent2
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -840,6 +814,10 @@ paths:
         - eeEventAttendees
       summary: List all attendees linked to the code
       operationId: retrieveAttendeesByCode
+      security:
+        - ClientKey: []
+          Authorization: []
+        - ClientKey: []
       responses:
         '200':
           description: OK
