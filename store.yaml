@@ -155,6 +155,11 @@ paths:
       tags:
         - esCurrencyExchange
       operationId: getLatestExchange
+      security:
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       summary: Get the latest exchange rates data
   ### CURRENCY EXCHANGE END
   

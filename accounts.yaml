@@ -317,9 +317,10 @@ paths:
       summary: List all profiles
       operationId: getAllProfiles
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -365,9 +366,10 @@ paths:
       summary: Get Multiple Profiles
       operationId: getMultipleProfiles
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       parameters:
         - in: query
           name: profileIds
@@ -395,9 +397,10 @@ paths:
       summary: Get a profile from the directory
       operationId: getProfile
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       parameters:
         - $ref: '#/parameters/enhanced'
       responses:

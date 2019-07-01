@@ -48,6 +48,11 @@ securityDefinitions:
     type: apiKey
     in: header
     name: X-Client-Key
+  AuthorizationOptional:
+    in: header
+    name: Authorization
+    description: Optional Authorization Key
+    type: apiKey
 security:
   - ClientKey: []
     Authorization: []
@@ -219,10 +224,6 @@ paths:
         - eeEvents
       summary: Create Event
       operationId: createEvent
-      security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
       parameters:
         - in: body
           name: eventProps
@@ -246,9 +247,10 @@ paths:
       summary: Get Multiple Events
       operationId: getMultipleEvents
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       parameters:
         - in: query
           name: eventIds
@@ -275,9 +277,10 @@ paths:
       summary: Get a Event from the directory
       operationId: getEvent
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       responses:
         '200':
           description: OK
@@ -334,9 +337,10 @@ paths:
       summary: Search for event facets
       operationId: searchEventFacets
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - in: query
@@ -364,9 +368,10 @@ paths:
       summary: Search Events
       operationId: searchEvent2
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       parameters:
         - $ref: '#/parameters/searchQuery'
         - $ref: '#/parameters/searchFacets'
@@ -815,9 +820,10 @@ paths:
       summary: List all attendees linked to the code
       operationId: retrieveAttendeesByCode
       security:
-        - ClientKey: []
-          Authorization: []
-        - ClientKey: []
+        - AuthorizationOptional: []
+          ClientKey: []
+        - Authorization: []
+          ClientKey: []
       responses:
         '200':
           description: OK

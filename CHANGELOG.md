@@ -4,6 +4,7 @@
 * **events.yaml**: Removed unused endpoints -> automations and tags
 * **events.yaml**: Security definitions updated for all open endpoints in order to allow access with just clientKey
 * **accounts.yaml**: Security definitions updated for all open endpoints in order to allow access with just clientKey
+* **store.yaml**: Security definitions updated for all open endpoints in order to allow access with just clientKey
 
 <a name="1.6.1"></a>
 # [1.6.1](https://github.com/aroraenterprise/ed_services/compare/1.6.1...1.5.1) (2019-06-25)
