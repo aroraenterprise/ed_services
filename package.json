@@ -35,7 +35,7 @@
   "homepage": "https://github.com/aroraenterprise/ed_services#readme",
   "dependencies": {
     "dotenv": "^6.0.0",
-    "latest-version": "^4.0.0",
+    "latest-version": "^7.0.0",
     "yargs": "^13.2.1"
   }
 }
